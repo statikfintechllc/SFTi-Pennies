@@ -5,7 +5,7 @@
  🚫APPLE,NVDA,TSLA,MSFT,GOOG🚫
   🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫
 
-<img width="2048" height="1679" alt="image" src="" />
+<img width="2048" height="1679" alt="image" src=".github/assets/sfti.notez.assets/trade.plan.assets/Trade_Plan.png" />
 
 </div>
 
