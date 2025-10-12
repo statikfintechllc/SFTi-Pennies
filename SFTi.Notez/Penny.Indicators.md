@@ -1,10 +1,12 @@
 **Penny Indicators**
 
+> [!NOTE]
+>
 > When trading penny stocks, technical indicators can be crucial for confirming trends and making informed trading decisions. 
 
 <div align="center">
 
-                               ------
+   ------
 
 </div>
 
@@ -13,12 +15,6 @@
 **Moving Averages (MA)**: Moving averages, such as the Simple Moving Average (SMA) and Exponential Moving Average (EMA), help smooth out price data to identify trends over a specific period. They are useful for spotting trend reversals and confirming trend direction. The **Moving Averages (MA)** is a key indicator for penny stocks due to several reasons:
 
 - **Trend Identification**: Moving averages help smooth out price data, making it easier to identify the direction of the trend. This is particularly useful in the volatile world of penny stocks, where price movements can be erratic.
-
-<div align="center">
-
-                               ------
-
-</div>
 
 - **Support and Resistance Levels**: Moving averages can act as dynamic support and resistance levels. Traders often look for price reactions around these levels to make informed trading decisions.
 
@@ -32,7 +28,7 @@
 
 <div align="center">
 
-                               ------
+   ------
 
 </div>
 
@@ -52,7 +48,7 @@ The **Relative Strength Index (RSI)** is a key indicator for penny stocks for se
 
 <div align="center">
 
-                               ------
+   ------
 
 </div>
 
@@ -73,7 +69,7 @@ The **Moving Average Convergence Divergence (MACD)** is a key indicator for penn
 
 <div align="center">
 
-                               ------
+   ------
 
 </div>
 
@@ -94,7 +90,7 @@ Bollinger Bands are considered a key indicator for penny stocks for several reas
 
 <div align="center">
 
-                               ------
+  ------
 
 </div>
 
@@ -115,7 +111,7 @@ Volume is considered a key indicator for trading penny stocks for several reason
 
 <div align="center">
 
-                               ------
+   ------
 
 </div>
 
@@ -133,11 +129,15 @@ Volume is considered a key indicator for trading penny stocks for several reason
 
 - Overall, VWAP is a valuable tool for penny stock traders as it combines price and volume data to provide a clearer picture of market dynamics.
 
-  These indicators, when used together,  
-   can provide a comprehensive view of 
-   market conditions and help traders 
-  make more informed decisions in the  
-      volatile world of penny stocks.
+<div align="center">
+
+   ------
+
+</div>
+
+> [!IMPORTANT]
+>
+> These indicators, when used together, can provide a comprehensive view of market conditions and help traders make more informed decisions in the volatile world of penny stocks.
 
 <div align="center">
 
