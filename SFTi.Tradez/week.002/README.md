@@ -77,9 +77,9 @@ Second week of systematic penny stock trading. Building on lessons from Week 001
 ## 💡 Lessons from Week 001
 
 ### Applying Previous Lessons:
-- [Carry forward lesson 1 from Week 001]
-- [Carry forward lesson 2 from Week 001]
-- [Carry forward lesson 3 from Week 001]
+- [TBD: Lesson 1 from Week 001]
+- [TBD: Lesson 2 from Week 001]
+- [TBD: Lesson 3 from Week 001]
 
 ### New Focus Areas:
 - [Area 1]
