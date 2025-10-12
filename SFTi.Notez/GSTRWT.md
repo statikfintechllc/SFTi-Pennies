@@ -8,9 +8,11 @@
 
 </div>
 
-> (Look left for recovery of Bearish trend)
-> (Look left for history of multi-day runs and look for history of a supernova)
-> (Looking for First or second Green Day)
+> [!IMPORTANT]
+>
+> Look left for recovery of Bearish trend  
+> Look left for history of multi-day runs and look for history of a supernova  
+> Looking for First or second Green Day  
 
 **Grind**: Wake Up before the algos, before anyone else, put in the work they don't.  
 **Scan**: Use the filters and scanners available.  
