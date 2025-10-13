@@ -5,6 +5,8 @@ on:
   push:
     paths:
       - 'trades/**'
+      - 'SFTi.Tradez/**'
+      - 'assets/sfti.tradez.assets/**'
       - '.github/assets/**'
       - '.github/scripts/**'
       - '.github/workflows/trade_pipeline.yml'

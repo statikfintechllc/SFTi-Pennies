@@ -199,13 +199,31 @@ def main():
     """Main execution function"""
     print("Starting trade parsing...")
     
-    # Find all trade markdown files
-    trade_files = glob.glob('trades/*.md')
-    # Remove duplicates by converting to set
+    # Find all trade markdown files in both locations:
+    # 1. Legacy location: trades/*.md
+    # 2. New location: SFTi.Tradez/week.*/**.md
+    trade_files = []
+    
+    # Check legacy trades/ directory
+    legacy_files = glob.glob('trades/*.md')
+    if legacy_files:
+        print(f"Found {len(legacy_files)} legacy trade file(s) in trades/")
+        trade_files.extend(legacy_files)
+    
+    # Check new SFTi.Tradez structure
+    sfti_tradez_pattern = 'SFTi.Tradez/week.*/*.md'
+    sfti_files = glob.glob(sfti_tradez_pattern)
+    # Filter out README files
+    sfti_files = [f for f in sfti_files if not f.endswith('README.md')]
+    if sfti_files:
+        print(f"Found {len(sfti_files)} trade file(s) in SFTi.Tradez/")
+        trade_files.extend(sfti_files)
+    
+    # Remove duplicates
     trade_files = list(set(trade_files))
     
     if not trade_files:
-        print("No trade files found in trades/ directory")
+        print("No trade files found in trades/ or SFTi.Tradez/ directories")
         # Create empty index
         output = {
             'trades': [],
@@ -214,7 +232,7 @@ def main():
             'version': '1.0'
         }
     else:
-        print(f"Found {len(trade_files)} trade file(s)")
+        print(f"Found {len(trade_files)} total trade file(s)")
         
         # Parse all trade files
         trades = []

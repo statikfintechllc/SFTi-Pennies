@@ -11,6 +11,45 @@ class TradingJournal {
   }
   
   /**
+   * Calculate week number from date (ISO week)
+   * @param {Date} date - Date object
+   * @returns {number} - ISO week number
+   */
+  getWeekNumber(date) {
+    const target = new Date(date.valueOf());
+    const dayNumber = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNumber + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
+  }
+  
+  /**
+   * Get trade count for a specific date
+   * @param {string} dateStr - Date in MM:DD:YYYY format
+   * @returns {Promise<number>} - Next trade number for that date
+   */
+  async getTradeCountForDate(dateStr) {
+    // For now, we'll extract from the trade_number field
+    // In future, this could query existing trades for the date
+    const tradeNumber = document.getElementById('trade_number')?.value || '1';
+    return tradeNumber;
+  }
+  
+  /**
+   * Format date as MM:DD:YYYY
+   * @param {string} dateStr - Date in YYYY-MM-DD format
+   * @returns {string} - Date in MM:DD:YYYY format
+   */
+  formatDateForFilename(dateStr) {
+    const [year, month, day] = dateStr.split('-');
+    return `${month}:${day}:${year}`;
+  }
+  
+  /**
    * Initialize the application
    */
   initializeApp() {
@@ -396,24 +435,34 @@ class TradingJournal {
       // Gather form data
       const formData = this.getFormData();
       
+      // Calculate week number and format date
+      const entryDate = new Date(formData.entry_date);
+      const weekNum = this.getWeekNumber(entryDate);
+      const dateFormatted = this.formatDateForFilename(formData.entry_date);
+      const tradeNum = formData.trade_number;
+      
+      // Generate file paths using new structure: SFTi.Tradez/week.{N}/{MM:DD:YYYY.N}.md
+      const weekFolder = `week.${String(weekNum).padStart(3, '0')}`;
+      const filename = `${dateFormatted}.${tradeNum}.md`;
+      const tradePath = `SFTi.Tradez/${weekFolder}/${filename}`;
+      
       // Generate markdown content
       const markdown = this.generateTradeMarkdown(formData);
       
-      // Upload images first
+      // Upload images first to: assets/sfti.tradez.assets/week.{N}/{MM:DD:YYYY.N}/
       if (this.uploadedImages.length > 0) {
-        await this.uploadImages(formData.trade_number);
+        await this.uploadImages(weekFolder, dateFormatted, tradeNum);
       }
       
       // Upload trade markdown
-      const tradePath = `trades/trade-${formData.trade_number}.md`;
       await this.auth.uploadFile(
         tradePath,
         btoa(unescape(encodeURIComponent(markdown))),
-        `Add trade #${formData.trade_number} - ${formData.ticker}`
+        `auto: new trade added ${dateFormatted}/${formData.ticker}`
       );
       
       // Show success message
-      alert(`Trade #${formData.trade_number} submitted successfully!`);
+      alert(`Trade #${tradeNum} submitted successfully!\nFile: ${tradePath}`);
       
       // Reset form
       event.target.reset();
@@ -479,9 +528,15 @@ class TradingJournal {
    * @returns {string}
    */
   generateTradeMarkdown(data) {
+    // Calculate paths for images
+    const entryDate = new Date(data.entry_date);
+    const weekNum = this.getWeekNumber(entryDate);
+    const weekFolder = `week.${String(weekNum).padStart(3, '0')}`;
+    const dateFormatted = this.formatDateForFilename(data.entry_date);
+    
     const screenshots = this.uploadedImages.map(img => 
-      `/SFTi-Pennies/assets/images/trade-${data.trade_number}/${img.name}`
-    ).join('\n  - ');
+      `  - /SFTi-Pennies/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
+    ).join('\n');
     
     return `---
 trade_number: ${data.trade_number}
@@ -502,7 +557,7 @@ broker: ${data.broker}
 pnl_usd: ${data.pnl_usd}
 pnl_percent: ${data.pnl_percent}
 screenshots:
-  - ${screenshots || 'None'}
+${screenshots || '  - None'}
 ---
 
 # Trade #${data.trade_number} - ${data.ticker}
@@ -535,22 +590,26 @@ ${data.notes || 'No additional notes.'}
 ## Screenshots
 
 ${this.uploadedImages.length > 0 ? this.uploadedImages.map(img => 
-  `![${img.name}](/SFTi-Pennies/assets/images/trade-${data.trade_number}/${img.name})`
+  `![${img.name}](/SFTi-Pennies/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name})`
 ).join('\n\n') : 'No screenshots uploaded.'}
 `;
   }
   
   /**
-   * Upload images to .github/assets/
-   * @param {string} tradeNumber
+   * Upload images to assets/sfti.tradez.assets/
+   * @param {string} weekFolder - Week folder name (e.g., "week.001")
+   * @param {string} dateFormatted - Date in MM:DD:YYYY format
+   * @param {string} tradeNum - Trade number
    */
-  async uploadImages(tradeNumber) {
+  async uploadImages(weekFolder, dateFormatted, tradeNum) {
+    const basePath = `assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${tradeNum}`;
+    
     for (const image of this.uploadedImages) {
-      const imagePath = `.github/assets/trade-${tradeNumber}/${image.name}`;
+      const imagePath = `${basePath}/${image.name}`;
       await this.auth.uploadFile(
         imagePath,
         image.base64,
-        `Add screenshot for trade #${tradeNumber}`
+        `auto: add screenshot for ${dateFormatted}.${tradeNum}`
       );
     }
   }
