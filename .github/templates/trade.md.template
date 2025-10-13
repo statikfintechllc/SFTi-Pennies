@@ -1,0 +1,52 @@
+---
+trade_number: 
+ticker: 
+entry_date: 
+entry_time: 
+exit_date: 
+exit_time: 
+entry_price: 
+exit_price: 
+position_size: 
+direction: 
+strategy: 
+stop_loss: 
+target_price: 
+risk_reward_ratio: 
+broker: 
+pnl_usd: 
+pnl_percent: 
+screenshots:
+  - 
+---
+
+# Trade #{trade_number} - {ticker}
+
+## Trade Details
+
+- **Ticker**: {ticker}
+- **Direction**: {direction}
+- **Entry**: ${entry_price} on {entry_date} at {entry_time}
+- **Exit**: ${exit_price} on {exit_date} at {exit_time}
+- **Position Size**: {position_size} shares
+- **Strategy**: {strategy}
+- **Broker**: {broker}
+
+## Risk Management
+
+- **Stop Loss**: ${stop_loss}
+- **Target Price**: ${target_price}
+- **Risk:Reward Ratio**: 1:{risk_reward_ratio}
+
+## Results
+
+- **P&L (USD)**: ${pnl_usd}
+- **P&L (%)**: {pnl_percent}%
+
+## Notes
+
+{notes}
+
+## Screenshots
+
+{screenshots}

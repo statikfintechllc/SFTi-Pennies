@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professional penny stock trading journal with automated tracking and analysis">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>SFTi-Pennies Trading Journal</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Books</a>
+          <ul class="nav-submenu">
+            <li><a href="Informational.Bookz/README.md" class="nav-link">Overview</a></li>
+            <li><a href="#" class="nav-link">10 Patterns</a></li>
+            <li><a href="#" class="nav-link">20 Strategies</a></li>
+            <li><a href="#" class="nav-link">7-Figure Mindset</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Notes</a>
+          <ul class="nav-submenu">
+            <li><a href="SFTi.Notez/README.md" class="nav-link">Overview</a></li>
+            <li><a href="SFTi.Notez/7.Step.Frame.md" class="nav-link">7-Step Framework</a></li>
+            <li><a href="SFTi.Notez/GSTRWT.md" class="nav-link">GSTRWT Method</a></li>
+            <li><a href="SFTi.Notez/Penny.Indicators.md" class="nav-link">Indicators</a></li>
+            <li><a href="SFTi.Notez/Trade.Plan.md" class="nav-link">Trade Plan</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+            <li><a href="SFTi.Tradez/week.001/README.md" class="nav-link">Week 001</a></li>
+            <li><a href="SFTi.Tradez/week.002/README.md" class="nav-link">Week 002</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="add-trade.html" class="nav-link btn btn-primary" style="margin-left: 1rem;">+ Add Trade</a>
+        </li>
+        
+        <li class="nav-item">
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>📈 SFTi-Pennies Trading Journal</h1>
+      <p>Professional penny stock trading journal with automated tracking, analysis, and performance metrics</p>
+      
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-label">Total Trades</div>
+          <div class="stat-value" id="stat-total-trades">0</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Win Rate</div>
+          <div class="stat-value positive" id="stat-win-rate">0%</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Total P&L</div>
+          <div class="stat-value" id="stat-total-pnl">$0.00</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-label">Avg P&L</div>
+          <div class="stat-value" id="stat-avg-pnl">$0.00</div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Recent Trades Section -->
+    <section class="trades-section">
+      <div class="section-header">
+        <h2>Recent Trades</h2>
+        <a href="add-trade.html" class="btn btn-primary">+ Add Trade</a>
+      </div>
+      
+      <div class="trades-grid" id="recent-trades">
+        <!-- Trade cards will be dynamically inserted here -->
+        <div class="alert alert-warning">
+          <p>Loading trades...</p>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Quick Links -->
+    <section class="trades-section">
+      <h2>Quick Links</h2>
+      <div class="trades-grid">
+        <div class="trade-card">
+          <h3>📚 Education Materials</h3>
+          <p>Trading patterns, strategies, and psychology resources</p>
+          <a href="Informational.Bookz/README.md" class="btn btn-secondary">View Books</a>
+        </div>
+        
+        <div class="trade-card">
+          <h3>📝 Trading Frameworks</h3>
+          <p>7-Step Framework, GSTRWT Method, and indicator guides</p>
+          <a href="SFTi.Notez/README.md" class="btn btn-secondary">View Notes</a>
+        </div>
+        
+        <div class="trade-card">
+          <h3>📊 Trade Journal</h3>
+          <p>Weekly trade logs with detailed analysis and screenshots</p>
+          <a href="SFTi.Tradez/README.md" class="btn btn-secondary">View All Trades</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Equity Curve (Placeholder for Chart.js) -->
+    <section class="trades-section">
+      <h2>Performance Chart</h2>
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; text-align: center;">
+        <p style="color: var(--text-secondary);">Equity curve will be displayed here once trades are added and the GitHub Actions workflow generates the chart data.</p>
+        <canvas id="equity-curve" width="800" height="400"></canvas>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal | 18 months to freedom 🚀</p>
+    <p>
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies" target="_blank">GitHub</a> |
+      <a href="README.md">Documentation</a> |
+      <a href="LICENSE">License</a>
+    </p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+  
+  <!-- Chart.js for equity curve -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</body>
+</html>
