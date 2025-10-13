@@ -1,0 +1,49 @@
+# GitHub Pages Configuration for SFTi-Pennies Trading Journal
+# This config ensures proper site building and excludes internal files
+
+# Site settings
+title: "SFTi-Pennies Trading Journal"
+description: "Professional penny stock trading journal with automated tracking and analysis"
+baseurl: ""
+url: "https://statikfintechllc.github.io/SFTi-Pennies"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Exclude from processing
+exclude:
+  - README.md
+  - README-DEV.md
+  - .github/
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - Informational.Bookz/
+  - SFTi.Notez/
+  - SFTi.Tradez/
+
+# Include necessary files
+include:
+  - _config.yml
+  - assets/
+  - trades/
+  - index.html
+  - add-trade.html
+  - manifest.json
+
+# Collections (for future use)
+collections:
+  trades:
+    output: true
+    permalink: /trades/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "trades"
+    values:
+      layout: "trade"

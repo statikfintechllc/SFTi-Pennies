@@ -1,0 +1,93 @@
+{
+  "trades": [
+    {
+      "file_path": "trades/trade-001.md",
+      "body": "# Trade #1 - TSLA\n\n## Trade Details\n\n- **Ticker**: TSLA\n- **Direction**: LONG\n- **Entry**: $245.50 on 2025-01-15 at 09:35\n- **Exit**: $251.75 on 2025-01-15 at 11:20\n- **Position Size**: 100 shares\n- *...",
+      "trade_number": 1,
+      "ticker": "TSLA",
+      "entry_date": "2025-01-15",
+      "entry_time": "09:35",
+      "exit_date": "2025-01-15",
+      "exit_time": "680",
+      "entry_price": 245.5,
+      "exit_price": 251.75,
+      "position_size": 100.0,
+      "direction": "LONG",
+      "strategy": "Breakout Play",
+      "stop_loss": 243.0,
+      "target_price": 252.0,
+      "risk_reward_ratio": 2.6,
+      "broker": "TD Ameritrade",
+      "pnl_usd": 625.0,
+      "pnl_percent": 2.55,
+      "screenshots": [
+        "None"
+      ]
+    },
+    {
+      "file_path": "trades/trade-002.md",
+      "body": "# Trade #2 - AAPL\n\n## Trade Details\n\n- **Ticker**: AAPL\n- **Direction**: LONG\n- **Entry**: $182.40 on 2025-01-16 at 10:15\n- **Exit**: $179.85 on 2025-01-16 at 14:30\n- **Position Size**: 50 shares\n- **...",
+      "trade_number": 2,
+      "ticker": "AAPL",
+      "entry_date": "2025-01-16",
+      "entry_time": "615",
+      "exit_date": "2025-01-16",
+      "exit_time": "870",
+      "entry_price": 182.4,
+      "exit_price": 179.85,
+      "position_size": 50.0,
+      "direction": "LONG",
+      "strategy": "VWAP Hold",
+      "stop_loss": 180.5,
+      "target_price": 185.0,
+      "risk_reward_ratio": 1.35,
+      "broker": "TD Ameritrade",
+      "pnl_usd": -127.5,
+      "pnl_percent": -1.4,
+      "screenshots": [
+        "None"
+      ]
+    },
+    {
+      "file_path": "trades/trade-003.md",
+      "body": "# Trade #3 - NVDA\n\n## Trade Details\n\n- **Ticker**: NVDA\n- **Direction**: LONG\n- **Entry**: $505.25 on 2025-01-17 at 09:45\n- **Exit**: $512.80 on 2025-01-17 at 10:30\n- **Position Size**: 25 shares\n- **...",
+      "trade_number": 3,
+      "ticker": "NVDA",
+      "entry_date": "2025-01-17",
+      "entry_time": "09:45",
+      "exit_date": "2025-01-17",
+      "exit_time": "630",
+      "entry_price": 505.25,
+      "exit_price": 512.8,
+      "position_size": 25.0,
+      "direction": "LONG",
+      "strategy": "Morning Momentum",
+      "stop_loss": 502.0,
+      "target_price": 515.0,
+      "risk_reward_ratio": 3.0,
+      "broker": "TD Ameritrade",
+      "pnl_usd": 188.75,
+      "pnl_percent": 1.49,
+      "screenshots": [
+        "None"
+      ]
+    }
+  ],
+  "statistics": {
+    "total_trades": 3,
+    "winning_trades": 2,
+    "losing_trades": 1,
+    "win_rate": 66.67,
+    "total_pnl": 686.25,
+    "avg_pnl": 228.75,
+    "avg_winner": 406.88,
+    "avg_loser": -127.5,
+    "largest_win": 625.0,
+    "largest_loss": -127.5,
+    "total_volume": 175,
+    "max_drawdown": 127.5,
+    "profit_factor": 3.19
+  },
+  "generated_at": "2025-10-13T01:19:51.632136",
+  "version": "1.0"
+}

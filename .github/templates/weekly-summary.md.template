@@ -1,0 +1,40 @@
+# Week {week_number} Summary
+
+**Period**: {start_date} - {end_date}
+
+## Weekly Statistics
+
+- **Total Trades**: {total_trades}
+- **Winning Trades**: {winning_trades}
+- **Losing Trades**: {losing_trades}
+- **Win Rate**: {win_rate}%
+- **Total P&L**: ${total_pnl}
+- **Average P&L per Trade**: ${avg_pnl}
+- **Best Trade**: {best_trade_ticker} (+${best_trade_pnl})
+- **Worst Trade**: {worst_trade_ticker} (-${worst_trade_pnl})
+- **Total Volume Traded**: {total_volume} shares
+
+## Performance Analysis
+
+### What Went Well
+{what_went_well}
+
+### What Needs Improvement
+{what_needs_improvement}
+
+### Key Lessons Learned
+{key_lessons}
+
+## Strategy Breakdown
+
+{strategy_breakdown}
+
+## Next Week Goals
+
+- {goal_1}
+- {goal_2}
+- {goal_3}
+
+---
+
+**Generated**: {generated_date}

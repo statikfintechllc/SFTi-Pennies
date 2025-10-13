@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add new trade to your trading journal">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Add Trade - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <h1>Add New Trade</h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Fill out the form below to add a new trade to your journal. Fields marked with <span style="color: var(--accent-red);">*</span> are required.
+        The form will automatically calculate P&L, time-in-trade, and risk:reward ratio.
+      </p>
+      
+      <form id="trade-form">
+        <!-- Trade Identification -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Trade Identification</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="trade_number" class="form-label required">Trade Number</label>
+              <input type="number" id="trade_number" class="form-input" required min="1" placeholder="1">
+              <p class="form-helper">Sequential trade number</p>
+            </div>
+            
+            <div class="form-group">
+              <label for="ticker" class="form-label required">Ticker Symbol</label>
+              <input type="text" id="ticker" class="form-input" required placeholder="AAPL" style="text-transform: uppercase;">
+              <p class="form-helper">Stock ticker (e.g., AAPL, TSLA)</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Entry Details -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Entry Details</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="entry_date" class="form-label required">Entry Date</label>
+              <input type="date" id="entry_date" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="entry_time" class="form-label required">Entry Time</label>
+              <input type="time" id="entry_time" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="entry_price" class="form-label required">Entry Price ($)</label>
+              <input type="number" id="entry_price" class="form-input" required step="0.0001" placeholder="10.50">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Exit Details -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Exit Details</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="exit_date" class="form-label required">Exit Date</label>
+              <input type="date" id="exit_date" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="exit_time" class="form-label required">Exit Time</label>
+              <input type="time" id="exit_time" class="form-input" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="exit_price" class="form-label required">Exit Price ($)</label>
+              <input type="number" id="exit_price" class="form-input" required step="0.0001" placeholder="11.25">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Position Details -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Position Details</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="direction" class="form-label required">Direction</label>
+              <select id="direction" class="form-select" required>
+                <option value="">Select direction</option>
+                <option value="LONG">LONG (Buy)</option>
+                <option value="SHORT">SHORT (Sell)</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="position_size" class="form-label required">Position Size (Shares)</label>
+              <input type="number" id="position_size" class="form-input" required min="1" placeholder="100">
+            </div>
+            
+            <div class="form-group">
+              <label for="broker" class="form-label required">Broker</label>
+              <input type="text" id="broker" class="form-input" required placeholder="TD Ameritrade">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Risk Management -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">Risk Management</h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="stop_loss" class="form-label required">Stop Loss ($)</label>
+              <input type="number" id="stop_loss" class="form-input" required step="0.0001" placeholder="10.00">
+            </div>
+            
+            <div class="form-group">
+              <label for="target_price" class="form-label required">Target Price ($)</label>
+              <input type="number" id="target_price" class="form-input" required step="0.0001" placeholder="12.00">
+            </div>
+            
+            <div class="form-group">
+              <label for="strategy" class="form-label required">Strategy</label>
+              <input type="text" id="strategy" class="form-input" required placeholder="Breakout Play">
+              <p class="form-helper">e.g., Breakout, Reversal, VWAP Hold</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Auto-Calculated Results -->
+        <div style="background-color: var(--bg-tertiary); border: 2px solid var(--accent-green); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; color: var(--accent-green);">📊 Auto-Calculated Results</h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">P&L (USD)</div>
+              <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;" id="calc-pnl-usd">$0.00</div>
+            </div>
+            
+            <div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">P&L (%)</div>
+              <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700;" id="calc-pnl-percent">0.00%</div>
+            </div>
+            
+            <div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Time in Trade</div>
+              <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow);" id="calc-time-in-trade">0h 0m</div>
+            </div>
+            
+            <div>
+              <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Risk:Reward</div>
+              <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow);" id="calc-risk-reward">1:0</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Screenshots Upload -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">📸 Screenshots</h3>
+          
+          <div class="file-upload">
+            <input type="file" id="screenshots" class="file-upload-input" multiple accept="image/*">
+            <label for="screenshots" class="file-upload-label">
+              <span style="font-size: 3rem;">📁</span>
+              <span>Click to upload screenshots</span>
+              <span style="font-size: 0.875rem; color: var(--text-dim);">Supports multiple images</span>
+            </label>
+          </div>
+          
+          <div id="file-preview" class="file-preview"></div>
+        </div>
+        
+        <!-- Additional Notes -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem;">📝 Additional Notes</h3>
+          
+          <div class="form-group">
+            <label for="notes" class="form-label">Trade Notes</label>
+            <textarea id="notes" class="form-textarea" rows="5" placeholder="What was your reasoning? What did you learn? Any mistakes or insights?"></textarea>
+          </div>
+        </div>
+        
+        <!-- Submit -->
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <a href="index.html" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary">Submit Trade</button>
+        </div>
+      </form>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
