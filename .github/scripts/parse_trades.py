@@ -97,6 +97,12 @@ def parse_trade_file(filepath):
         if 'trade_number' in trade_data:
             trade_data['trade_number'] = int(trade_data['trade_number'])
         
+        # Convert date/time fields to strings for JSON serialization
+        date_fields = ['entry_date', 'exit_date', 'entry_time', 'exit_time']
+        for field in date_fields:
+            if field in trade_data and trade_data[field] is not None:
+                trade_data[field] = str(trade_data[field])
+        
         return trade_data
         
     except Exception as e:
@@ -194,7 +200,9 @@ def main():
     print("Starting trade parsing...")
     
     # Find all trade markdown files
-    trade_files = glob.glob('trades/*.md') + glob.glob('trades/**/*.md', recursive=True)
+    trade_files = glob.glob('trades/*.md')
+    # Remove duplicates by converting to set
+    trade_files = list(set(trade_files))
     
     if not trade_files:
         print("No trade files found in trades/ directory")

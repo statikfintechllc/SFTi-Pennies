@@ -34,11 +34,13 @@ Thumbs.db
 *.log
 /tmp/
 
-# Data files (generated)
-trades-index.json
-stats.json
-
 # Don't ignore the templates
 !.github/templates/
 !.github/scripts/
 !.github/workflows/
+
+# Keep generated files for the site
+!trades-index.json
+!all-trades.html
+!summaries/
+!assets/charts/

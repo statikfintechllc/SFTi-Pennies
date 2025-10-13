@@ -186,8 +186,77 @@
   <!-- Chart.js for equity curve -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
+  <!-- Initialize equity curve chart -->
+  <script>
+    // Load and display equity curve
+    fetch('/SFTi-Pennies/assets/charts/equity-curve-data.json')
+      .then(response => response.json())
+      .then(data => {
+        const ctx = document.getElementById('equity-curve');
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: true,
+                  labels: {
+                    color: '#e4e4e7',
+                    font: {
+                      family: 'JetBrains Mono',
+                      size: 12
+                    }
+                  }
+                },
+                title: {
+                  display: false
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(161, 161, 170, 0.2)'
+                  },
+                  ticks: {
+                    color: '#e4e4e7',
+                    font: {
+                      family: 'JetBrains Mono'
+                    }
+                  }
+                },
+                x: {
+                  grid: {
+                    color: 'rgba(161, 161, 170, 0.2)'
+                  },
+                  ticks: {
+                    color: '#e4e4e7',
+                    font: {
+                      family: 'JetBrains Mono'
+                    }
+                  }
+                }
+              }
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.log('Equity curve data not yet available:', error);
+      });
+  </script>
+  
   <!-- GLightbox for image lightbox -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
   <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
+  <script>
+    // Initialize GLightbox for any images
+    const lightbox = GLightbox({
+      selector: '.glightbox'
+    });
+  </script>
 </body>
 </html>
