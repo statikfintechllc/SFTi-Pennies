@@ -165,33 +165,49 @@ php -S localhost:8000
 4. Upload screenshots (optional but recommended)
 5. Add notes about the trade
 6. Click "Submit Trade"
-7. The trade will be committed to GitHub
+7. The trade will be committed to GitHub in the format:
+   - Path: `SFTi.Tradez/week.{N}/MM:DD:YYYY.N.md`
+   - Example: `SFTi.Tradez/week.042/10:13:2025.1.md`
 8. GitHub Actions will automatically process it
 
 #### Via Manual File Creation
-1. Create a new markdown file in `trades/`
+1. Determine the week number for your trade date (ISO week)
+2. Create the directory structure if needed:
    ```bash
-   touch trades/trade-123.md
+   # For October 13, 2025 (week 42), trade #1
+   mkdir -p SFTi.Tradez/week.042
    ```
 
-2. Use the template from `.github/templates/trade.md.template`
-
-3. Fill in all YAML frontmatter fields
-
-4. Commit and push:
+3. Create the markdown file with proper naming:
    ```bash
-   git add trades/trade-123.md
-   git commit -m "Add trade #123"
+   # Format: MM:DD:YYYY.N.md
+   touch SFTi.Tradez/week.042/10:13:2025.1.md
+   ```
+
+4. Use the template from `SFTi.Tradez/template/**:**:****.*.md`
+
+5. Fill in all YAML frontmatter fields
+
+6. Commit and push:
+   ```bash
+   git add SFTi.Tradez/week.042/10:13:2025.1.md
+   git commit -m "auto: new trade added 10:13:2025/TICKER"
    git push
    ```
+
+**Note:** Legacy `trades/trade-{N}.md` format is still supported for backward compatibility.
+
+For complete details on the trade pipeline, see [Trade Pipeline Documentation](.github/docs/TRADE_PIPELINE.md).
 
 ### Uploading Screenshots
 
 Screenshots should be uploaded via the web form. They will be:
-1. Initially uploaded to `.github/assets/trade-{N}/`
-2. Automatically optimized by the workflow
-3. Copied to `assets/images/trade-{N}/` for public serving
+1. Uploaded to `assets/sfti.tradez.assets/week.{N}/MM:DD:YYYY.N/`
+2. Example: `assets/sfti.tradez.assets/week.042/10:13:2025.1/T.1.jpeg`
+3. Automatically optimized by the workflow
 4. Referenced in the trade markdown
+
+**Legacy support:** Images in `.github/assets/trade-{N}/` are still processed and copied to `assets/images/trade-{N}/` for backward compatibility.
 
 ### Viewing Your Journal
 
@@ -204,15 +220,17 @@ Screenshots should be uploaded via the web form. They will be:
 
 ### Trigger Conditions
 The workflow runs automatically when you:
-- Push changes to `trades/` directory
-- Upload images to `.github/assets/`
+- Push changes to `trades/` directory (legacy)
+- Push changes to `SFTi.Tradez/` directory (new format)
+- Upload images to `assets/sfti.tradez.assets/` (new format)
+- Upload images to `.github/assets/` (legacy)
 - Modify workflow or scripts
 - Manually trigger via Actions tab
 
 ### Workflow Steps
 
 1. **Parse Trades** (parse_trades.py)
-   - Reads all markdown files in `trades/`
+   - Reads all markdown files in `trades/` (legacy) and `SFTi.Tradez/week.*/` (new)
    - Extracts YAML frontmatter
    - Validates required fields
    - Generates `trades-index.json`
