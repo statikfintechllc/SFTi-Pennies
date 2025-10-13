@@ -1,0 +1,129 @@
+name: Trade Pipeline
+
+# Trigger on push to trades/ or .github/assets/
+on:
+  push:
+    paths:
+      - 'trades/**'
+      - '.github/assets/**'
+      - '.github/scripts/**'
+      - '.github/workflows/trade_pipeline.yml'
+  workflow_dispatch:
+
+# Permissions for GitHub Pages deployment
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  process-trades:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml matplotlib
+      
+      - name: Install image optimization tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y optipng jpegoptim
+      
+      - name: Parse trades into JSON index
+        run: |
+          echo "Step 1: Parsing trades..."
+          python .github/scripts/parse_trades.py
+      
+      - name: Generate summaries
+        run: |
+          echo "Step 2: Generating summaries..."
+          python .github/scripts/generate_summaries.py
+      
+      - name: Generate index
+        run: |
+          echo "Step 3: Generating master index..."
+          python .github/scripts/generate_index.py
+      
+      - name: Generate charts
+        run: |
+          echo "Step 4: Generating charts..."
+          python .github/scripts/generate_charts.py
+      
+      - name: Update homepage
+        run: |
+          echo "Step 5: Updating homepage..."
+          python .github/scripts/update_homepage.py
+      
+      - name: Optimize images
+        run: |
+          echo "Step 6: Optimizing images..."
+          bash .github/scripts/optimize_images.sh
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Commit generated files
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update: Process trades and generate charts [skip ci]"
+            git push
+          fi
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: trade-data
+          path: |
+            trades-index.json
+            assets/charts/
+            summaries/
+            all-trades.html
+
+  deploy-pages:
+    needs: process-trades
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      
+      - name: Pull latest changes
+        run: |
+          git pull origin ${{ github.ref_name }}
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./_site
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v3
