@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Trading education books and PDFs">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Books - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  
+  <!-- GLightbox -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="add-trade.html" class="nav-link btn btn-primary" style="margin-left: 1rem;">+ Add Trade</a>
+        </li>
+        
+        <li class="nav-item">
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section class="hero">
+      <h1>📚 Trading Books</h1>
+      <p>Educational PDFs and resources for penny stock trading</p>
+    </section>
+    
+    <!-- Books Grid -->
+    <section class="trades-section">
+      <div class="trades-grid" id="books-grid">
+        <!-- Book cards will be dynamically inserted here -->
+        <div class="alert alert-warning">
+          <p>Loading books...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- PDF Viewer Modal -->
+  <div id="pdf-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
+        <h2 id="pdf-title" style="margin: 0;">Loading...</h2>
+        <button id="close-pdf" class="btn btn-secondary">✕ Close</button>
+      </div>
+      <div id="pdf-container" style="padding: 2rem; background: var(--bg-tertiary);">
+        <canvas id="pdf-canvas"></canvas>
+      </div>
+      <div style="display: flex; justify-content: center; gap: 1rem; padding: 1rem; background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
+        <button id="pdf-prev" class="btn btn-secondary">← Previous</button>
+        <span id="pdf-page-info" style="padding: 0.5rem 1rem; color: var(--text-primary);">Page 1 of 1</span>
+        <button id="pdf-next" class="btn btn-secondary">Next →</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  
+  <!-- Books Page Script -->
+  <script>
+    // PDF.js worker
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    
+    let currentPDF = null;
+    let currentPage = 1;
+    let totalPages = 0;
+    
+    // Load and display books
+    async function loadBooks() {
+      const container = document.getElementById('books-grid');
+      if (!container) return;
+      
+      try {
+        const response = await fetch('/SFTi-Pennies/books-index.json');
+        if (!response.ok) {
+          throw new Error('Books index not found');
+        }
+        
+        const data = await response.json();
+        const books = data.books || [];
+        
+        if (books.length === 0) {
+          container.innerHTML = '<div class="alert alert-warning"><p>No books found yet.</p></div>';
+          return;
+        }
+        
+        // Display books
+        container.innerHTML = books.map((book, index) => createBookCard(book, index)).join('');
+        
+      } catch (error) {
+        console.warn('Could not load books:', error);
+        container.innerHTML = '<div class="alert alert-warning"><p>Books are being indexed. Please check back soon.</p></div>';
+      }
+    }
+    
+    // Create HTML for a book card
+    function createBookCard(book, index) {
+      return `
+        <div class="trade-card" style="animation-delay: ${index * 0.1}s; cursor: pointer;" 
+             onclick="openPDF('${book.file}', '${book.title}')">
+          <div class="trade-header">
+            <div class="trade-ticker">📖 ${book.title}</div>
+          </div>
+          
+          <div class="trade-details">
+            <div class="trade-detail">
+              <div class="trade-detail-label">Size</div>
+              <div class="trade-detail-value">${book.size_mb} MB</div>
+            </div>
+            <div class="trade-detail">
+              <div class="trade-detail-label">Type</div>
+              <div class="trade-detail-value">PDF</div>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 1rem;">
+            <button class="btn btn-primary" style="width: 100%;">📄 Open PDF</button>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Open PDF in modal
+    async function openPDF(filepath, title) {
+      const modal = document.getElementById('pdf-modal');
+      const titleEl = document.getElementById('pdf-title');
+      const canvas = document.getElementById('pdf-canvas');
+      const context = canvas.getContext('2d');
+      
+      titleEl.textContent = title;
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.background = 'rgba(0, 0, 0, 0.9)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '10000';
+      
+      try {
+        const pdf = await pdfjsLib.getDocument('/SFTi-Pennies/' + filepath).promise;
+        currentPDF = pdf;
+        totalPages = pdf.numPages;
+        currentPage = 1;
+        
+        renderPage(currentPage);
+      } catch (error) {
+        console.error('Error loading PDF:', error);
+        alert('Error loading PDF. Please try again.');
+        closePDF();
+      }
+    }
+    
+    // Render PDF page
+    async function renderPage(pageNum) {
+      if (!currentPDF) return;
+      
+      const page = await currentPDF.getPage(pageNum);
+      const canvas = document.getElementById('pdf-canvas');
+      const context = canvas.getContext('2d');
+      
+      // Scale to fit container
+      const viewport = page.getViewport({ scale: 1.5 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      
+      const renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      
+      await page.render(renderContext).promise;
+      
+      // Update page info
+      document.getElementById('pdf-page-info').textContent = `Page ${pageNum} of ${totalPages}`;
+      
+      // Enable/disable navigation buttons
+      document.getElementById('pdf-prev').disabled = pageNum === 1;
+      document.getElementById('pdf-next').disabled = pageNum === totalPages;
+    }
+    
+    // Close PDF modal
+    function closePDF() {
+      document.getElementById('pdf-modal').style.display = 'none';
+      currentPDF = null;
+      currentPage = 1;
+      totalPages = 0;
+    }
+    
+    // Navigation setup
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (navToggle && navMenu) {
+      navToggle.addEventListener('click', () => {
+        navToggle.classList.toggle('active');
+        navMenu.classList.toggle('active');
+      });
+    }
+    
+    // PDF navigation
+    document.getElementById('close-pdf').addEventListener('click', closePDF);
+    document.getElementById('pdf-prev').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage(currentPage);
+      }
+    });
+    document.getElementById('pdf-next').addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPage(currentPage);
+      }
+    });
+    
+    // Load books on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadBooks();
+      
+      // Setup auth button
+      const authButton = document.getElementById('auth-button');
+      if (authButton) {
+        const auth = new GitHubAuth();
+        if (auth.isAuthenticated()) {
+          authButton.textContent = 'Logout';
+          authButton.addEventListener('click', () => {
+            auth.clearAuth();
+            window.location.reload();
+          });
+        } else {
+          authButton.textContent = 'Login';
+          authButton.addEventListener('click', () => {
+            showAuthPrompt();
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -46,29 +46,39 @@ jobs:
           echo "Step 1: Parsing trades..."
           python .github/scripts/parse_trades.py
       
+      - name: Generate books index
+        run: |
+          echo "Step 2: Generating books index..."
+          python .github/scripts/generate_books_index.py
+      
+      - name: Generate notes index
+        run: |
+          echo "Step 3: Generating notes index..."
+          python .github/scripts/generate_notes_index.py
+      
       - name: Generate summaries
         run: |
-          echo "Step 2: Generating summaries..."
+          echo "Step 4: Generating summaries..."
           python .github/scripts/generate_summaries.py
       
       - name: Generate index
         run: |
-          echo "Step 3: Generating master index..."
+          echo "Step 5: Generating master index..."
           python .github/scripts/generate_index.py
       
       - name: Generate charts
         run: |
-          echo "Step 4: Generating charts..."
+          echo "Step 6: Generating charts..."
           python .github/scripts/generate_charts.py
       
       - name: Update homepage
         run: |
-          echo "Step 5: Updating homepage..."
+          echo "Step 7: Updating homepage..."
           python .github/scripts/update_homepage.py
       
       - name: Optimize images
         run: |
-          echo "Step 6: Optimizing images..."
+          echo "Step 8: Optimizing images..."
           bash .github/scripts/optimize_images.sh
       
       - name: Configure Git

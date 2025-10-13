@@ -1,0 +1,61 @@
+{
+  "books": [
+    {
+      "title": "10 Patterns",
+      "file": "Informational.Bookz/10_Patterns.pdf",
+      "filename": "10_Patterns.pdf",
+      "size": 9919629,
+      "size_mb": 9.46,
+      "modified": "2025-10-13T02:07:26.288905",
+      "cover": null
+    },
+    {
+      "title": "20 Strategies",
+      "file": "Informational.Bookz/20_Strategies.pdf",
+      "filename": "20_Strategies.pdf",
+      "size": 1607802,
+      "size_mb": 1.53,
+      "modified": "2025-10-13T02:07:26.292905",
+      "cover": null
+    },
+    {
+      "title": "7 Figure MindSet",
+      "file": "Informational.Bookz/7_Figure_MindSet.pdf",
+      "filename": "7_Figure_MindSet.pdf",
+      "size": 2161020,
+      "size_mb": 2.06,
+      "modified": "2025-10-13T02:07:26.297905",
+      "cover": null
+    },
+    {
+      "title": "American Hedge Fund",
+      "file": "Informational.Bookz/American_Hedge_Fund.pdf",
+      "filename": "American_Hedge_Fund.pdf",
+      "size": 5899107,
+      "size_mb": 5.63,
+      "modified": "2025-10-13T02:07:26.311905",
+      "cover": null
+    },
+    {
+      "title": "Penny Corse",
+      "file": "Informational.Bookz/Penny_Corse.pdf",
+      "filename": "Penny_Corse.pdf",
+      "size": 16973439,
+      "size_mb": 16.19,
+      "modified": "2025-10-13T02:07:26.379905",
+      "cover": null
+    },
+    {
+      "title": "Protect Profit",
+      "file": "Informational.Bookz/Protect_Profit.pdf",
+      "filename": "Protect_Profit.pdf",
+      "size": 376802,
+      "size_mb": 0.36,
+      "modified": "2025-10-13T02:07:26.380905",
+      "cover": null
+    }
+  ],
+  "total_count": 6,
+  "generated_at": "2025-10-13T02:09:01.379414",
+  "version": "1.0"
+}

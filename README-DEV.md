@@ -14,6 +14,8 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 - 📈 **Charts & Analytics**: Equity curves and performance metrics
 - 🤖 **GitHub Actions**: Fully automated processing pipeline
 - 📦 **PWA Ready**: Progressive Web App with offline capability
+- 📚 **Books Library**: PDF viewer with navigation for trading books
+- 📝 **Notes System**: Markdown renderer with GitHub styling for trading notes
 
 ## Architecture
 
@@ -22,6 +24,9 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 - **CSS**: Custom styles with Tailwind CDN for utilities
 - **JavaScript**: Vanilla JS for form handling and API calls
 - **Fonts**: JetBrains Mono + Inter from Google Fonts
+- **PDF.js**: PDF rendering for books
+- **Marked.js**: Markdown parsing for notes
+- **GitHub Markdown CSS**: Styling for rendered markdown
 
 ### Backend (GitHub Actions)
 - **Python 3.11**: Data processing scripts
@@ -212,25 +217,35 @@ The workflow runs automatically when you:
    - Validates required fields
    - Generates `trades-index.json`
 
-2. **Generate Summaries** (generate_summaries.py)
+2. **Generate Books Index** (generate_books_index.py)
+   - Scans `Informational.Bookz/` for PDF files
+   - Extracts metadata and file info
+   - Generates `books-index.json`
+
+3. **Generate Notes Index** (generate_notes_index.py)
+   - Scans `SFTi.Notez/` for markdown files
+   - Extracts titles, excerpts, and thumbnails
+   - Generates `notes-index.json`
+
+4. **Generate Summaries** (generate_summaries.py)
    - Groups trades by week/month/year
    - Calculates statistics for each period
    - Creates markdown summaries in `summaries/`
 
-3. **Generate Index** (generate_index.py)
+5. **Generate Index** (generate_index.py)
    - Creates consolidated trade index
    - Generates `all-trades.html` page
 
-4. **Generate Charts** (generate_charts.py)
+6. **Generate Charts** (generate_charts.py)
    - Creates equity curve data (Chart.js format)
    - Generates static chart images with matplotlib
    - Saves to `assets/charts/`
 
-5. **Update Homepage** (update_homepage.py)
+7. **Update Homepage** (update_homepage.py)
    - Ensures trades-index.json is accessible
    - Homepage loads data dynamically via JavaScript
 
-6. **Optimize Images** (optimize_images.sh)
+8. **Optimize Images** (optimize_images.sh)
    - Moves images from `.github/assets/` to `assets/images/`
    - Optimizes PNGs with optipng
    - Optimizes JPEGs with jpegoptim

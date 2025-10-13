@@ -41,6 +41,8 @@ Thumbs.db
 
 # Keep generated files for the site
 !trades-index.json
+!books-index.json
+!notes-index.json
 !all-trades.html
 !summaries/
 !assets/charts/
