@@ -21,20 +21,20 @@ SFTi-Pennies/
 ├── SFTi.Tradez/                    # Main trade journal directory
 │   ├── template/
 │   │   └── **:**:****.*.md         # Template for new trades
-│   ├── week.001/                   # Week 1 trades
-│   │   ├── 10:09:2025.1.md        # Trade 1 on Oct 9, 2025
-│   │   ├── 10:09:2025.2.md        # Trade 2 on Oct 9, 2025
+│   ├── week.2025.01/               # Week 1 of 2025 trades
+│   │   ├── 01:06:2025.1.md        # Trade 1 on Jan 6, 2025
+│   │   ├── 01:06:2025.2.md        # Trade 2 on Jan 6, 2025
 │   │   └── README.md               # Week summary
-│   ├── week.002/                   # Week 2 trades
+│   ├── week.2025.42/               # Week 42 of 2025 trades
 │   └── ...
 │
 ├── assets/
 │   └── sfti.tradez.assets/        # Trade screenshots and images
-│       ├── week.001/
-│       │   ├── 10:09:2025.1/      # Images for trade 1
+│       ├── week.2025.01/
+│       │   ├── 01:06:2025.1/      # Images for trade 1
 │       │   │   ├── T.1.jpeg
 │       │   │   └── Total.jpg
-│       │   ├── 10:09:2025.2/      # Images for trade 2
+│       │   ├── 01:06:2025.2/      # Images for trade 2
 │       │   └── ...
 │       └── ...
 │
@@ -67,13 +67,23 @@ SFTi-Pennies/
 - `10:13:2025.2.md` - Second trade on October 13, 2025
 - `12:31:2025.1.md` - First trade on December 31, 2025
 
-**Location:** `SFTi.Tradez/week.{N}/MM:DD:YYYY.N.md`
+**Location:** `SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md`
 
-Where `{N}` is the ISO week number (e.g., `week.001`, `week.052`)
+Where:
+- `YYYY` is the 4-digit year (e.g., 2025)
+- `WW` is the ISO week number, zero-padded (e.g., 01, 42, 52)
+
+**Examples:**
+- `SFTi.Tradez/week.2025.42/10:13:2025.1.md` - First trade on October 13, 2025 (week 42)
+- `SFTi.Tradez/week.2025.01/01:06:2025.1.md` - First trade on January 6, 2025 (week 1)
 
 ### Image Files
 
-**Location:** `assets/sfti.tradez.assets/week.{N}/MM:DD:YYYY.N/`
+**Location:** `assets/sfti.tradez.assets/week.YYYY.WW/MM:DD:YYYY.N/`
+
+**Examples:**
+- `assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg`
+- `assets/sfti.tradez.assets/week.2025.01/01:06:2025.1/Total.jpg`
 
 **Naming:**
 - Trade screenshots: `T.1.jpeg`, `T.2.jpeg`, etc.
@@ -82,10 +92,12 @@ Where `{N}` is the ISO week number (e.g., `week.001`, `week.052`)
 
 ## Week Number Calculation
 
-The system uses ISO week numbering:
+The system uses ISO week numbering with year prefix:
+- Format: `YYYY.WW` where YYYY is the 4-digit year and WW is the ISO week (01-53)
 - Week 1 is the first week with at least 4 days in the new year
 - Weeks start on Monday
 - Calculated automatically by JavaScript based on entry date
+- Example: October 13, 2025 falls in week 42, formatted as `2025.42`
 
 ## Frontend Submission Process
 
@@ -114,15 +126,15 @@ When the user fills out the form on `add-trade.html`:
 JavaScript calculates paths based on entry date:
 
 ```javascript
-// Calculate week number from entry date
+// Calculate year-week number from entry date
 const entryDate = new Date(formData.entry_date);
-const weekNum = getWeekNumber(entryDate);  // ISO week
+const yearWeek = getYearWeekNumber(entryDate);  // Returns "YYYY.WW"
 
 // Format date as MM:DD:YYYY
 const dateFormatted = formatDateForFilename(formData.entry_date);
 
 // Generate paths
-const weekFolder = `week.${String(weekNum).padStart(3, '0')}`;
+const weekFolder = `week.${yearWeek}`;
 const filename = `${dateFormatted}.${tradeNum}.md`;
 const tradePath = `SFTi.Tradez/${weekFolder}/${filename}`;
 ```
@@ -130,19 +142,19 @@ const tradePath = `SFTi.Tradez/${weekFolder}/${filename}`;
 **Example:**
 - Entry date: `2025-10-13`
 - Trade number: `1`
-- Week number: `42`
-- Result: `SFTi.Tradez/week.042/10:13:2025.1.md`
+- Year-Week: `2025.42`
+- Result: `SFTi.Tradez/week.2025.42/10:13:2025.1.md`
 
 ### 3. Image Upload
 
 Images are uploaded to:
 ```
-assets/sfti.tradez.assets/week.{N}/{MM:DD:YYYY.N}/filename.jpg
+assets/sfti.tradez.assets/week.YYYY.WW/{MM:DD:YYYY.N}/filename.jpg
 ```
 
 **Example:**
 ```
-assets/sfti.tradez.assets/week.042/10:13:2025.1/T.1.jpeg
+assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg
 ```
 
 ### 4. Markdown Generation
@@ -169,7 +181,7 @@ broker: Interactive Brokers
 pnl_usd: 255.00
 pnl_percent: 1.70
 screenshots:
-  - /SFTi-Pennies/assets/sfti.tradez.assets/week.042/10:13:2025.1/T.1.jpeg
+  - /SFTi-Pennies/assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg
 ---
 
 # Trade #1 - AAPL
@@ -199,7 +211,7 @@ The workflow triggers automatically on push to:
 
 Scans both directories:
 - Legacy: `trades/*.md`
-- New: `SFTi.Tradez/week.*/*.md`
+- New: `SFTi.Tradez/week.*/*.md` (supports both `week.XXX` and `week.YYYY.WW` formats)
 
 Extracts YAML frontmatter and validates:
 - Required fields present
@@ -270,11 +282,14 @@ Optimizes images using:
 
 1. Create markdown file in correct location:
    ```bash
-   # Calculate week number for your date
-   # For example, October 13, 2025 is week 42
+   # Calculate year-week number for your date
+   # For example, October 13, 2025 is week 42 of 2025 = 2025.42
+   
+   # Create directory if needed
+   mkdir -p SFTi.Tradez/week.2025.42
    
    # Create file
-   touch SFTi.Tradez/week.042/10:13:2025.1.md
+   touch SFTi.Tradez/week.2025.42/10:13:2025.1.md
    ```
 
 2. Copy template from `SFTi.Tradez/template/**:**:****.*.md`
@@ -285,14 +300,14 @@ Optimizes images using:
 
 5. Upload images to:
    ```bash
-   mkdir -p assets/sfti.tradez.assets/week.042/10:13:2025.1/
-   cp screenshot.jpg assets/sfti.tradez.assets/week.042/10:13:2025.1/T.1.jpeg
+   mkdir -p assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/
+   cp screenshot.jpg assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg
    ```
 
 6. Commit and push:
    ```bash
-   git add SFTi.Tradez/week.042/10:13:2025.1.md
-   git add assets/sfti.tradez.assets/week.042/10:13:2025.1/
+   git add SFTi.Tradez/week.2025.42/10:13:2025.1.md
+   git add assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/
    git commit -m "auto: new trade added 10:13:2025/TICKER"
    git push
    ```
@@ -346,7 +361,7 @@ The frontend uses GitHub Personal Access Token (PAT) for API authentication:
 ### Trade Not Showing Up
 
 1. Check if file was committed to repository
-2. Verify file is in correct directory: `SFTi.Tradez/week.{N}/`
+2. Verify file is in correct directory: `SFTi.Tradez/week.YYYY.WW/` (e.g., `week.2025.42`)
 3. Check workflow ran successfully
 4. Verify `trades-index.json` was updated
 5. Hard refresh browser (Ctrl+F5) to clear cache

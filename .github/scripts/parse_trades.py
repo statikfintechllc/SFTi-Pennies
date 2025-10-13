@@ -201,7 +201,7 @@ def main():
     
     # Find all trade markdown files in both locations:
     # 1. Legacy location: trades/*.md
-    # 2. New location: SFTi.Tradez/week.*/**.md
+    # 2. New location: SFTi.Tradez/week.*/**.md (supports both week.XXX and week.YYYY.WW formats)
     trade_files = []
     
     # Check legacy trades/ directory
@@ -210,7 +210,7 @@ def main():
         print(f"Found {len(legacy_files)} legacy trade file(s) in trades/")
         trade_files.extend(legacy_files)
     
-    # Check new SFTi.Tradez structure
+    # Check new SFTi.Tradez structure (supports week.XXX and week.YYYY.WW patterns)
     sfti_tradez_pattern = 'SFTi.Tradez/week.*/*.md'
     sfti_files = glob.glob(sfti_tradez_pattern)
     # Filter out README files

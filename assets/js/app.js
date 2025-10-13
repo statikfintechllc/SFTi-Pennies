@@ -11,11 +11,11 @@ class TradingJournal {
   }
   
   /**
-   * Calculate week number from date (ISO week)
+   * Calculate year and week number from date (ISO week)
    * @param {Date} date - Date object
-   * @returns {number} - ISO week number
+   * @returns {string} - Year and week in format "YYYY.WW"
    */
-  getWeekNumber(date) {
+  getYearWeekNumber(date) {
     const target = new Date(date.valueOf());
     const dayNumber = (date.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNumber + 3);
@@ -24,7 +24,9 @@ class TradingJournal {
     if (target.getDay() !== 4) {
       target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
     }
-    return 1 + Math.ceil((firstThursday - target) / 604800000);
+    const weekNumber = 1 + Math.ceil((firstThursday - target) / 604800000);
+    const year = target.getFullYear();
+    return `${year}.${String(weekNumber).padStart(2, '0')}`;
   }
   
   /**
@@ -435,21 +437,21 @@ class TradingJournal {
       // Gather form data
       const formData = this.getFormData();
       
-      // Calculate week number and format date
+      // Calculate year-week number and format date
       const entryDate = new Date(formData.entry_date);
-      const weekNum = this.getWeekNumber(entryDate);
+      const yearWeek = this.getYearWeekNumber(entryDate);
       const dateFormatted = this.formatDateForFilename(formData.entry_date);
       const tradeNum = formData.trade_number;
       
-      // Generate file paths using new structure: SFTi.Tradez/week.{N}/{MM:DD:YYYY.N}.md
-      const weekFolder = `week.${String(weekNum).padStart(3, '0')}`;
+      // Generate file paths using new structure: SFTi.Tradez/week.YYYY.WW/{MM:DD:YYYY.N}.md
+      const weekFolder = `week.${yearWeek}`;
       const filename = `${dateFormatted}.${tradeNum}.md`;
       const tradePath = `SFTi.Tradez/${weekFolder}/${filename}`;
       
       // Generate markdown content
       const markdown = this.generateTradeMarkdown(formData);
       
-      // Upload images first to: assets/sfti.tradez.assets/week.{N}/{MM:DD:YYYY.N}/
+      // Upload images first to: assets/sfti.tradez.assets/week.YYYY.WW/{MM:DD:YYYY.N}/
       if (this.uploadedImages.length > 0) {
         await this.uploadImages(weekFolder, dateFormatted, tradeNum);
       }
@@ -530,8 +532,8 @@ class TradingJournal {
   generateTradeMarkdown(data) {
     // Calculate paths for images
     const entryDate = new Date(data.entry_date);
-    const weekNum = this.getWeekNumber(entryDate);
-    const weekFolder = `week.${String(weekNum).padStart(3, '0')}`;
+    const yearWeek = this.getYearWeekNumber(entryDate);
+    const weekFolder = `week.${yearWeek}`;
     const dateFormatted = this.formatDateForFilename(data.entry_date);
     
     const screenshots = this.uploadedImages.map(img => 
@@ -597,7 +599,7 @@ ${this.uploadedImages.length > 0 ? this.uploadedImages.map(img =>
   
   /**
    * Upload images to assets/sfti.tradez.assets/
-   * @param {string} weekFolder - Week folder name (e.g., "week.001")
+   * @param {string} weekFolder - Week folder name (e.g., "week.2025.42")
    * @param {string} dateFormatted - Date in MM:DD:YYYY format
    * @param {string} tradeNum - Trade number
    */

@@ -166,22 +166,22 @@ php -S localhost:8000
 5. Add notes about the trade
 6. Click "Submit Trade"
 7. The trade will be committed to GitHub in the format:
-   - Path: `SFTi.Tradez/week.{N}/MM:DD:YYYY.N.md`
-   - Example: `SFTi.Tradez/week.042/10:13:2025.1.md`
+   - Path: `SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md`
+   - Example: `SFTi.Tradez/week.2025.42/10:13:2025.1.md`
 8. GitHub Actions will automatically process it
 
 #### Via Manual File Creation
-1. Determine the week number for your trade date (ISO week)
+1. Determine the year-week number for your trade date (ISO week with year)
 2. Create the directory structure if needed:
    ```bash
-   # For October 13, 2025 (week 42), trade #1
-   mkdir -p SFTi.Tradez/week.042
+   # For October 13, 2025 (week 42 of 2025), trade #1
+   mkdir -p SFTi.Tradez/week.2025.42
    ```
 
 3. Create the markdown file with proper naming:
    ```bash
    # Format: MM:DD:YYYY.N.md
-   touch SFTi.Tradez/week.042/10:13:2025.1.md
+   touch SFTi.Tradez/week.2025.42/10:13:2025.1.md
    ```
 
 4. Use the template from `SFTi.Tradez/template/**:**:****.*.md`
@@ -190,7 +190,7 @@ php -S localhost:8000
 
 6. Commit and push:
    ```bash
-   git add SFTi.Tradez/week.042/10:13:2025.1.md
+   git add SFTi.Tradez/week.2025.42/10:13:2025.1.md
    git commit -m "auto: new trade added 10:13:2025/TICKER"
    git push
    ```
@@ -202,8 +202,8 @@ For complete details on the trade pipeline, see [Trade Pipeline Documentation](.
 ### Uploading Screenshots
 
 Screenshots should be uploaded via the web form. They will be:
-1. Uploaded to `assets/sfti.tradez.assets/week.{N}/MM:DD:YYYY.N/`
-2. Example: `assets/sfti.tradez.assets/week.042/10:13:2025.1/T.1.jpeg`
+1. Uploaded to `assets/sfti.tradez.assets/week.YYYY.WW/MM:DD:YYYY.N/`
+2. Example: `assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg`
 3. Automatically optimized by the workflow
 4. Referenced in the trade markdown
 
@@ -230,7 +230,7 @@ The workflow runs automatically when you:
 ### Workflow Steps
 
 1. **Parse Trades** (parse_trades.py)
-   - Reads all markdown files in `trades/` (legacy) and `SFTi.Tradez/week.*/` (new)
+   - Reads all markdown files in `trades/` (legacy) and `SFTi.Tradez/week.*/` (supports both `week.XXX` and `week.YYYY.WW`)
    - Extracts YAML frontmatter
    - Validates required fields
    - Generates `trades-index.json`
