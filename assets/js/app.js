@@ -592,7 +592,7 @@ ${data.notes || 'No additional notes.'}
 ## Screenshots
 
 ${this.uploadedImages.length > 0 ? this.uploadedImages.map(img => 
-  `![${img.name}](/SFTi-Pennies/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name})`
+  `![${img.name}](assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name})`
 ).join('\n\n') : 'No screenshots uploaded.'}
 `;
   }
