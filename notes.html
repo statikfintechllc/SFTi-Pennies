@@ -208,184 +208,137 @@
   
   <!-- Notes Page Script -->
   <script>
-    let lightbox;
-    
-    // Load and display notes
-    async function loadNotes() {
-      const container = document.getElementById('notes-grid');
-      if (!container) return;
-      
-      try {
-        const response = await fetch('/SFTi-Pennies/notes-index.json');
-        if (!response.ok) {
-          throw new Error('Notes index not found');
-        }
-        
-        const data = await response.json();
-        const notes = data.notes || [];
-        
-        if (notes.length === 0) {
-          container.innerHTML = '<div class="alert alert-warning"><p>No notes found yet.</p></div>';
-          return;
-        }
-        
-        // Display notes
-        container.innerHTML = notes.map((note, index) => createNoteCard(note, index)).join('');
-        
-      } catch (error) {
-        console.warn('Could not load notes:', error);
-        container.innerHTML = '<div class="alert alert-warning"><p>Notes are being indexed. Please check back soon.</p></div>';
-      }
+  let lightbox;
+
+  // Load and display notes
+  async function loadNotes() {
+    const container = document.getElementById('notes-grid');
+    if (!container) return;
+
+  try {
+    const response = await fetch('./notes-index.json');
+    if (!response.ok) throw new Error('Notes index not found');
+    const data = await response.json();
+    const notes = data.notes || data || [];
+
+    if (notes.length === 0) {
+      container.innerHTML = '<div class="alert alert-warning"><p>No notes found yet.</p></div>';
+      return;
     }
-    
-    // Create HTML for a note card
-    function createNoteCard(note, index) {
-      const thumbnail = note.thumbnail ? 
-        `<div style="width: 100%; height: 150px; overflow: hidden; border-radius: 4px; margin-bottom: 1rem;">
-          <img src="/SFTi-Pennies/${note.thumbnail}" alt="${note.title}" 
-               style="width: 100%; height: 100%; object-fit: cover;">
-        </div>` : '';
-      
-      return `
-        <div class="trade-card" style="animation-delay: ${index * 0.1}s; cursor: pointer;" 
-             onclick="openNote('${note.file}', '${note.title.replace(/'/g, "\\'")}')">
-          ${thumbnail}
-          <div class="trade-header">
-            <div class="trade-ticker">📝 ${note.title}</div>
-          </div>
-          
-          <div style="padding: 1rem 0;">
-            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
-              ${note.excerpt}
-            </p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 1rem;">
-            <button class="btn btn-primary" style="width: 100%;">📖 Read Note</button>
+
+      container.innerHTML = notes.map((note, index) => createNoteCard(note, index)).join('');
+    } catch (error) {
+      console.warn('Could not load notes:', error);
+      container.innerHTML = '<div class="alert alert-warning"><p>Notes are being indexed. Please check back soon.</p></div>';
+    }
+  }
+
+  // Create HTML for a note card
+  function createNoteCard(note, index) {
+    const thumbPath = note.thumbnail ? `./${note.thumbnail}` : 'assets/icons/icon-192.png';
+    const previewText = note.excerpt 
+      ? note.excerpt.replace(/\n+/g, ' ').slice(0, 140) + '…'
+      : 'Click to view full note.';
+
+    return `
+      <div class="trade-card transition transform hover:scale-105 hover:shadow-lg" 
+           style="animation-delay: ${index * 0.1}s; cursor: pointer;" 
+           onclick="openNote('${note.file}', '${note.title.replace(/'/g, "\\'")}')">
+        <div style="width: 100%; height: 160px; overflow: hidden; border-radius: 4px;">
+          <img src="${thumbPath}" alt="${note.title}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div class="p-4">
+          <div class="trade-ticker text-accent-green font-mono text-lg mb-2">📝 ${note.title}</div>
+          <p class="text-text-secondary text-sm leading-relaxed">${previewText}</p>
+          <div class="mt-4 text-center">
+            <button class="btn btn-primary w-full">📖 Read Note</button>
           </div>
         </div>
-      `;
-    }
-    
-    // Open note in modal
-    async function openNote(filepath, title) {
-      const modal = document.getElementById('note-modal');
-      const titleEl = document.getElementById('note-title');
-      const contentEl = document.getElementById('note-content');
-      
-      titleEl.textContent = title;
-      contentEl.innerHTML = '<p style="text-align: center; padding: 2rem;">Loading...</p>';
-      modal.style.display = 'block';
-      
-      try {
-        const response = await fetch('/SFTi-Pennies/' + filepath);
-        if (!response.ok) {
-          throw new Error('Failed to load note');
-        }
-        
-        let markdown = await response.text();
-        
-        // Remove YAML frontmatter if present
-        if (markdown.startsWith('---')) {
-          const parts = markdown.split('---');
-          if (parts.length >= 3) {
-            markdown = parts.slice(2).join('---').trim();
-          }
-        }
-        
-        // Configure marked for GitHub-style rendering
-        marked.setOptions({
-          breaks: true,
-          gfm: true,
-          headerIds: true,
-          mangle: false
-        });
-        
-        // Render markdown
-        const html = marked.parse(markdown);
-        contentEl.innerHTML = html;
-        
-        // Make images clickable with lightbox
-        const images = contentEl.querySelectorAll('img');
-        images.forEach((img, idx) => {
-          // Fix relative image paths
-          if (img.src.includes('../.github/')) {
-            const newSrc = img.src.replace('../.github/', '.github/');
-            img.src = '/SFTi-Pennies/' + newSrc.split('/SFTi-Pennies/').pop();
-          }
-          
-          // Add lightbox class
-          img.classList.add('glightbox');
-          img.setAttribute('data-gallery', 'note-images');
-        });
-        
-        // Reinitialize lightbox
-        if (lightbox) {
-          lightbox.destroy();
-        }
-        lightbox = GLightbox({
-          selector: '.glightbox'
-        });
-        
-      } catch (error) {
-        console.error('Error loading note:', error);
-        contentEl.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--accent-red);">Error loading note. Please try again.</p>';
+      </div>
+    `;
+  }
+
+// Open note in modal “bubble”
+  async function openNote(filepath, title) {
+    const modal = document.getElementById('note-modal');
+    const titleEl = document.getElementById('note-title');
+    const contentEl = document.getElementById('note-content');
+
+    titleEl.textContent = title;
+    contentEl.innerHTML = '<p style="text-align:center; padding:2rem;">Loading...</p>';
+    modal.style.display = 'flex';
+    modal.style.opacity = '0';
+    modal.style.transition = 'opacity 0.3s ease-in-out';
+    setTimeout(() => (modal.style.opacity = '1'), 50);
+
+    try {
+      const cleanPath = filepath.replace(/^\/+/, '');
+      const response = await fetch('./' + cleanPath);
+      if (!response.ok) throw new Error('Failed to load note');
+      let markdown = await response.text();
+
+      // Strip YAML frontmatter
+      if (markdown.startsWith('---')) {
+        const parts = markdown.split('---');
+        if (parts.length >= 3) markdown = parts.slice(2).join('---').trim();
       }
+
+      marked.setOptions({
+        breaks: true,
+        gfm: true,
+        headerIds: true,
+        mangle: false
+      });
+
+      const html = marked.parse(markdown);
+      contentEl.innerHTML = html;
+
+      // Fix image paths + add lightbox
+      contentEl.querySelectorAll('img').forEach(img => {
+        if (!img.src.startsWith('http')) {
+          const cleanSrc = img.getAttribute('src').replace(/^\/+/, '');
+          img.src = './' + cleanSrc;
+        }
+        img.classList.add('glightbox');
+        img.setAttribute('data-gallery', 'note-images');
+      });
+
+      if (lightbox) lightbox.destroy();
+      lightbox = GLightbox({ selector: '.glightbox' });
+    } catch (error) {
+      console.error('Error loading note:', error);
+      contentEl.innerHTML = '<p style="text-align:center; padding:2rem; color:var(--accent-red);">Error loading note. Please try again.</p>';
     }
-    
-    // Close note modal
-    function closeNote() {
-      document.getElementById('note-modal').style.display = 'none';
-    }
-    
-    // Navigation setup
+  }
+
+  // Close modal with fade
+  function closeNote() {
+    const modal = document.getElementById('note-modal');
+    modal.style.opacity = '0';
+    setTimeout(() => {
+      modal.style.display = 'none';
+    }, 300);
+  }
+
+  // Nav + modal setup
+  document.addEventListener('DOMContentLoaded', () => {
+    loadNotes();
+    lightbox = GLightbox({ selector: '.glightbox' });
+
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
-    
     if (navToggle && navMenu) {
       navToggle.addEventListener('click', () => {
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
       });
     }
-    
-    // Modal close
+
     document.getElementById('close-note').addEventListener('click', closeNote);
-    
-    // Close modal when clicking outside
-    document.getElementById('note-modal').addEventListener('click', (e) => {
-      if (e.target.id === 'note-modal') {
-        closeNote();
-      }
+    document.getElementById('note-modal').addEventListener('click', e => {
+      if (e.target.id === 'note-modal') closeNote();
     });
-    
-    // Load notes on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      loadNotes();
-      
-      // Initialize GLightbox
-      lightbox = GLightbox({
-        selector: '.glightbox'
-      });
-      
-      // Setup auth button
-      const authButton = document.getElementById('auth-button');
-      if (authButton) {
-        const auth = new GitHubAuth();
-        if (auth.isAuthenticated()) {
-          authButton.textContent = 'Logout';
-          authButton.addEventListener('click', () => {
-            auth.clearAuth();
-            window.location.reload();
-          });
-        } else {
-          authButton.textContent = 'Login';
-          authButton.addEventListener('click', () => {
-            showAuthPrompt();
-          });
-        }
-      }
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
