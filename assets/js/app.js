@@ -19,13 +19,14 @@ class TradingJournal {
     const target = new Date(date.valueOf());
     const dayNumber = (date.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNumber + 3);
+    const thursdayOfTargetWeek = new Date(target.valueOf());
+    const year = thursdayOfTargetWeek.getFullYear();
     const firstThursday = target.valueOf();
     target.setMonth(0, 1);
     if (target.getDay() !== 4) {
       target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
     }
     const weekNumber = 1 + Math.ceil((firstThursday - target) / 604800000);
-    const year = target.getFullYear();
     return `${year}.${String(weekNumber).padStart(2, '0')}`;
   }
   
