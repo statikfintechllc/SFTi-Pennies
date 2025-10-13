@@ -175,8 +175,18 @@
   
   <!-- Initialize equity curve chart -->
   <script>
+    // Get base path dynamically to support different deployments
+    const getBasePath = () => {
+      const pathSegments = window.location.pathname.split('/').filter(Boolean);
+      if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
+        return '/' + pathSegments[0];
+      }
+      return '';
+    };
+    const basePath = getBasePath();
+    
     // Load and display equity curve
-    fetch('/SFTi-Pennies/assets/charts/equity-curve-data.json')
+    fetch(`${basePath}/assets/charts/equity-curve-data.json`)
       .then(response => response.json())
       .then(data => {
         const ctx = document.getElementById('equity-curve');

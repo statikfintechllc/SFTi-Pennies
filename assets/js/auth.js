@@ -14,11 +14,28 @@ class GitHubAuth {
     this.token = null;
     this.authMethod = null;
     this.username = null;
-    this.repo = 'SFTi-Pennies';
+    // Get repository name from the page URL or use default
+    // This makes the code portable across different forks/deployments
+    this.repo = this.getRepoFromURL() || 'SFTi-Pennies';
     this.owner = 'statikfintechllc';
     
     // Check for stored PAT
     this.checkStoredAuth();
+  }
+  
+  /**
+   * Extract repository name from current URL
+   * Works with GitHub Pages URLs like: username.github.io/repo-name
+   * @returns {string|null} - Repository name or null
+   */
+  getRepoFromURL() {
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    // For GitHub Pages, the first path segment is usually the repo name
+    // unless it's a custom domain
+    if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
+      return pathSegments[0];
+    }
+    return null;
   }
   
   /**

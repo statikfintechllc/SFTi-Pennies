@@ -181,7 +181,7 @@ broker: Interactive Brokers
 pnl_usd: 255.00
 pnl_percent: 1.70
 screenshots:
-  - /SFTi-Pennies/assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg
+  - assets/sfti.tradez.assets/week.2025.42/10:13:2025.1/T.1.jpeg
 ---
 
 # Trade #1 - AAPL

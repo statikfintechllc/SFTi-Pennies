@@ -7,7 +7,24 @@ class TradingJournal {
   constructor() {
     this.auth = new GitHubAuth();
     this.uploadedImages = [];
+    // Get base path from URL to make code portable
+    this.basePath = this.getBasePath();
     this.initializeApp();
+  }
+  
+  /**
+   * Get base path for the application
+   * Works with GitHub Pages and custom domains
+   * @returns {string} - Base path (e.g., '/SFTi-Pennies' or '')
+   */
+  getBasePath() {
+    const pathSegments = window.location.pathname.split('/').filter(Boolean);
+    // For GitHub Pages URLs (username.github.io/repo-name)
+    if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
+      return '/' + pathSegments[0];
+    }
+    // For custom domains or root deployments
+    return '';
   }
   
   /**
@@ -127,8 +144,8 @@ class TradingJournal {
     if (!container) return;
     
     try {
-      // Try to fetch trades index
-      const response = await fetch('/SFTi-Pennies/trades-index.json');
+      // Try to fetch trades index using dynamic base path
+      const response = await fetch(`${this.basePath}/trades-index.json`);
       if (!response.ok) {
         throw new Error('Trades index not found');
       }
@@ -538,7 +555,7 @@ class TradingJournal {
     const dateFormatted = this.formatDateForFilename(data.entry_date);
     
     const screenshots = this.uploadedImages.map(img => 
-      `  - /SFTi-Pennies/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
+      `  - ${this.basePath}/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
     ).join('\n');
     
     return `---
