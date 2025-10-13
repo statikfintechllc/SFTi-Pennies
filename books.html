@@ -209,13 +209,17 @@
       modal.style.alignItems = 'center';
       modal.style.justifyContent = 'center';
       modal.style.zIndex = '10000';
-      
+
       try {
-        const pdf = await pdfjsLib.getDocument('/SFTi-Pennies/' + filepath).promise;
+        // Remove any accidental leading slash so the path stays relative
+        const cleanPath = filepath.replace(/^\/+/, '');
+        // Build a relative path so GitHub Pages doesn’t double-prefix the repo name
+        const pdf = await pdfjsLib.getDocument('./' + cleanPath).promise;
+
         currentPDF = pdf;
         totalPages = pdf.numPages;
         currentPage = 1;
-        
+
         renderPage(currentPage);
       } catch (error) {
         console.error('Error loading PDF:', error);
