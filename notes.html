@@ -79,6 +79,19 @@
       border-left-color: var(--accent-green) !important;
       color: var(--text-secondary) !important;
     }
+
+    .note-modal {
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+    .note-modal-content {
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+    .note-modal[style*="display: flex"] .note-modal-content {
+      transform: scale(1);
+    }
     
     .note-modal {
       display: none;
