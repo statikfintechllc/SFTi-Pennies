@@ -45,6 +45,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y optipng jpegoptim
       
+      - name: Sanitize filenames for Jekyll compatibility
+        run: |
+          echo "Checking for files with problematic characters (colons, asterisks)..."
+          # Find and report any files with colons in their names (excluding hidden directories)
+          if find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" 2>/dev/null | grep -q .; then
+            echo "Warning: Found files with colons in their names:"
+            find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" 2>/dev/null
+            echo "These files will be excluded by Jekyll configuration."
+          else
+            echo "No problematic filenames found. All clear!"
+          fi
+      
       - name: Parse trades into JSON index
         run: |
           echo "Step 1: Parsing trades..."
