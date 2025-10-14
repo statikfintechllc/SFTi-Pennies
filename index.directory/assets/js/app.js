@@ -145,12 +145,13 @@ class TradingJournal {
     
     try {
       // Try to fetch trades index using dynamic base path
-      const response = await fetch(`${this.basePath}/trades-index.json`);
+      const response = await fetch(`${this.basePath}/index.directory/trades-index.json`);
       if (!response.ok) {
         throw new Error('Trades index not found');
       }
       
-      const trades = await response.json();
+      const data = await response.json();
+      const trades = data.trades || [];
       
       // Sort by date and get 3 most recent
       const recentTrades = trades
@@ -163,13 +164,13 @@ class TradingJournal {
       ).join('');
       
       // Update stats
-      this.updateStats(trades);
+      this.updateStats(data.statistics || {});
       
     } catch (error) {
       console.warn('Could not load trades:', error);
       container.innerHTML = `
         <div class="alert alert-warning">
-          <p>No trades found yet. <a href="add-trade.html">Add your first trade!</a></p>
+          <p>No trades found yet. <a href="index.directory/add-trade.html">Add your first trade!</a></p>
         </div>
       `;
     }
@@ -227,24 +228,17 @@ class TradingJournal {
   
   /**
    * Update stats display
-   * @param {Array} trades - All trades
+   * @param {Object} stats - Statistics object from trades index
    */
-  updateStats(trades) {
-    if (trades.length === 0) return;
-    
-    // Calculate stats
-    const totalTrades = trades.length;
-    const winners = trades.filter(t => parseFloat(t.pnl_usd) > 0).length;
-    const winRate = ((winners / totalTrades) * 100).toFixed(1);
-    const totalPnL = trades.reduce((sum, t) => sum + parseFloat(t.pnl_usd || 0), 0);
-    const avgPnL = (totalPnL / totalTrades).toFixed(2);
+  updateStats(stats) {
+    if (!stats || Object.keys(stats).length === 0) return;
     
     // Update DOM
     const statElements = {
-      'stat-total-trades': totalTrades,
-      'stat-win-rate': `${winRate}%`,
-      'stat-total-pnl': `$${totalPnL.toFixed(2)}`,
-      'stat-avg-pnl': `$${avgPnL}`
+      'stat-total-trades': stats.total_trades || 0,
+      'stat-win-rate': `${stats.win_rate || 0}%`,
+      'stat-total-pnl': `$${(stats.total_pnl || 0).toFixed(2)}`,
+      'stat-avg-pnl': `$${(stats.avg_pnl || 0).toFixed(2)}`
     };
     
     Object.entries(statElements).forEach(([id, value]) => {
@@ -253,6 +247,7 @@ class TradingJournal {
         element.textContent = value;
         // Add positive/negative class for P&L
         if (id.includes('pnl')) {
+          const totalPnL = stats.total_pnl || 0;
           element.classList.add(totalPnL >= 0 ? 'positive' : 'negative');
         }
       }
@@ -461,15 +456,15 @@ class TradingJournal {
       const dateFormatted = this.formatDateForFilename(formData.entry_date);
       const tradeNum = formData.trade_number;
       
-      // Generate file paths using new structure: SFTi.Tradez/week.YYYY.WW/{MM:DD:YYYY.N}.md
+      // Generate file paths using new structure: index.directory/SFTi.Tradez/week.YYYY.WW/{MM:DD:YYYY.N}.md
       const weekFolder = `week.${yearWeek}`;
       const filename = `${dateFormatted}.${tradeNum}.md`;
-      const tradePath = `SFTi.Tradez/${weekFolder}/${filename}`;
+      const tradePath = `index.directory/SFTi.Tradez/${weekFolder}/${filename}`;
       
       // Generate markdown content
       const markdown = this.generateTradeMarkdown(formData);
       
-      // Upload images first to: assets/sfti.tradez.assets/week.YYYY.WW/{MM:DD:YYYY.N}/
+      // Upload images first to: index.directory/assets/sfti.tradez.assets/week.YYYY.WW/{MM:DD:YYYY.N}/
       if (this.uploadedImages.length > 0) {
         await this.uploadImages(weekFolder, dateFormatted, tradeNum);
       }
@@ -555,7 +550,7 @@ class TradingJournal {
     const dateFormatted = this.formatDateForFilename(data.entry_date);
     
     const screenshots = this.uploadedImages.map(img => 
-      `  - ${this.basePath}/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
+      `  - ${this.basePath}/index.directory/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
     ).join('\n');
     
     return `---
@@ -622,7 +617,7 @@ ${this.uploadedImages.length > 0 ? this.uploadedImages.map(img =>
    * @param {string} tradeNum - Trade number
    */
   async uploadImages(weekFolder, dateFormatted, tradeNum) {
-    const basePath = `assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${tradeNum}`;
+    const basePath = `index.directory/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${tradeNum}`;
     
     for (const image of this.uploadedImages) {
       const imagePath = `${basePath}/${image.name}`;

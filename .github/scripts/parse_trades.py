@@ -201,7 +201,7 @@ def main():
     
     # Find all trade markdown files in both locations:
     # 1. Legacy location: trades/*.md
-    # 2. New location: SFTi.Tradez/week.*/**.md (supports both week.XXX and week.YYYY.WW formats)
+    # 2. New location: index.directory/SFTi.Tradez/week.*/**.md (supports both week.XXX and week.YYYY.WW formats)
     trade_files = []
     
     # Check legacy trades/ directory
@@ -210,20 +210,20 @@ def main():
         print(f"Found {len(legacy_files)} legacy trade file(s) in trades/")
         trade_files.extend(legacy_files)
     
-    # Check new SFTi.Tradez structure (supports week.XXX and week.YYYY.WW patterns)
-    sfti_tradez_pattern = 'SFTi.Tradez/week.*/*.md'
+    # Check new index.directory/SFTi.Tradez structure (supports week.XXX and week.YYYY.WW patterns)
+    sfti_tradez_pattern = 'index.directory/SFTi.Tradez/week.*/*.md'
     sfti_files = glob.glob(sfti_tradez_pattern)
     # Filter out README files
     sfti_files = [f for f in sfti_files if not f.endswith('README.md')]
     if sfti_files:
-        print(f"Found {len(sfti_files)} trade file(s) in SFTi.Tradez/")
+        print(f"Found {len(sfti_files)} trade file(s) in index.directory/SFTi.Tradez/")
         trade_files.extend(sfti_files)
     
     # Remove duplicates
     trade_files = list(set(trade_files))
     
     if not trade_files:
-        print("No trade files found in trades/ or SFTi.Tradez/ directories")
+        print("No trade files found in trades/ or index.directory/SFTi.Tradez/ directories")
         # Create empty index
         output = {
             'trades': [],
@@ -259,7 +259,7 @@ def main():
         }
     
     # Write JSON index
-    output_file = 'trades-index.json'
+    output_file = 'index.directory/trades-index.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     

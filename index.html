@@ -17,14 +17,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="index.directory/assets/css/main.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   
   <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="index.directory/assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="index.directory/assets/icons/icon-192.png">
 </head>
 <body>
   <!-- Animated Background -->
@@ -49,24 +49,23 @@
         </li>
         
         <li class="nav-item">
-          <a href="books.html" class="nav-link">Books</a>
+          <a href="index.directory/books.html" class="nav-link">Books</a>
         </li>
         
         <li class="nav-item">
-          <a href="notes.html" class="nav-link">Notes</a>
+          <a href="index.directory/notes.html" class="nav-link">Notes</a>
         </li>
         
         <li class="nav-item has-submenu">
           <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
-            <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
-            <li><a href="SFTi.Tradez/week.001/README.md" class="nav-link">Week 001</a></li>
-            <li><a href="SFTi.Tradez/week.002/README.md" class="nav-link">Week 002</a></li>
+            <li><a href="index.directory/SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+            <li><a href="index.directory/all-trades.html" class="nav-link">View All Trades</a></li>
           </ul>
         </li>
         
         <li class="nav-item">
-          <a href="add-trade.html" class="nav-link btn btn-primary" style="margin-left: 1rem;">+ Add Trade</a>
+          <a href="index.directory/add-trade.html" class="nav-link btn btn-primary" style="margin-left: 1rem;">+ Add Trade</a>
         </li>
         
         <li class="nav-item">
@@ -110,7 +109,7 @@
     <section class="trades-section">
       <div class="section-header">
         <h2>Recent Trades</h2>
-        <a href="add-trade.html" class="btn btn-primary">+ Add Trade</a>
+        <a href="index.directory/add-trade.html" class="btn btn-primary">+ Add Trade</a>
       </div>
       
       <div class="trades-grid" id="recent-trades">
@@ -128,19 +127,19 @@
         <div class="trade-card">
           <h3>📚 Education Materials</h3>
           <p>Trading patterns, strategies, and psychology resources</p>
-          <a href="books.html" class="btn btn-secondary">View Books</a>
+          <a href="index.directory/books.html" class="btn btn-secondary">View Books</a>
         </div>
         
         <div class="trade-card">
           <h3>📝 Trading Frameworks</h3>
           <p>7-Step Framework, GSTRWT Method, and indicator guides</p>
-          <a href="notes.html" class="btn btn-secondary">View Notes</a>
+          <a href="index.directory/notes.html" class="btn btn-secondary">View Notes</a>
         </div>
         
         <div class="trade-card">
           <h3>📊 Trade Journal</h3>
           <p>Weekly trade logs with detailed analysis and screenshots</p>
-          <a href="SFTi.Tradez/README.md" class="btn btn-secondary">View All Trades</a>
+          <a href="index.directory/all-trades.html" class="btn btn-secondary">View All Trades</a>
         </div>
       </div>
     </section>
@@ -166,9 +165,9 @@
   </footer>
   
   <!-- Scripts -->
-  <script src="assets/js/background.js"></script>
-  <script src="assets/js/auth.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="index.directory/assets/js/background.js"></script>
+  <script src="index.directory/assets/js/auth.js"></script>
+  <script src="index.directory/assets/js/app.js"></script>
   
   <!-- Chart.js for equity curve -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -186,7 +185,7 @@
     const basePath = getBasePath();
     
     // Load and display equity curve
-    fetch(`${basePath}/assets/charts/equity-curve-data.json`)
+    fetch(`${basePath}/index.directory/assets/charts/equity-curve-data.json`)
       .then(response => response.json())
       .then(data => {
         const ctx = document.getElementById('equity-curve');

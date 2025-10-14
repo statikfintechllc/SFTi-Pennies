@@ -26,7 +26,7 @@ def extract_book_title(filename):
     return title
 
 
-def scan_books_directory(directory='Informational.Bookz'):
+def scan_books_directory(directory='index.directory/Informational.Bookz'):
     """
     Scan the books directory for PDF files
     
@@ -93,7 +93,7 @@ def main():
         }
     
     # Write JSON index
-    output_file = 'books-index.json'
+    output_file = 'index.directory/books-index.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     

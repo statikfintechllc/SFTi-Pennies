@@ -144,7 +144,7 @@ def find_thumbnail(content, note_file):
     return None
 
 
-def scan_notes_directory(directory='SFTi.Notez'):
+def scan_notes_directory(directory='index.directory/SFTi.Notez'):
     """
     Scan the notes directory for markdown files
     
@@ -234,7 +234,7 @@ def main():
         }
     
     # Write JSON index
-    output_file = 'notes-index.json'
+    output_file = 'index.directory/notes-index.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     

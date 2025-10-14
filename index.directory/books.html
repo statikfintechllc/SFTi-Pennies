@@ -152,7 +152,7 @@
       if (!container) return;
       
       try {
-        const response = await fetch(`${basePath}/books-index.json`);
+        const response = await fetch(`${basePath}/index.directory/books-index.json`);
         if (!response.ok) {
           throw new Error('Books index not found');
         }

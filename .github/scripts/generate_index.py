@@ -15,13 +15,13 @@ def main():
     print("Generating master trade index...")
     
     # Check if trades-index.json exists
-    if not os.path.exists('trades-index.json'):
-        print("Warning: trades-index.json not found")
+    if not os.path.exists('index.directory/trades-index.json'):
+        print("Warning: index.directory/trades-index.json not found")
         print("This file should be created by parse_trades.py")
         return
     
     # Load the index
-    with open('trades-index.json', 'r', encoding='utf-8') as f:
+    with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
         index_data = json.load(f)
     
     trades = index_data.get('trades', [])
@@ -32,8 +32,8 @@ def main():
     print(f"Win Rate: {stats.get('win_rate', 0)}%")
     
     # Ensure the file is in place for GitHub Pages
-    # (it's already at the root, which is correct)
-    print("Master index is ready at trades-index.json")
+    # (it's already at index.directory/, which is correct)
+    print("Master index is ready at index.directory/trades-index.json")
     
     # Create a simple trade list HTML for easy browsing (optional)
     create_trade_list_html(trades)
@@ -123,7 +123,7 @@ def create_trade_list_html(trades):
         <div class="nav-container">
             <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
             <ul class="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a></li>
             </ul>
         </div>
@@ -166,10 +166,10 @@ def create_trade_list_html(trades):
 </html>
 """
     
-    with open('all-trades.html', 'w', encoding='utf-8') as f:
+    with open('index.directory/all-trades.html', 'w', encoding='utf-8') as f:
         f.write(html_content)
     
-    print("Trade list HTML created at all-trades.html")
+    print("Trade list HTML created at index.directory/all-trades.html")
 
 
 if __name__ == '__main__':
