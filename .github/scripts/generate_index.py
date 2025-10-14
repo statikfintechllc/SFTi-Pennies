@@ -121,7 +121,7 @@ def create_trade_list_html(trades):
     
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
                 <li class="nav-item"><a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a></li>
