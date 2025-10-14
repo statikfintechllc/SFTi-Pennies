@@ -13,10 +13,10 @@ from collections import defaultdict
 def load_trades_index():
     """Load the trades index JSON file"""
     try:
-        with open('trades-index.json', 'r', encoding='utf-8') as f:
+        with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        print("trades-index.json not found. Run parse_trades.py first.")
+        print("index.directory/trades-index.json not found. Run parse_trades.py first.")
         return None
 
 

@@ -5,8 +5,10 @@ on:
   push:
     paths:
       - 'trades/**'
-      - 'SFTi.Tradez/**'
-      - 'assets/sfti.tradez.assets/**'
+      - 'index.directory/SFTi.Tradez/**'
+      - 'index.directory/assets/sfti.tradez.assets/**'
+      - 'index.directory/Informational.Bookz/**'
+      - 'index.directory/SFTi.Notez/**'
       - '.github/assets/**'
       - '.github/scripts/**'
       - '.github/workflows/trade_pipeline.yml'
@@ -103,10 +105,11 @@ jobs:
         with:
           name: trade-data
           path: |
-            trades-index.json
-            assets/charts/
-            summaries/
-            all-trades.html
+            index.directory/trades-index.json
+            index.directory/books-index.json
+            index.directory/notes-index.json
+            index.directory/assets/charts/
+            index.directory/all-trades.html
 
   deploy-pages:
     needs: process-trades

@@ -17,10 +17,10 @@ import matplotlib.dates as mdates
 def load_trades_index():
     """Load the trades index JSON file"""
     try:
-        with open('trades-index.json', 'r', encoding='utf-8') as f:
+        with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
-        print("trades-index.json not found. Run parse_trades.py first.")
+        print("index.directory/trades-index.json not found. Run parse_trades.py first.")
         return None
 
 
@@ -89,7 +89,7 @@ def generate_equity_curve_data(trades):
     return chartjs_data
 
 
-def generate_static_chart(trades, output_path='assets/charts/equity-curve.png'):
+def generate_static_chart(trades, output_path='index.directory/assets/charts/equity-curve.png'):
     """
     Generate a static equity curve image using matplotlib
     
@@ -174,7 +174,7 @@ def generate_static_chart(trades, output_path='assets/charts/equity-curve.png'):
     print(f"Static chart saved to {output_path}")
 
 
-def generate_trade_distribution_chart(trades, output_path='assets/charts/trade-distribution.png'):
+def generate_trade_distribution_chart(trades, output_path='index.directory/assets/charts/trade-distribution.png'):
     """
     Generate a bar chart showing P&L distribution
     
@@ -258,10 +258,10 @@ def main():
     chartjs_data = generate_equity_curve_data(trades)
     
     # Save Chart.js data
-    os.makedirs('assets/charts', exist_ok=True)
-    with open('assets/charts/equity-curve-data.json', 'w', encoding='utf-8') as f:
+    os.makedirs('index.directory/assets/charts', exist_ok=True)
+    with open('index.directory/assets/charts/equity-curve-data.json', 'w', encoding='utf-8') as f:
         json.dump(chartjs_data, f, indent=2)
-    print("Chart.js data saved to assets/charts/equity-curve-data.json")
+    print("Chart.js data saved to index.directory/assets/charts/equity-curve-data.json")
     
     # Generate static charts
     try:

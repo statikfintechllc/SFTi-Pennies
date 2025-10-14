@@ -51,7 +51,7 @@
       
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="index.html" class="nav-link">Home</a>
+          <a href="../index.html" class="nav-link">Home</a>
         </li>
         
         <li class="nav-item">
@@ -65,6 +65,7 @@
         <li class="nav-item has-submenu">
           <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
             <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
           </ul>
         </li>
@@ -152,7 +153,7 @@
       if (!container) return;
       
       try {
-        const response = await fetch(`${basePath}/books-index.json`);
+        const response = await fetch(`${basePath}/index.directory/books-index.json`);
         if (!response.ok) {
           throw new Error('Books index not found');
         }

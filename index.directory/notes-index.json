@@ -2,46 +2,46 @@
   "notes": [
     {
       "title": "The 7-Step Penny-Stocking Framework",
-      "file": "SFTi.Notez/7.Step.Frame.md",
+      "file": "index.directory/SFTi.Notez/7.Step.Frame.md",
       "filename": "7.Step.Frame.md",
       "excerpt": "**The 7-Step Penny-Stocking Framework** **Step #1**: The Pre-Pump or Promotion",
-      "thumbnail": ".github/assets/sfti.notez.assets/7.step.framework.assets/Step.1.png",
-      "size": 8518,
-      "modified": "2025-10-13T23:10:10.537765",
+      "thumbnail": "assets/sfti.notez.assets/7.step.framework.assets/Step.1.png",
+      "size": 8462,
+      "modified": "2025-10-14T16:28:12.580612",
       "tags": []
     },
     {
       "title": "SCANNER",
-      "file": "SFTi.Notez/GSTRWT.md",
+      "file": "index.directory/SFTi.Notez/GSTRWT.md",
       "filename": "GSTRWT.md",
       "excerpt": "**GSTRWT** Grind.Scan.Trace.Research.Watch.Trade Build a watch list Daily",
       "thumbnail": null,
       "size": 1495,
-      "modified": "2025-10-13T23:10:10.537765",
+      "modified": "2025-10-14T16:28:12.581612",
       "tags": []
     },
     {
       "title": "Penny Indicators",
-      "file": "SFTi.Notez/Penny.Indicators.md",
+      "file": "index.directory/SFTi.Notez/Penny.Indicators.md",
       "filename": "Penny.Indicators.md",
       "excerpt": "**Penny Indicators** *Here are the top 5 most commonly used technical indicators for penny stocks*:",
       "thumbnail": null,
       "size": 11001,
-      "modified": "2025-10-13T23:10:10.537765",
+      "modified": "2025-10-14T16:28:12.581612",
       "tags": []
     },
     {
       "title": "Trade Plan",
-      "file": "SFTi.Notez/Trade.Plan.md",
+      "file": "index.directory/SFTi.Notez/Trade.Plan.md",
       "filename": "Trade.Plan.md",
       "excerpt": "**Trading Plan** 🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 🚫APPLE,NVDA,TSLA,MSFT,GOOG🚫",
-      "thumbnail": ".github/assets/sfti.notez.assets/trade.plan.assets/Trade_Plan.png",
-      "size": 721,
-      "modified": "2025-10-13T23:10:10.537765",
+      "thumbnail": "assets/sfti.notez.assets/trade.plan.assets/Trade_Plan.png",
+      "size": 713,
+      "modified": "2025-10-14T16:28:12.581612",
       "tags": []
     }
   ],
   "total_count": 4,
-  "generated_at": "2025-10-13T23:10:48.344682",
+  "generated_at": "2025-10-14T16:30:18.467532",
   "version": "1.0"
 }
