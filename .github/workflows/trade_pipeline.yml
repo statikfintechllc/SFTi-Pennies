@@ -49,9 +49,9 @@ jobs:
         run: |
           echo "Checking for files with problematic characters (colons, asterisks)..."
           # Find and report any files with colons in their names (excluding hidden directories)
-          if find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" 2>/dev/null | grep -q .; then
+          if find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" ! -path "./node_modules/*" ! -path "./vendor/*" 2>/dev/null | grep -q .; then
             echo "Warning: Found files with colons in their names:"
-            find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" 2>/dev/null
+            find . -type f -name "*:*" ! -path "./.git/*" ! -path "./.github/*" ! -path "./node_modules/*" ! -path "./vendor/*" 2>/dev/null
             echo "These files will be excluded by Jekyll configuration."
           else
             echo "No problematic filenames found. All clear!"
