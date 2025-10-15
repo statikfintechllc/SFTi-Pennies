@@ -286,7 +286,11 @@
     setTimeout(() => (modal.style.opacity = '1'), 50);
 
     try {
-      const cleanPath = filepath.replace(/^\/+/, '');
+      // Strip 'index.directory/' prefix if present since we're already in that directory
+      let cleanPath = filepath.replace(/^\/+/, '');
+      if (cleanPath.startsWith('index.directory/')) {
+        cleanPath = cleanPath.substring('index.directory/'.length);
+      }
       const response = await fetch('./' + cleanPath);
       if (!response.ok) throw new Error('Failed to load note');
       let markdown = await response.text();
@@ -310,7 +314,11 @@
       // Fix image paths + add lightbox
       contentEl.querySelectorAll('img').forEach(img => {
         if (!img.src.startsWith('http')) {
-          const cleanSrc = img.getAttribute('src').replace(/^\/+/, '');
+          let cleanSrc = img.getAttribute('src').replace(/^\/+/, '');
+          // Handle relative paths from markdown (../assets/...)
+          if (cleanSrc.startsWith('../')) {
+            cleanSrc = cleanSrc.substring(3);
+          }
           img.src = './' + cleanSrc;
         }
         img.classList.add('glightbox');

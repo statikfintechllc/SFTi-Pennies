@@ -138,22 +138,12 @@
     let totalPages = 0;
     
     // Load and display books
-    // Get base path dynamically to support different deployments
-    const getBasePath = () => {
-      const pathSegments = window.location.pathname.split('/').filter(Boolean);
-      if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-        return '/' + pathSegments[0];
-      }
-      return '';
-    };
-    const basePath = getBasePath();
-    
     async function loadBooks() {
       const container = document.getElementById('books-grid');
       if (!container) return;
       
       try {
-        const response = await fetch(`${basePath}/index.directory/books-index.json`);
+        const response = await fetch('./books-index.json');
         if (!response.ok) {
           throw new Error('Books index not found');
         }
@@ -222,9 +212,11 @@
       modal.style.zIndex = '10000';
 
       try {
-        // Remove any accidental leading slash so the path stays relative
-        const cleanPath = filepath.replace(/^\/+/, '');
-        // Build a relative path so GitHub Pages doesn’t double-prefix the repo name
+        // Strip 'index.directory/' prefix if present since we're already in that directory
+        let cleanPath = filepath.replace(/^\/+/, '');
+        if (cleanPath.startsWith('index.directory/')) {
+          cleanPath = cleanPath.substring('index.directory/'.length);
+        }
         const pdf = await pdfjsLib.getDocument('./' + cleanPath).promise;
 
         currentPDF = pdf;
