@@ -19,11 +19,11 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
   
-  <!-- GitHub Markdown CSS (Dark) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.4.0/github-markdown-dark.min.css">
-  
-  <!-- Local Bundle (marked.js + PDF.js) -->
+  <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
   <script src="assets/js/bundle.min.js"></script>
+  
+  <!-- Custom Markdown & PDF Styles -->
+  <link rel="stylesheet" href="styles/markdown.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -35,65 +35,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
   <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
   
+  <!-- Modular Renderers -->
+  <script src="render/markdownRenderer.js"></script>
+  
   <style>
-    /* Custom styling for markdown content to match our theme */
-    .markdown-body {
-      background-color: var(--bg-tertiary) !important;
-      color: var(--text-primary) !important;
-      font-family: var(--font-sans) !important;
-      padding: 2rem;
-      border-radius: 8px;
-    }
-    
-    .markdown-body code {
-      font-family: var(--font-mono) !important;
-      background-color: var(--bg-secondary) !important;
-      color: var(--accent-yellow) !important;
-    }
-    
-    .markdown-body pre {
-      background-color: var(--bg-secondary) !important;
-    }
-    
-    .markdown-body h1,
-    .markdown-body h2,
-    .markdown-body h3,
-    .markdown-body h4 {
-      font-family: var(--font-mono) !important;
-      color: var(--accent-green) !important;
-      border-bottom-color: var(--border-color) !important;
-    }
-    
-    .markdown-body a {
-      color: var(--accent-green) !important;
-    }
-    
-    .markdown-body img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    .markdown-body blockquote {
-      border-left-color: var(--accent-green) !important;
-      color: var(--text-secondary) !important;
-    }
-
+    /* Modal Styles */
     .note-modal {
       backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
-    }
-    .note-modal-content {
-      transform: scale(0.95);
-      transition: transform 0.25s ease;
-    }
-    .note-modal[style*="display: flex"] .note-modal-content {
-      transform: scale(1);
-    }
-    
-    .note-modal {
       display: none;
       position: fixed;
       top: 0;
@@ -113,6 +63,12 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+    
+    .note-modal[style*="display: flex"] .note-modal-content {
+      transform: scale(1);
     }
     
     .note-modal-header {
@@ -339,26 +295,13 @@
       console.log('Markdown loaded, length:', markdown.length);
       console.log('First 100 chars:', markdown.substring(0, 100));
 
-      // Strip YAML frontmatter if present
-      let cleanMarkdown = markdown;
-      if (markdown.startsWith('---')) {
-        const parts = markdown.split('---');
-        if (parts.length >= 3) {
-          cleanMarkdown = parts.slice(2).join('---').trim();
-        }
-      }
-      console.log('After YAML strip, length:', cleanMarkdown.length);
-
-      // Render markdown
-      console.log('Rendering with marked.js...');
-      marked.setOptions({
-        breaks: true,
-        gfm: true,
-        headerIds: true,
-        mangle: false
-      });
-
-      const html = marked.parse(cleanMarkdown);
+      // Initialize MarkdownRenderer
+      console.log('Initializing MarkdownRenderer...');
+      const renderer = new MarkdownRenderer();
+      
+      // Render markdown with GFM and callouts
+      console.log('Rendering markdown with GFM and GitHub callouts...');
+      const html = renderer.render(markdown);
       console.log('HTML rendered, length:', html.length);
 
       contentEl.innerHTML = html;
@@ -371,23 +314,9 @@
       contentEl.style.display = 'block';
       contentEl.style.visibility = 'visible';
 
-      // Fix image paths after rendering
-      contentEl.querySelectorAll('img').forEach((img, index) => {
-        console.log(`Image ${index} original src:`, img.getAttribute('src'));
-        let cleanSrc = img.getAttribute('src');
-        if (!cleanSrc.startsWith('http')) {
-          cleanSrc = cleanSrc.replace(/^\/+/, '');
-          if (cleanSrc.startsWith('../')) {
-            cleanSrc = './' + cleanSrc.substring(3);
-          } else if (!cleanSrc.startsWith('./')) {
-            cleanSrc = './' + cleanSrc;
-          }
-        }
-        img.src = cleanSrc;
-        console.log(`Image ${index} final src:`, img.src);
-        img.classList.add('glightbox');
-        img.setAttribute('data-gallery', 'note-images');
-      });
+      // Fix image paths using renderer
+      renderer.fixImagePaths(contentEl);
+      console.log('Image paths fixed');
 
       if (typeof GLightbox !== 'undefined') {
         if (lightbox) lightbox.destroy();

@@ -11,8 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/marked": "^5.0.2",
     "esbuild": "^0.25.11",
+    "highlight.js": "^11.11.1",
     "marked": "^16.4.0",
+    "marked-gfm-heading-id": "^4.1.2",
+    "marked-highlight": "^2.2.2",
     "pdfjs-dist": "^5.4.296"
   }
 }
