@@ -6,7 +6,6 @@ _site/
 
 # Node modules (if added later)
 node_modules/
-package-lock.json
 
 # Python cache
 __pycache__/

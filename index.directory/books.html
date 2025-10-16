@@ -25,8 +25,8 @@
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
   
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Local Bundle (marked.js + PDF.js) -->
+  <script src="assets/js/bundle.min.js"></script>
   
   <!-- GLightbox -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
@@ -130,7 +130,7 @@
   <script>
     // PDF.js worker
     if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/js/pdf.worker.min.mjs';
     }
     
     let currentPDF = null;
