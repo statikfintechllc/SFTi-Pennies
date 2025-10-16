@@ -19,14 +19,20 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
   
+  <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
+  <script src="assets/js/bundle.min.js"></script>
+  
+  <!-- Custom PDF Viewer Styles -->
+  <link rel="stylesheet" href="styles/pdf-viewer.css">
+  
+  <!-- Modular Renderers -->
+  <script src="render/pdfRenderer.js"></script>
+  
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
   
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-  
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   
   <!-- GLightbox -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
@@ -101,19 +107,12 @@
   
   <!-- PDF Viewer Modal -->
   <div id="pdf-modal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 90%; max-height: 90vh; overflow: auto;">
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);">
-        <h2 id="pdf-title" style="margin: 0;">Loading...</h2>
+    <div class="modal-content" style="max-width: 95%; max-height: 95vh; background: var(--bg-secondary); border-radius: 8px; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-primary); border-bottom: 1px solid var(--border-color);">
+        <h2 id="pdf-title" style="margin: 0; color: var(--accent-green); font-family: var(--font-mono);">Loading...</h2>
         <button id="close-pdf" class="btn btn-secondary">✕ Close</button>
       </div>
-      <div id="pdf-container" style="padding: 2rem; background: var(--bg-tertiary);">
-        <canvas id="pdf-canvas"></canvas>
-      </div>
-      <div style="display: flex; justify-content: center; gap: 1rem; padding: 1rem; background: var(--bg-secondary); border-top: 1px solid var(--border-color);">
-        <button id="pdf-prev" class="btn btn-secondary">← Previous</button>
-        <span id="pdf-page-info" style="padding: 0.5rem 1rem; color: var(--text-primary);">Page 1 of 1</span>
-        <button id="pdf-next" class="btn btn-secondary">Next →</button>
-      </div>
+      <div id="pdf-viewer-root" style="height: calc(95vh - 80px); background: var(--bg-tertiary);"></div>
     </div>
   </div>
   
@@ -130,14 +129,101 @@
   <script>
     // PDF.js worker
     if (typeof pdfjsLib !== 'undefined') {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/js/pdf.worker.min.mjs';
     }
     
-    let currentPDF = null;
-    let currentPage = 1;
-    let totalPages = 0;
+    let pdfRenderer = null;
     
-    // Load and display books
+    // Open PDF in modal
+    async function openPDF(filepath, title) {
+      const modal = document.getElementById('pdf-modal');
+      const titleEl = document.getElementById('pdf-title');
+      
+      titleEl.textContent = title;
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.background = 'rgba(0, 0, 0, 0.9)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = '10000';
+
+      try {
+        console.log('=== ATTEMPTING TO LOAD PDF ===');
+        console.log('Original filepath:', filepath);
+        
+        // Strip index.directory/ prefix
+        let cleanPath = filepath.replace(/^\/+/, '');
+        if (cleanPath.startsWith('index.directory/')) {
+          cleanPath = cleanPath.substring('index.directory/'.length);
+        }
+        console.log('Cleaned path:', cleanPath);
+        
+        const fullUrl = './' + cleanPath;
+        console.log('Full fetch URL:', fullUrl);
+        
+        // Initialize PDFRenderer if not exists
+        if (!pdfRenderer) {
+          console.log('Initializing PDFRenderer...');
+          pdfRenderer = new PDFRenderer('pdf-viewer-root', {
+            scale: 1.5,
+            enableZoom: true,
+            enableScroll: true
+          });
+        }
+        
+        // Try multiple path variations
+        const pathVariations = [
+          fullUrl,
+          '../' + cleanPath,
+          '/' + cleanPath,
+          cleanPath
+        ];
+        
+        let successPath = null;
+        let lastError = null;
+        
+        for (const testPath of pathVariations) {
+          console.log(`Trying path: ${testPath}`);
+          try {
+            await pdfRenderer.loadPDF(testPath);
+            console.log(`  SUCCESS with path: ${testPath}`);
+            successPath = testPath;
+            break;
+          } catch (e) {
+            console.log(`  Failed with path: ${testPath}`, e.message);
+            lastError = e;
+          }
+        }
+        
+        if (!successPath) {
+          throw lastError || new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+        }
+
+        console.log('=== PDF LOADED SUCCESSFULLY ===');
+        console.log('PDF rendered with scrollable viewer');
+        
+      } catch (error) {
+        console.error('=== PDF LOAD FAILED ===');
+        console.error('Error type:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Full error:', error);
+        
+        const container = document.getElementById('pdf-viewer-root');
+        if (container) {
+          container.innerHTML = `
+            <div style="padding:2rem; color:var(--accent-red); text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+              <p style="font-weight:bold; margin-bottom:1rem; font-size:1.2em;">Error loading PDF</p>
+              <p style="font-size:0.9em; font-family:monospace; background: var(--bg-secondary); padding: 1rem; border-radius: 4px; max-width: 600px;">${error.message}</p>
+              <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+            </div>
+          `;
+        }
+      }
+    }
     async function loadBooks() {
       const container = document.getElementById('books-grid');
       if (!container) return;
@@ -212,65 +298,96 @@
       modal.style.zIndex = '10000';
 
       try {
-        // Path Resolution Logic:
-        // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/Informational.Bookz/10_Patterns.pdf')
-        // Since books.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
-        // Example: 'index.directory/Informational.Bookz/file.pdf' -> './Informational.Bookz/file.pdf'
-        let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
+        console.log('=== ATTEMPTING TO LOAD PDF ===');
+        console.log('Original filepath:', filepath);
+        
+        // Strip index.directory/ prefix
+        let cleanPath = filepath.replace(/^\/+/, '');
         if (cleanPath.startsWith('index.directory/')) {
-          cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
+          cleanPath = cleanPath.substring('index.directory/'.length);
         }
-        const pdf = await pdfjsLib.getDocument('./' + cleanPath).promise;
+        console.log('Cleaned path:', cleanPath);
+        
+        const fullUrl = './' + cleanPath;
+        console.log('Full fetch URL:', fullUrl);
+        console.log('Attempting PDF.js getDocument...');
+        
+        // Try multiple path variations if primary path fails
+        const pathVariations = [
+          fullUrl,
+          '../' + cleanPath,
+          '/' + cleanPath,
+          cleanPath
+        ];
+        
+        let pdf = null;
+        let successPath = null;
+        
+        for (const testPath of pathVariations) {
+          console.log(`Trying path: ${testPath}`);
+          try {
+            const loadingTask = pdfjsLib.getDocument(testPath);
+            const testPdf = await loadingTask.promise;
+            console.log(`  SUCCESS with path: ${testPath}`);
+            console.log(`  PDF loaded, pages: ${testPdf.numPages}`);
+            pdf = testPdf;
+            successPath = testPath;
+            break;
+          } catch (e) {
+            console.log(`  Failed with path: ${testPath}`, e.message);
+          }
+        }
+        
+        if (!pdf) {
+          throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+        }
 
+        console.log('PDF loaded successfully');
+        console.log('Total pages:', pdf.numPages);
+        
         currentPDF = pdf;
         totalPages = pdf.numPages;
         currentPage = 1;
 
-        renderPage(currentPage);
+        console.log('Rendering first page...');
+        await renderPage(currentPage);
+        console.log('=== PDF LOADED SUCCESSFULLY ===');
+        
+        // Force modal visibility
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        canvas.style.display = 'block';
+        canvas.style.visibility = 'visible';
+        
       } catch (error) {
-        console.error('Error loading PDF:', error);
-        alert('Error loading PDF. Please try again.');
-        closePDF();
+        console.error('=== PDF LOAD FAILED ===');
+        console.error('Error type:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Full error:', error);
+        
+        const container = document.getElementById('pdf-container');
+        if (container) {
+          container.innerHTML = `
+            <div style="padding:2rem; color:var(--accent-red); text-align:center;">
+              <p style="font-weight:bold; margin-bottom:1rem;">Error loading PDF</p>
+              <p style="font-size:0.9em; font-family:monospace;">${error.message}</p>
+              <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+            </div>
+          `;
+        }
       }
-    }
-    
-    // Render PDF page
-    async function renderPage(pageNum) {
-      if (!currentPDF) return;
-      
-      const page = await currentPDF.getPage(pageNum);
-      const canvas = document.getElementById('pdf-canvas');
-      const context = canvas.getContext('2d');
-      
-      // Scale to fit container
-      const viewport = page.getViewport({ scale: 1.5 });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport
-      };
-      
-      await page.render(renderContext).promise;
-      
-      // Update page info
-      document.getElementById('pdf-page-info').textContent = `Page ${pageNum} of ${totalPages}`;
-      
-      // Enable/disable navigation buttons
-      document.getElementById('pdf-prev').disabled = pageNum === 1;
-      document.getElementById('pdf-next').disabled = pageNum === totalPages;
     }
     
     // Close PDF modal
     function closePDF() {
       document.getElementById('pdf-modal').style.display = 'none';
-      currentPDF = null;
-      currentPage = 1;
-      totalPages = 0;
+      if (pdfRenderer) {
+        pdfRenderer.destroy();
+      }
     }
     
-    // Navigation setup
+    // Load and display books
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     
@@ -281,22 +398,10 @@
       });
     }
     
-    // PDF navigation
+    // PDF modal close handler
     document.getElementById('close-pdf').addEventListener('click', closePDF);
-    document.getElementById('pdf-prev').addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderPage(currentPage);
-      }
-    });
-    document.getElementById('pdf-next').addEventListener('click', () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderPage(currentPage);
-      }
-    });
     
-    // Load books on page load
+    // Load and display books
     document.addEventListener('DOMContentLoaded', () => {
       loadBooks();
       

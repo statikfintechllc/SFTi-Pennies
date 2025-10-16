@@ -19,11 +19,11 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
   
-  <!-- GitHub Markdown CSS (Dark) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.4.0/github-markdown-dark.min.css">
+  <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
+  <script src="assets/js/bundle.min.js"></script>
   
-  <!-- Marked.js for Markdown Rendering -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@11.0.0/marked.min.js"></script>
+  <!-- Custom Markdown & PDF Styles -->
+  <link rel="stylesheet" href="styles/markdown.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -35,65 +35,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
   <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
   
+  <!-- Modular Renderers -->
+  <script src="render/markdownRenderer.js"></script>
+  
   <style>
-    /* Custom styling for markdown content to match our theme */
-    .markdown-body {
-      background-color: var(--bg-tertiary) !important;
-      color: var(--text-primary) !important;
-      font-family: var(--font-sans) !important;
-      padding: 2rem;
-      border-radius: 8px;
-    }
-    
-    .markdown-body code {
-      font-family: var(--font-mono) !important;
-      background-color: var(--bg-secondary) !important;
-      color: var(--accent-yellow) !important;
-    }
-    
-    .markdown-body pre {
-      background-color: var(--bg-secondary) !important;
-    }
-    
-    .markdown-body h1,
-    .markdown-body h2,
-    .markdown-body h3,
-    .markdown-body h4 {
-      font-family: var(--font-mono) !important;
-      color: var(--accent-green) !important;
-      border-bottom-color: var(--border-color) !important;
-    }
-    
-    .markdown-body a {
-      color: var(--accent-green) !important;
-    }
-    
-    .markdown-body img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    .markdown-body blockquote {
-      border-left-color: var(--accent-green) !important;
-      color: var(--text-secondary) !important;
-    }
-
+    /* Modal Styles */
     .note-modal {
       backdrop-filter: blur(8px);
       align-items: center;
       justify-content: center;
-    }
-    .note-modal-content {
-      transform: scale(0.95);
-      transition: transform 0.25s ease;
-    }
-    .note-modal[style*="display: flex"] .note-modal-content {
-      transform: scale(1);
-    }
-    
-    .note-modal {
       display: none;
       position: fixed;
       top: 0;
@@ -113,6 +63,12 @@
       border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+    }
+    
+    .note-modal[style*="display: flex"] .note-modal-content {
+      transform: scale(1);
     }
     
     .note-modal-header {
@@ -286,56 +242,98 @@
     setTimeout(() => (modal.style.opacity = '1'), 50);
 
     try {
-      // Path Resolution Logic:
-      // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/SFTi.Notez/7.Step.Frame.md')
-      // Since notes.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
-      // Example: 'index.directory/SFTi.Notez/file.md' -> './SFTi.Notez/file.md'
-      let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
+      console.log('=== ATTEMPTING TO LOAD NOTE ===');
+      console.log('Original filepath:', filepath);
+      
+      // Strip index.directory/ prefix
+      let cleanPath = filepath.replace(/^\/+/, '');
       if (cleanPath.startsWith('index.directory/')) {
-        cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
+        cleanPath = cleanPath.substring('index.directory/'.length);
       }
-      const response = await fetch('./' + cleanPath);
-      if (!response.ok) throw new Error('Failed to load note');
-      let markdown = await response.text();
-
-      // Strip YAML frontmatter
-      if (markdown.startsWith('---')) {
-        const parts = markdown.split('---');
-        if (parts.length >= 3) markdown = parts.slice(2).join('---').trim();
-      }
-
-      marked.setOptions({
-        breaks: true,
-        gfm: true,
-        headerIds: true,
-        mangle: false
-      });
-
-      const html = marked.parse(markdown);
-      contentEl.innerHTML = html;
-
-      // Fix image paths + add lightbox
-      contentEl.querySelectorAll('img').forEach(img => {
-        if (!img.src.startsWith('http')) {
-          let cleanSrc = img.getAttribute('src').replace(/^\/+/, ''); // Remove leading slashes
-          // Image Path Resolution:
-          // Markdown files use '../assets/' for relative paths since they're in SFTi.Notez/
-          // When rendered in the modal, we need to convert these to './assets/' (relative to index.directory/)
-          // Example: '../assets/sfti.notez.assets/Step.1.png' -> './assets/sfti.notez.assets/Step.1.png'
-          if (cleanSrc.startsWith('../')) {
-            cleanSrc = cleanSrc.substring(3); // Strip the '../' prefix
+      console.log('Cleaned path:', cleanPath);
+      
+      const fullUrl = './' + cleanPath;
+      console.log('Full fetch URL:', fullUrl);
+      console.log('Attempting fetch...');
+      
+      // Try multiple path variations if primary path fails
+      const pathVariations = [
+        fullUrl,
+        '../' + cleanPath,
+        '/' + cleanPath,
+        cleanPath
+      ];
+      
+      let response = null;
+      let successPath = null;
+      
+      for (const testPath of pathVariations) {
+        console.log(`Trying path: ${testPath}`);
+        try {
+          const testResponse = await fetch(testPath);
+          console.log(`  Response status: ${testResponse.status}, ok: ${testResponse.ok}`);
+          if (testResponse.ok) {
+            console.log(`  SUCCESS with path: ${testPath}`);
+            response = testResponse;
+            successPath = testPath;
+            break;
           }
-          img.src = './' + cleanSrc;
+        } catch (e) {
+          console.log(`  Failed with path: ${testPath}`, e.message);
         }
-        img.classList.add('glightbox');
-        img.setAttribute('data-gallery', 'note-images');
-      });
+      }
+      
+      if (!response || !response.ok) {
+        throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+      }
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      console.log('Response headers:', [...response.headers.entries()]);
+      
+      const markdown = await response.text();
+      console.log('Markdown loaded, length:', markdown.length);
+      console.log('First 100 chars:', markdown.substring(0, 100));
 
-      if (lightbox) lightbox.destroy();
-      lightbox = GLightbox({ selector: '.glightbox' });
+      // Initialize MarkdownRenderer
+      console.log('Initializing MarkdownRenderer...');
+      const renderer = new MarkdownRenderer();
+      
+      // Render markdown with GFM and callouts
+      console.log('Rendering markdown with GFM and GitHub callouts...');
+      const html = renderer.render(markdown);
+      console.log('HTML rendered, length:', html.length);
+
+      contentEl.innerHTML = html;
+      console.log('=== NOTE LOADED SUCCESSFULLY ===');
+
+      // Force modal visibility
+      modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
+      modal.style.opacity = '1';
+      contentEl.style.display = 'block';
+      contentEl.style.visibility = 'visible';
+
+      // Fix image paths using renderer
+      renderer.fixImagePaths(contentEl);
+      console.log('Image paths fixed');
+
+      if (typeof GLightbox !== 'undefined') {
+        if (lightbox) lightbox.destroy();
+        lightbox = GLightbox({ selector: '.glightbox' });
+      }
     } catch (error) {
-      console.error('Error loading note:', error);
-      contentEl.innerHTML = '<p style="text-align:center; padding:2rem; color:var(--accent-red);">Error loading note. Please try again.</p>';
+      console.error('=== NOTE LOAD FAILED ===');
+      console.error('Error type:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Full error:', error);
+      contentEl.innerHTML = `
+        <div style="padding:2rem; color:var(--accent-red);">
+          <p style="font-weight:bold; margin-bottom:1rem;">Error loading note</p>
+          <p style="font-size:0.9em; font-family:monospace;">${error.message}</p>
+          <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+        </div>
+      `;
     }
   }
 
@@ -351,7 +349,9 @@
   // Nav + modal setup
   document.addEventListener('DOMContentLoaded', () => {
     loadNotes();
-    lightbox = GLightbox({ selector: '.glightbox' });
+    if (typeof GLightbox !== 'undefined') {
+      lightbox = GLightbox({ selector: '.glightbox' });
+    }
 
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
