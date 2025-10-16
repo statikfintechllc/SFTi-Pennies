@@ -163,7 +163,7 @@
         console.log('Cleaned path:', cleanPath);
         
         const fullUrl = './' + cleanPath;
-        console.log('Full fetch URL:', fullUrl);
+        console.log('Loading PDF from:', fullUrl);
         
         // Initialize PDFRenderer if not exists
         if (!pdfRenderer) {
@@ -175,33 +175,7 @@
           });
         }
         
-        // Try multiple path variations
-        const pathVariations = [
-          fullUrl,
-          '../' + cleanPath,
-          '/' + cleanPath,
-          cleanPath
-        ];
-        
-        let successPath = null;
-        let lastError = null;
-        
-        for (const testPath of pathVariations) {
-          console.log(`Trying path: ${testPath}`);
-          try {
-            await pdfRenderer.loadPDF(testPath);
-            console.log(`  SUCCESS with path: ${testPath}`);
-            successPath = testPath;
-            break;
-          } catch (e) {
-            console.log(`  Failed with path: ${testPath}`, e.message);
-            lastError = e;
-          }
-        }
-        
-        if (!successPath) {
-          throw lastError || new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
-        }
+        await pdfRenderer.loadPDF(fullUrl);
 
         console.log('=== PDF LOADED SUCCESSFULLY ===');
         console.log('PDF rendered with scrollable viewer');
@@ -309,39 +283,11 @@
         console.log('Cleaned path:', cleanPath);
         
         const fullUrl = './' + cleanPath;
-        console.log('Full fetch URL:', fullUrl);
-        console.log('Attempting PDF.js getDocument...');
+        console.log('Loading PDF from:', fullUrl);
         
-        // Try multiple path variations if primary path fails
-        const pathVariations = [
-          fullUrl,
-          '../' + cleanPath,
-          '/' + cleanPath,
-          cleanPath
-        ];
+        const loadingTask = pdfjsLib.getDocument(fullUrl);
+        const pdf = await loadingTask.promise;
         
-        let pdf = null;
-        let successPath = null;
-        
-        for (const testPath of pathVariations) {
-          console.log(`Trying path: ${testPath}`);
-          try {
-            const loadingTask = pdfjsLib.getDocument(testPath);
-            const testPdf = await loadingTask.promise;
-            console.log(`  SUCCESS with path: ${testPath}`);
-            console.log(`  PDF loaded, pages: ${testPdf.numPages}`);
-            pdf = testPdf;
-            successPath = testPath;
-            break;
-          } catch (e) {
-            console.log(`  Failed with path: ${testPath}`, e.message);
-          }
-        }
-        
-        if (!pdf) {
-          throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
-        }
-
         console.log('PDF loaded successfully');
         console.log('Total pages:', pdf.numPages);
         

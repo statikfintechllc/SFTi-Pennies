@@ -253,47 +253,16 @@
       console.log('Cleaned path:', cleanPath);
       
       const fullUrl = './' + cleanPath;
-      console.log('Full fetch URL:', fullUrl);
-      console.log('Attempting fetch...');
+      console.log('Fetching from:', fullUrl);
       
-      // Try multiple path variations if primary path fails
-      const pathVariations = [
-        fullUrl,
-        '../' + cleanPath,
-        '/' + cleanPath,
-        cleanPath
-      ];
-      
-      let response = null;
-      let successPath = null;
-      
-      for (const testPath of pathVariations) {
-        console.log(`Trying path: ${testPath}`);
-        try {
-          const testResponse = await fetch(testPath);
-          console.log(`  Response status: ${testResponse.status}, ok: ${testResponse.ok}`);
-          if (testResponse.ok) {
-            console.log(`  SUCCESS with path: ${testPath}`);
-            response = testResponse;
-            successPath = testPath;
-            break;
-          }
-        } catch (e) {
-          console.log(`  Failed with path: ${testPath}`, e.message);
-        }
-      }
-      
-      if (!response || !response.ok) {
-        throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+      const response = await fetch(fullUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to load note: HTTP ${response.status}`);
       }
       
       console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-      console.log('Response headers:', [...response.headers.entries()]);
-      
       const markdown = await response.text();
       console.log('Markdown loaded, length:', markdown.length);
-      console.log('First 100 chars:', markdown.substring(0, 100));
 
       // Initialize MarkdownRenderer
       console.log('Initializing MarkdownRenderer...');
