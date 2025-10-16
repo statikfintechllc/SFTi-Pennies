@@ -212,10 +212,13 @@
       modal.style.zIndex = '10000';
 
       try {
-        // Strip 'index.directory/' prefix if present since we're already in that directory
-        let cleanPath = filepath.replace(/^\/+/, '');
+        // Path Resolution Logic:
+        // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/Informational.Bookz/10_Patterns.pdf')
+        // Since books.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
+        // Example: 'index.directory/Informational.Bookz/file.pdf' -> './Informational.Bookz/file.pdf'
+        let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
         if (cleanPath.startsWith('index.directory/')) {
-          cleanPath = cleanPath.substring('index.directory/'.length);
+          cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
         }
         const pdf = await pdfjsLib.getDocument('./' + cleanPath).promise;
 

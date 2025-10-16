@@ -286,10 +286,13 @@
     setTimeout(() => (modal.style.opacity = '1'), 50);
 
     try {
-      // Strip 'index.directory/' prefix if present since we're already in that directory
-      let cleanPath = filepath.replace(/^\/+/, '');
+      // Path Resolution Logic:
+      // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/SFTi.Notez/7.Step.Frame.md')
+      // Since notes.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
+      // Example: 'index.directory/SFTi.Notez/file.md' -> './SFTi.Notez/file.md'
+      let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
       if (cleanPath.startsWith('index.directory/')) {
-        cleanPath = cleanPath.substring('index.directory/'.length);
+        cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
       }
       const response = await fetch('./' + cleanPath);
       if (!response.ok) throw new Error('Failed to load note');
@@ -314,10 +317,13 @@
       // Fix image paths + add lightbox
       contentEl.querySelectorAll('img').forEach(img => {
         if (!img.src.startsWith('http')) {
-          let cleanSrc = img.getAttribute('src').replace(/^\/+/, '');
-          // Handle relative paths from markdown (../assets/...)
+          let cleanSrc = img.getAttribute('src').replace(/^\/+/, ''); // Remove leading slashes
+          // Image Path Resolution:
+          // Markdown files use '../assets/' for relative paths since they're in SFTi.Notez/
+          // When rendered in the modal, we need to convert these to './assets/' (relative to index.directory/)
+          // Example: '../assets/sfti.notez.assets/Step.1.png' -> './assets/sfti.notez.assets/Step.1.png'
           if (cleanSrc.startsWith('../')) {
-            cleanSrc = cleanSrc.substring(3);
+            cleanSrc = cleanSrc.substring(3); // Strip the '../' prefix
           }
           img.src = './' + cleanSrc;
         }
