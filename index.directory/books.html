@@ -212,54 +212,128 @@
       modal.style.zIndex = '10000';
 
       try {
-        // Path Resolution Logic:
-        // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/Informational.Bookz/10_Patterns.pdf')
-        // Since books.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
-        // Example: 'index.directory/Informational.Bookz/file.pdf' -> './Informational.Bookz/file.pdf'
-        let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
+        console.log('=== ATTEMPTING TO LOAD PDF ===');
+        console.log('Original filepath:', filepath);
+        
+        // Strip index.directory/ prefix
+        let cleanPath = filepath.replace(/^\/+/, '');
         if (cleanPath.startsWith('index.directory/')) {
-          cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
+          cleanPath = cleanPath.substring('index.directory/'.length);
         }
-        const pdf = await pdfjsLib.getDocument('./' + cleanPath).promise;
+        console.log('Cleaned path:', cleanPath);
+        
+        const fullUrl = './' + cleanPath;
+        console.log('Full fetch URL:', fullUrl);
+        console.log('Attempting PDF.js getDocument...');
+        
+        // Try multiple path variations if primary path fails
+        const pathVariations = [
+          fullUrl,
+          '../' + cleanPath,
+          '/' + cleanPath,
+          cleanPath
+        ];
+        
+        let pdf = null;
+        let successPath = null;
+        
+        for (const testPath of pathVariations) {
+          console.log(`Trying path: ${testPath}`);
+          try {
+            const loadingTask = pdfjsLib.getDocument(testPath);
+            const testPdf = await loadingTask.promise;
+            console.log(`  SUCCESS with path: ${testPath}`);
+            console.log(`  PDF loaded, pages: ${testPdf.numPages}`);
+            pdf = testPdf;
+            successPath = testPath;
+            break;
+          } catch (e) {
+            console.log(`  Failed with path: ${testPath}`, e.message);
+          }
+        }
+        
+        if (!pdf) {
+          throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+        }
 
+        console.log('PDF loaded successfully');
+        console.log('Total pages:', pdf.numPages);
+        
         currentPDF = pdf;
         totalPages = pdf.numPages;
         currentPage = 1;
 
-        renderPage(currentPage);
+        console.log('Rendering first page...');
+        await renderPage(currentPage);
+        console.log('=== PDF LOADED SUCCESSFULLY ===');
+        
+        // Force modal visibility
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        canvas.style.display = 'block';
+        canvas.style.visibility = 'visible';
+        
       } catch (error) {
-        console.error('Error loading PDF:', error);
-        alert('Error loading PDF. Please try again.');
-        closePDF();
+        console.error('=== PDF LOAD FAILED ===');
+        console.error('Error type:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Full error:', error);
+        
+        const container = document.getElementById('pdf-container');
+        if (container) {
+          container.innerHTML = `
+            <div style="padding:2rem; color:var(--accent-red); text-align:center;">
+              <p style="font-weight:bold; margin-bottom:1rem;">Error loading PDF</p>
+              <p style="font-size:0.9em; font-family:monospace;">${error.message}</p>
+              <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+            </div>
+          `;
+        }
       }
     }
     
     // Render PDF page
     async function renderPage(pageNum) {
-      if (!currentPDF) return;
+      if (!currentPDF) {
+        console.error('renderPage called but currentPDF is null');
+        return;
+      }
       
-      const page = await currentPDF.getPage(pageNum);
-      const canvas = document.getElementById('pdf-canvas');
-      const context = canvas.getContext('2d');
+      console.log(`Rendering page ${pageNum} of ${totalPages}...`);
       
-      // Scale to fit container
-      const viewport = page.getViewport({ scale: 1.5 });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport
-      };
-      
-      await page.render(renderContext).promise;
-      
-      // Update page info
-      document.getElementById('pdf-page-info').textContent = `Page ${pageNum} of ${totalPages}`;
-      
-      // Enable/disable navigation buttons
-      document.getElementById('pdf-prev').disabled = pageNum === 1;
-      document.getElementById('pdf-next').disabled = pageNum === totalPages;
+      try {
+        const page = await currentPDF.getPage(pageNum);
+        console.log(`Got page object for page ${pageNum}`);
+        
+        const canvas = document.getElementById('pdf-canvas');
+        const context = canvas.getContext('2d');
+        
+        // Scale to fit container
+        const viewport = page.getViewport({ scale: 1.5 });
+        console.log(`Viewport size: ${viewport.width}x${viewport.height}`);
+        
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport
+        };
+        
+        await page.render(renderContext).promise;
+        console.log(`Page ${pageNum} rendered successfully`);
+        
+        // Update page info
+        document.getElementById('pdf-page-info').textContent = `Page ${pageNum} of ${totalPages}`;
+        
+        // Enable/disable navigation buttons
+        document.getElementById('pdf-prev').disabled = pageNum === 1;
+        document.getElementById('pdf-next').disabled = pageNum === totalPages;
+      } catch (error) {
+        console.error(`Failed to render page ${pageNum}:`, error);
+        throw error;
+      }
     }
     
     // Close PDF modal

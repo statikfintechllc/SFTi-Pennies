@@ -286,24 +286,71 @@
     setTimeout(() => (modal.style.opacity = '1'), 50);
 
     try {
-      // Path Resolution Logic:
-      // JSON paths include 'index.directory/' prefix (e.g., 'index.directory/SFTi.Notez/7.Step.Frame.md')
-      // Since notes.html is already in index.directory/, we need to strip this prefix to avoid double-prefixing
-      // Example: 'index.directory/SFTi.Notez/file.md' -> './SFTi.Notez/file.md'
-      let cleanPath = filepath.replace(/^\/+/, ''); // Remove any leading slashes first
+      console.log('=== ATTEMPTING TO LOAD NOTE ===');
+      console.log('Original filepath:', filepath);
+      
+      // Strip index.directory/ prefix
+      let cleanPath = filepath.replace(/^\/+/, '');
       if (cleanPath.startsWith('index.directory/')) {
-        cleanPath = cleanPath.substring('index.directory/'.length); // Strip the prefix
+        cleanPath = cleanPath.substring('index.directory/'.length);
       }
-      const response = await fetch('./' + cleanPath);
-      if (!response.ok) throw new Error('Failed to load note');
-      let markdown = await response.text();
+      console.log('Cleaned path:', cleanPath);
+      
+      const fullUrl = './' + cleanPath;
+      console.log('Full fetch URL:', fullUrl);
+      console.log('Attempting fetch...');
+      
+      // Try multiple path variations if primary path fails
+      const pathVariations = [
+        fullUrl,
+        '../' + cleanPath,
+        '/' + cleanPath,
+        cleanPath
+      ];
+      
+      let response = null;
+      let successPath = null;
+      
+      for (const testPath of pathVariations) {
+        console.log(`Trying path: ${testPath}`);
+        try {
+          const testResponse = await fetch(testPath);
+          console.log(`  Response status: ${testResponse.status}, ok: ${testResponse.ok}`);
+          if (testResponse.ok) {
+            console.log(`  SUCCESS with path: ${testPath}`);
+            response = testResponse;
+            successPath = testPath;
+            break;
+          }
+        } catch (e) {
+          console.log(`  Failed with path: ${testPath}`, e.message);
+        }
+      }
+      
+      if (!response || !response.ok) {
+        throw new Error(`All path variations failed. Tried: ${pathVariations.join(', ')}`);
+      }
+      
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      console.log('Response headers:', [...response.headers.entries()]);
+      
+      const markdown = await response.text();
+      console.log('Markdown loaded, length:', markdown.length);
+      console.log('First 100 chars:', markdown.substring(0, 100));
 
-      // Strip YAML frontmatter
+      // Strip YAML frontmatter if present
+      let cleanMarkdown = markdown;
       if (markdown.startsWith('---')) {
         const parts = markdown.split('---');
-        if (parts.length >= 3) markdown = parts.slice(2).join('---').trim();
+        if (parts.length >= 3) {
+          cleanMarkdown = parts.slice(2).join('---').trim();
+        }
       }
+      console.log('After YAML strip, length:', cleanMarkdown.length);
 
+      // Render markdown
+      console.log('Rendering with marked.js...');
       marked.setOptions({
         breaks: true,
         gfm: true,
@@ -311,22 +358,33 @@
         mangle: false
       });
 
-      const html = marked.parse(markdown);
-      contentEl.innerHTML = html;
+      const html = marked.parse(cleanMarkdown);
+      console.log('HTML rendered, length:', html.length);
 
-      // Fix image paths + add lightbox
-      contentEl.querySelectorAll('img').forEach(img => {
-        if (!img.src.startsWith('http')) {
-          let cleanSrc = img.getAttribute('src').replace(/^\/+/, ''); // Remove leading slashes
-          // Image Path Resolution:
-          // Markdown files use '../assets/' for relative paths since they're in SFTi.Notez/
-          // When rendered in the modal, we need to convert these to './assets/' (relative to index.directory/)
-          // Example: '../assets/sfti.notez.assets/Step.1.png' -> './assets/sfti.notez.assets/Step.1.png'
+      contentEl.innerHTML = html;
+      console.log('=== NOTE LOADED SUCCESSFULLY ===');
+
+      // Force modal visibility
+      modal.style.display = 'flex';
+      modal.style.visibility = 'visible';
+      modal.style.opacity = '1';
+      contentEl.style.display = 'block';
+      contentEl.style.visibility = 'visible';
+
+      // Fix image paths after rendering
+      contentEl.querySelectorAll('img').forEach((img, index) => {
+        console.log(`Image ${index} original src:`, img.getAttribute('src'));
+        let cleanSrc = img.getAttribute('src');
+        if (!cleanSrc.startsWith('http')) {
+          cleanSrc = cleanSrc.replace(/^\/+/, '');
           if (cleanSrc.startsWith('../')) {
-            cleanSrc = cleanSrc.substring(3); // Strip the '../' prefix
+            cleanSrc = './' + cleanSrc.substring(3);
+          } else if (!cleanSrc.startsWith('./')) {
+            cleanSrc = './' + cleanSrc;
           }
-          img.src = './' + cleanSrc;
         }
+        img.src = cleanSrc;
+        console.log(`Image ${index} final src:`, img.src);
         img.classList.add('glightbox');
         img.setAttribute('data-gallery', 'note-images');
       });
@@ -334,8 +392,17 @@
       if (lightbox) lightbox.destroy();
       lightbox = GLightbox({ selector: '.glightbox' });
     } catch (error) {
-      console.error('Error loading note:', error);
-      contentEl.innerHTML = '<p style="text-align:center; padding:2rem; color:var(--accent-red);">Error loading note. Please try again.</p>';
+      console.error('=== NOTE LOAD FAILED ===');
+      console.error('Error type:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Full error:', error);
+      contentEl.innerHTML = `
+        <div style="padding:2rem; color:var(--accent-red);">
+          <p style="font-weight:bold; margin-bottom:1rem;">Error loading note</p>
+          <p style="font-size:0.9em; font-family:monospace;">${error.message}</p>
+          <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+        </div>
+      `;
     }
   }
 
