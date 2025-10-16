@@ -175,7 +175,11 @@
           });
         }
         
-        await pdfRenderer.loadPDF(fullUrl);
+        try {
+          await pdfRenderer.loadPDF(fullUrl);
+        } catch (e) {
+          throw new Error(`Failed to load PDF from ${fullUrl}: ${e.message}`);
+        }
 
         console.log('=== PDF LOADED SUCCESSFULLY ===');
         console.log('PDF rendered with scrollable viewer');
