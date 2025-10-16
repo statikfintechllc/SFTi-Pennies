@@ -257,7 +257,7 @@
       
       const response = await fetch(fullUrl);
       if (!response.ok) {
-        throw new Error(`Failed to load note: HTTP ${response.status}`);
+        throw new Error(`Failed to load note from ${fullUrl}: HTTP ${response.status} ${response.statusText}`);
       }
       
       console.log('Response status:', response.status);
