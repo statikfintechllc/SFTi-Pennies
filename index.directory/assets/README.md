@@ -1,6 +1,6 @@
 # 🎨 Assets Directory
 
-**📁 You are here:** `/.github/assets`
+**📁 You are here:** `index.director/assets`
 
 ## Description
 
