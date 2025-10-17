@@ -2,7 +2,7 @@
   "name": "SFTi-Pennies Trading Journal",
   "short_name": "SFTi-Pennies",
   "description": "Professional penny stock trading journal with automated tracking and analysis",
-  "start_url": "/",
+  "start_url": "/SFTi-Pennies/",
   "display": "standalone",
   "background_color": "#0a0e27",
   "theme_color": "#00ff88",
