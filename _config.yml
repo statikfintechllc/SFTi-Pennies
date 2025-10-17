@@ -22,18 +22,12 @@ exclude:
   - Gemfile.lock
   - node_modules/
   - vendor/
-  - index.directory/Informational.Bookz/
-  - index.directory/SFTi.Notez/
-  - index.directory/SFTi.Tradez/
   - "**/*:*"
   - "**/**:**:****.*.md"
 
 # Include necessary files
 include:
-  - index.directory/assets/
-  - index.directory/trades-index.json
-  - index.directory/books-index.json
-  - index.directory/notes-index.json
+  - index.directory/
   - index.html
   - manifest.json
 
