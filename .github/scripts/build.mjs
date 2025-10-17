@@ -8,7 +8,7 @@ await mkdir(outdir, { recursive: true });
 
 // Build the main bundle
 await esbuild.build({
-  entryPoints: ['./src/main.js'],
+  entryPoints: ['./index.directory/src/main.js'],
   bundle: true,
   minify: true,
   outfile: './index.directory/assets/js/bundle.min.js',
