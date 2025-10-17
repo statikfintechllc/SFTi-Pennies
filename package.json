@@ -4,7 +4,7 @@
   "description": "**📁 You are here:** `/` (root)",
   "main": "index.js",
   "scripts": {
-    "build": "node build.mjs",
+    "build": "node .github/scripts/build.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

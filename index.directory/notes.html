@@ -26,7 +26,7 @@
   <link rel="stylesheet" href="styles/markdown.css">
   
   <!-- PWA Manifest -->
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="../manifest.json">
   
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
@@ -39,51 +39,55 @@
   <script src="render/markdownRenderer.js"></script>
   
   <style>
-    /* Modal Styles */
+    /* Modal Styles - matching books.html structure */
     .note-modal {
-      backdrop-filter: blur(8px);
-      align-items: center;
-      justify-content: center;
       display: none;
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.9);
       z-index: 10000;
-      overflow-y: auto;
-      padding: 2rem;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
     }
     
     .note-modal-content {
-      max-width: 1000px;
+      max-width: 95%;
+      max-height: 95vh;
       margin: 0 auto;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       overflow: hidden;
-      transform: scale(0.95);
-      transition: transform 0.25s ease;
-    }
-    
-    .note-modal[style*="display: flex"] .note-modal-content {
-      transform: scale(1);
+      display: flex;
+      flex-direction: column;
     }
     
     .note-modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1.5rem;
+      padding: 1rem;
       background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
     }
     
     .note-modal-header h2 {
       margin: 0;
       color: var(--accent-green);
       font-family: var(--font-mono);
+    }
+    
+    /* Make content area scrollable */
+    #note-content {
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+      flex: 1;
     }
   </style>
 </head>
@@ -236,10 +240,17 @@
 
     titleEl.textContent = title;
     contentEl.innerHTML = '<p style="text-align:center; padding:2rem;">Loading...</p>';
+    
+    // Match books.html modal display logic
     modal.style.display = 'flex';
-    modal.style.opacity = '0';
-    modal.style.transition = 'opacity 0.3s ease-in-out';
-    setTimeout(() => (modal.style.opacity = '1'), 50);
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.zIndex = '10000';
 
     try {
       console.log('=== ATTEMPTING TO LOAD NOTE ===');
@@ -276,13 +287,6 @@
       contentEl.innerHTML = html;
       console.log('=== NOTE LOADED SUCCESSFULLY ===');
 
-      // Force modal visibility
-      modal.style.display = 'flex';
-      modal.style.visibility = 'visible';
-      modal.style.opacity = '1';
-      contentEl.style.display = 'block';
-      contentEl.style.visibility = 'visible';
-
       // Fix image paths using renderer
       renderer.fixImagePaths(contentEl);
       console.log('Image paths fixed');
@@ -306,13 +310,9 @@
     }
   }
 
-  // Close modal with fade
+  // Close modal
   function closeNote() {
-    const modal = document.getElementById('note-modal');
-    modal.style.opacity = '0';
-    setTimeout(() => {
-      modal.style.display = 'none';
-    }, 300);
+    document.getElementById('note-modal').style.display = 'none';
   }
 
   // Nav + modal setup
