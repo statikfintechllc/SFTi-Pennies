@@ -374,5 +374,267 @@ cat output.log
 ---
 
 **Last Updated:** October 2025  
-**Script Count:** 10  
+**Script Count:** 17 (10 core + 7 new)  
 **Purpose:** Automated data processing and content generation
+
+## New Scripts (Phase 2)
+
+The following scripts were added to support CSV imports, advanced analytics, and export functionality:
+
+### Advanced Analytics
+
+#### 11. `generate_analytics.py`
+**Purpose:** Compute advanced trading metrics and per-tag performance
+
+**What it does:**
+- Calculates expectancy (average P&L per trade)
+- Computes profit factor (gross profit / gross loss)
+- Determines max win/loss streaks
+- Calculates Kelly Criterion for position sizing
+- Generates drawdown series over time
+- Aggregates statistics by strategy, setup, session tags
+- Outputs comprehensive analytics JSON
+
+**Input:** `trades-index.json`  
+**Output:** `assets/charts/analytics-data.json`  
+**Dependencies:** `json`, `datetime`
+
+**Example usage:**
+```bash
+python .github/scripts/generate_analytics.py
+```
+
+### Import/Export Tools
+
+#### 12. `export_csv.py`
+**Purpose:** Export trades from JSON to CSV format
+
+**What it does:**
+- Loads all trades from trades-index.json
+- Filters by strategy, date range (optional)
+- Exports to standard CSV format compatible with Excel/Google Sheets
+- Supports customizable field selection
+
+**Input:** `trades-index.json`  
+**Output:** CSV file (default: `trades-export.csv`)  
+**Dependencies:** `csv`, `json`
+
+**Example usage:**
+```bash
+# Export all trades
+python .github/scripts/export_csv.py
+
+# Export with filters
+python .github/scripts/export_csv.py --output my-trades.csv --filter-strategy "Breakout"
+```
+
+**Options:**
+- `--output` / `-o`: Output file path
+- `--filter-strategy`: Filter by strategy name
+- `--filter-date-from`: Start date (YYYY-MM-DD)
+- `--filter-date-to`: End date (YYYY-MM-DD)
+
+#### 13. `normalize_schema.py`
+**Purpose:** Migrate trade data schema between versions
+
+**What it does:**
+- Detects current schema version
+- Migrates trade data to newer schema versions
+- Validates trade data against schema requirements
+- Ensures backward compatibility
+- Handles schema evolution (v1.0 → v1.1 → future versions)
+
+**Input:** `trades-index.json`  
+**Output:** Updated `trades-index.json` with migrated schema  
+**Dependencies:** `json`, `datetime`
+
+**Example usage:**
+```bash
+# Migrate to current schema
+python .github/scripts/normalize_schema.py
+
+# Validate without migrating
+python .github/scripts/normalize_schema.py --validate-only
+
+# Dry run to preview changes
+python .github/scripts/normalize_schema.py --dry-run
+```
+
+**Schema Versions:**
+- v1.0: Initial schema with basic trade fields
+- v1.1: Added tags (strategy, setup, session, market_condition) and notes
+
+### Trade Detail Pages
+
+#### 14. `generate_trade_pages.py`
+**Purpose:** Create individual HTML pages for each trade
+
+**What it does:**
+- Generates a dedicated page for each trade
+- Includes complete trade metadata
+- Integrates screenshot galleries with GLightbox
+- Links related trades
+- Shows performance metrics specific to that trade
+
+**Input:** `trades-index.json`  
+**Output:** `index.directory/trades/trade-{num}-{ticker}.html`  
+**Dependencies:** `json`, `pathlib`
+
+**Example usage:**
+```bash
+python .github/scripts/generate_trade_pages.py
+```
+
+**Status:** 🚧 Scaffolded - full template needs implementation
+
+### Media Management
+
+#### 15. `attach_media.py`
+**Purpose:** Validate and reconcile trade image attachments
+
+**What it does:**
+- Scans `assets/trade-images/` for screenshots
+- Validates image file references in trade metadata
+- Detects orphaned images (not linked to trades)
+- Reports missing images
+- Verifies file paths and accessibility
+
+**Input:** `assets/trade-images/`, `trades-index.json`  
+**Output:** Validation report  
+**Dependencies:** `os`, `json`, `glob`
+
+**Example usage:**
+```bash
+python .github/scripts/attach_media.py
+```
+
+**Expected Structure:**
+```
+assets/trade-images/
+├── trade-001/
+│   ├── entry-chart.png
+│   └── exit-chart.png
+├── trade-002/
+│   └── screenshot.png
+```
+
+### CSV Importers
+
+#### 16. `import_csv.py`
+**Purpose:** Import trades from broker CSV files
+
+**What it does:**
+- Auto-detects broker from CSV format
+- Parses CSV using broker-specific importer
+- Validates parsed trades
+- Creates trade markdown files
+- Updates trades-index.json
+- Generates weekly folders automatically
+
+**Input:** Broker CSV file  
+**Output:** Trade markdown files in `SFTi.Tradez/week.*/`  
+**Dependencies:** `importers/` modules, `json`, `argparse`
+
+**Example usage:**
+```bash
+# Auto-detect broker
+python .github/scripts/import_csv.py path/to/trades.csv
+
+# Specify broker
+python .github/scripts/import_csv.py path/to/trades.csv --broker ibkr
+
+# Dry run (validate only)
+python .github/scripts/import_csv.py path/to/trades.csv --dry-run
+```
+
+**Options:**
+- `--broker`: Broker name (ibkr, schwab, robinhood, webull)
+- `--dry-run`: Validate without creating files
+- `--output-dir`: Custom output directory
+
+**Status:** 🚧 Scaffolded - broker parsers need implementation
+
+#### 17. `importers/` Module
+**Purpose:** Broker-specific CSV parsing logic
+
+**Structure:**
+```
+importers/
+├── __init__.py           # Registry of available importers
+├── base_importer.py      # Abstract base class
+├── ibkr.py               # Interactive Brokers parser
+├── schwab.py             # Schwab/TD Ameritrade parser
+├── robinhood.py          # Robinhood parser
+└── webull.py             # Webull parser
+```
+
+**What it does:**
+- Provides abstract interface for all importers
+- Implements broker-specific field mapping
+- Handles entry/exit pair matching
+- Validates trade data
+- Calculates P&L if not in CSV
+
+**Status:** 🚧 Scaffolded - full parsing logic needed
+
+**Example (adding new broker):**
+```python
+from .base_importer import BaseImporter
+
+class MyBrokerImporter(BaseImporter):
+    def __init__(self):
+        super().__init__()
+        self.broker_name = "MyBroker"
+    
+    def detect_format(self, csv_content):
+        # Implement detection logic
+        pass
+    
+    def parse_csv(self, csv_content):
+        # Implement parsing logic
+        pass
+    
+    def validate_trade(self, trade):
+        # Implement validation
+        pass
+```
+
+## Updated Script Execution Order
+
+With Phase 2 additions, the workflow now runs:
+
+1. `parse_trades.py` - Create JSON index from markdown
+2. `generate_books_index.py` - Index PDF library
+3. `generate_notes_index.py` - Index trading notes
+4. `generate_summaries.py` - Generate period summaries
+5. `generate_index.py` - Create master index page
+6. `generate_charts.py` - Generate visualizations
+7. **`generate_analytics.py`** - ✨ NEW: Advanced analytics
+8. **`generate_trade_pages.py`** - ✨ NEW: Trade detail pages
+9. `update_homepage.py` - Ensure data accessibility
+10. `optimize_images.sh` - Optimize and move images
+
+## New Dependencies
+
+Phase 2 scripts use:
+- `csv` - CSV export/import
+- `argparse` - CLI argument parsing
+- `pathlib` - Modern path handling
+- `glob` - File pattern matching
+
+All are part of Python standard library - no additional pip installs required beyond Phase 1 dependencies.
+
+## Related Documentation
+
+- [Importing Guide](../docs/importing.md) - CSV import instructions
+- [QUICKSTART_TEMPLATE.md](../../QUICKSTART_TEMPLATE.md) - Template user guide
+- [GitHub Actions Workflow](../workflows/README.md)
+- [Trade Pipeline Documentation](../docs/TRADE_PIPELINE.md)
+- [Developer Guide](../docs/README-DEV.md)
+
+---
+
+**Phase 1:** October 13, 2025 (10 scripts)  
+**Phase 2:** October 18, 2025 (+7 scripts)  
+**Total Scripts:** 17  
+**Status:** ✅ Core functional, 🚧 Extensions scaffolded
