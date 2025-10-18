@@ -28,7 +28,7 @@ This directory contains all GitHub-specific configuration, automation, templates
 
 ## 📚 Main Subdirectories
 
-### [📖 docs/](./docs/README.md)
+### [📖 docs/](./README.md)
 **Comprehensive Documentation Hub**
 
 Complete guides covering every aspect of the system:
