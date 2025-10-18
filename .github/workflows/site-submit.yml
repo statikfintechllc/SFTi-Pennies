@@ -1,0 +1,120 @@
+name: Site Submit (PR Mode)
+
+# This workflow allows users to submit trade changes via pull request
+# instead of direct commits. Useful for template forks with multiple contributors.
+#
+# Triggered by:
+# - Manual workflow dispatch
+# - Repository dispatch events from frontend
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: 'Branch name for PR'
+        required: false
+        default: 'trade-submission'
+      pr_title:
+        description: 'Pull request title'
+        required: false
+        default: 'Trade submission'
+  repository_dispatch:
+    types: [submit-trade]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Create submission branch
+        run: |
+          branch_name="${{ github.event.inputs.branch_name || 'trade-submission' }}"
+          timestamp=$(date +%Y%m%d-%H%M%S)
+          unique_branch="${branch_name}-${timestamp}"
+          
+          echo "Creating branch: $unique_branch"
+          git checkout -b "$unique_branch"
+          
+          echo "BRANCH_NAME=$unique_branch" >> $GITHUB_ENV
+      
+      - name: Stage pending changes
+        run: |
+          # TODO: Implement logic to bundle pending trade submissions
+          # This could read from a staging area or temp folder
+          # For now, just stage any changes
+          
+          if [ -d "pending-submissions" ]; then
+            echo "Found pending submissions"
+            git add pending-submissions/
+          fi
+          
+          # Check for changes
+          if git diff --staged --quiet; then
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
+          else
+            echo "NO_CHANGES=false" >> $GITHUB_ENV
+          fi
+      
+      - name: Commit changes
+        if: env.NO_CHANGES == 'false'
+        run: |
+          git commit -m "${{ github.event.inputs.pr_title || 'Trade submission' }}"
+      
+      - name: Push branch
+        if: env.NO_CHANGES == 'false'
+        run: |
+          git push origin "$BRANCH_NAME"
+      
+      - name: Create Pull Request
+        if: env.NO_CHANGES == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.BRANCH_NAME }}
+          title: ${{ github.event.inputs.pr_title || 'Trade submission' }}
+          body: |
+            ## Trade Submission
+            
+            This PR was created automatically via the site-submit workflow.
+            
+            **Submitted at:** ${{ github.event.repository.updated_at }}
+            
+            ### Changes
+            - New trade data submitted via web interface
+            
+            ### Review Checklist
+            - [ ] Trade data is complete and valid
+            - [ ] No duplicate entries
+            - [ ] Screenshots uploaded correctly (if any)
+            - [ ] Trade notes are clear
+            
+            ### Next Steps
+            Once approved and merged, the trade pipeline will automatically:
+            1. Parse trades into JSON index
+            2. Generate charts and analytics
+            3. Update the live site
+            
+            ---
+            *This PR was created by the SFTi-Pennies site-submit workflow*
+          labels: |
+            trade-submission
+            automated
+      
+      - name: No changes to submit
+        if: env.NO_CHANGES == 'true'
+        run: |
+          echo "No pending changes found to submit"
+          echo "Place trade files in pending-submissions/ directory"

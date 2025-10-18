@@ -1,0 +1,16 @@
+{
+  "expectancy": 0,
+  "profit_factor": 0,
+  "max_win_streak": 0,
+  "max_loss_streak": 0,
+  "max_drawdown": 0,
+  "kelly_criterion": 0,
+  "by_strategy": {},
+  "by_setup": {},
+  "by_session": {},
+  "drawdown_series": {
+    "labels": [],
+    "values": []
+  },
+  "generated_at": "2025-10-18T12:51:19.759844"
+}
