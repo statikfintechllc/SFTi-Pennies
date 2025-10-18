@@ -109,16 +109,53 @@ All charts follow the trading journal's dark terminal theme:
 
 ### Chart.js Configuration
 ```javascript
-{
-  backgroundColor: '#0a0e27',
-  borderColor: '#00ff88',
-  gridColor: '#2a3f5f',
-  textColor: '#e0e0e0',
-  font: {
-    family: 'JetBrains Mono',
-    size: 14
+const options = {
+  plugins: {
+    legend: {
+      labels: {
+        color: '#e0e0e0',
+        font: {
+          family: 'JetBrains Mono',
+          size: 14,
+          weight: '500'
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      grid: {
+        color: '#2a3f5f'
+      },
+      ticks: {
+        color: '#e0e0e0',
+        font: {
+          family: 'JetBrains Mono',
+          size: 10
+        }
+      }
+    },
+    y: {
+      grid: {
+        color: '#2a3f5f'
+      },
+      ticks: {
+        color: '#e0e0e0',
+        font: {
+          family: 'JetBrains Mono',
+          size: 10
+        }
+      }
+    }
   }
-}
+};
+// Dataset example:
+const dataset = {
+  label: 'Equity Curve',
+  data: [0, 100, 250, ...],
+  borderColor: '#00ff88',
+  backgroundColor: 'rgba(0, 255, 136, 0.1)'
+};
 ```
 
 ## 🤖 Automatic Generation
