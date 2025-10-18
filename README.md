@@ -6,7 +6,7 @@
 
 [![Live Site](https://img.shields.io/badge/🌐_Live_Site-Visit_Journal-00ff88?style=for-the-badge&logo=github)](https://statikfintechllc.github.io/SFTi-Pennies/)
 [![SFTi AI](https://img.shields.io/badge/🤖_SFTi_AI-Visit_Platform-00ff88?style=for-the-badge)](https://www.sfti-ai.org)
-[![Ascend Institute](https://img.shields.io/badge/📚_Ascend_Institute-Learn_More-00ff88?style=for-the-badge)](https://statikfintechllc.github.io/SFTi-Pennies/)
+[![Ascend Institute](https://img.shields.io/badge/📚_Ascend_Institute-Learn_More-00ff88?style=for-the-badge)](https://statikfintechllc.github.io/Ascend-Institute/)
 
 </div>
 
