@@ -64,7 +64,7 @@ Create a **fully transparent, organized trading account** with complete document
 
 ### ⚙️ Automation & Infrastructure
 
-#### 4. [🤖 .github/scripts](./github/scripts/README.md)
+#### 4. [🤖 .github/scripts](./.github/scripts/README.md)
 **Automation Scripts** - Python scripts that power the system:
 - `parse_trades.py` - Trade data extraction
 - `generate_summaries.py` - Performance analytics
