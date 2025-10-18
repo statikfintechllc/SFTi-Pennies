@@ -40,8 +40,8 @@ index.directory/
 │   ├── books-index.json       # PDF library index
 │   └── notes-index.json       # Notes framework index
 └── ⚙️ Configuration
-    ├── _config.yml            # Jekyll configuration
-    └── manifest.json          # PWA manifest (link in root)
+    ├── _config.yml            # Jekyll configuration (inside index.directory)
+    └── manifest.json          # PWA manifest (in root)
 ```
 
 ## 🎯 Main Sections

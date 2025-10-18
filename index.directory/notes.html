@@ -143,7 +143,12 @@
   <!-- Main Content -->
   <main class="container">
     <section class="hero">
-      <h1>📝 Trading Notes</h1>
+      <h1 style="display: flex; align-items: center; gap: 0.75rem; justify-content: center;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Trading Notes
+      </h1>
       <p>Frameworks, strategies, and trading methodologies</p>
     </section>
     
@@ -209,23 +214,37 @@
 
   // Create HTML for a note card
   function createNoteCard(note, index) {
-    const thumbPath = note.thumbnail ? `./${note.thumbnail}` : 'assets/icons/icon-192.png';
-    const previewText = note.excerpt 
-      ? note.excerpt.replace(/\n+/g, ' ').slice(0, 140) + '…'
+    
+    // Strip markdown formatting from excerpt for clean preview
+    const cleanExcerpt = note.excerpt 
+      ? note.excerpt
+          .replace(/\*\*(.+?)\*\*/g, '$1')  // Remove bold **text**
+          .replace(/\*(.+?)\*/g, '$1')      // Remove italic *text*
+          .replace(/~~(.+?)~~/g, '$1')      // Remove strikethrough ~~text~~
+          .replace(/`(.+?)`/g, '$1')        // Remove inline code `text`
+          .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Remove links [text](url)
+          .replace(/#{1,6}\s+/g, '')        // Remove headers ###
+          .replace(/\n+/g, ' ')             // Replace newlines with spaces
+          .replace(/\s+/g, ' ')             // Normalize whitespace
+          .trim()
       : 'Click to view full note.';
+    
+    const previewText = cleanExcerpt.slice(0, 140) + (cleanExcerpt.length > 140 ? '…' : '');
 
     return `
       <div class="trade-card transition transform hover:scale-105 hover:shadow-lg" 
            style="animation-delay: ${index * 0.1}s; cursor: pointer;" 
            onclick="openNote('${note.file}', '${note.title.replace(/'/g, "\\'")}')">
-        <div style="width: 100%; height: 160px; overflow: hidden; border-radius: 4px;">
-          <img src="${thumbPath}" alt="${note.title}" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div class="p-4">
-          <div class="trade-ticker text-accent-green font-mono text-lg mb-2">📝 ${note.title}</div>
-          <p class="text-text-secondary text-sm leading-relaxed">${previewText}</p>
-          <div class="mt-4 text-center">
-            <button class="btn btn-primary w-full">📖 Read Note</button>
+        <div class="quick-links-card">
+          <div class="quick-links-icon icon-cyan">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <div class="quick-links-content">
+            <h3>${note.title}</h3>
+            <p>${previewText}</p>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Read Note</button>
           </div>
         </div>
       </div>

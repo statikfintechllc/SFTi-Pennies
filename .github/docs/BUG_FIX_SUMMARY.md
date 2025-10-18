@@ -34,9 +34,11 @@ exclude:
 ## Fixes Applied
 
 ### Fix 1: Update _config.yml
-**File**: `_config.yml`
+**File**: `index.directory/_config.yml` (main configuration)
 
 **Changes**:
+- Merged root and index.directory configurations into a single comprehensive config
+- Configuration now located in index.directory/_config.yml
 - Removed exclusions of content directories:
   - ~~`index.directory/Informational.Bookz/`~~
   - ~~`index.directory/SFTi.Notez/`~~

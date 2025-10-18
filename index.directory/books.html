@@ -90,7 +90,12 @@
   <!-- Main Content -->
   <main class="container">
     <section class="hero">
-      <h1>📚 Trading Books</h1>
+      <h1 style="display: flex; align-items: center; gap: 0.75rem; justify-content: center;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        Trading Books
+      </h1>
       <p>Educational PDFs and resources for penny stock trading</p>
     </section>
     
@@ -234,23 +239,26 @@
       return `
         <div class="trade-card" style="animation-delay: ${index * 0.1}s; cursor: pointer;" 
              onclick="openPDF('${book.file}', '${book.title}')">
-          <div class="trade-header">
-            <div class="trade-ticker">📖 ${book.title}</div>
-          </div>
-          
-          <div class="trade-details">
-            <div class="trade-detail">
-              <div class="trade-detail-label">Size</div>
-              <div class="trade-detail-value">${book.size_mb} MB</div>
+          <div class="quick-links-card">
+            <div class="quick-links-icon icon-green">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
             </div>
-            <div class="trade-detail">
-              <div class="trade-detail-label">Type</div>
-              <div class="trade-detail-value">PDF</div>
+            <div class="quick-links-content">
+              <h3>${book.title}</h3>
+              <div class="trade-details" style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+                <div class="trade-detail">
+                  <div class="trade-detail-label">Size</div>
+                  <div class="trade-detail-value">${book.size_mb} MB</div>
+                </div>
+                <div class="trade-detail">
+                  <div class="trade-detail-label">Type</div>
+                  <div class="trade-detail-value">PDF</div>
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Open PDF</button>
             </div>
-          </div>
-          
-          <div style="text-align: center; margin-top: 1rem;">
-            <button class="btn btn-primary" style="width: 100%;">📄 Open PDF</button>
           </div>
         </div>
       `;
