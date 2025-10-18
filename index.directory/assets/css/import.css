@@ -1,0 +1,142 @@
+/* Import Page Specific Styles */
+
+.import-card {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.import-status {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-green);
+  background-color: var(--bg-tertiary);
+}
+
+.import-status.error {
+  border-left-color: var(--accent-red);
+}
+
+.import-status.warning {
+  border-left-color: var(--accent-yellow);
+}
+
+.import-status-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.import-status-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.import-status-message {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.csv-file-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--accent-green);
+}
+
+.preview-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.preview-summary-item {
+  text-align: center;
+}
+
+.preview-summary-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.preview-summary-value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-green);
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.preview-table th {
+  background-color: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.preview-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.preview-table tbody tr:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.trade-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.trade-status-badge.valid {
+  background-color: rgba(0, 255, 136, 0.2);
+  color: var(--accent-green);
+}
+
+.trade-status-badge.invalid {
+  background-color: rgba(255, 71, 87, 0.2);
+  color: var(--accent-red);
+}
+
+.trade-status-badge.warning {
+  background-color: rgba(255, 215, 0, 0.2);
+  color: var(--accent-yellow);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .preview-table {
+    font-size: 0.75rem;
+  }
+  
+  .preview-table th,
+  .preview-table td {
+    padding: 0.5rem;
+  }
+  
+  .preview-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

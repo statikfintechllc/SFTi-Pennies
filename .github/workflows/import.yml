@@ -1,0 +1,143 @@
+name: Import Trades from CSV
+
+# Trigger on:
+# 1. Push to import/*.csv files
+# 2. Manual workflow dispatch
+on:
+  push:
+    paths:
+      - 'import/*.csv'
+  workflow_dispatch:
+    inputs:
+      csv_file:
+        description: 'Path to CSV file to import'
+        required: false
+        default: ''
+      broker:
+        description: 'Broker name (auto-detect if empty)'
+        required: false
+        default: ''
+        type: choice
+        options:
+          - ''
+          - 'ibkr'
+          - 'schwab'
+          - 'robinhood'
+          - 'webull'
+
+# Permissions for committing
+permissions:
+  contents: write
+
+jobs:
+  import-csv:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Find CSV files to import
+        id: find-csv
+        run: |
+          # If manual dispatch with specific file
+          if [ -n "${{ github.event.inputs.csv_file }}" ]; then
+            echo "csv_files=${{ github.event.inputs.csv_file }}" >> $GITHUB_OUTPUT
+          else
+            # Find all CSV files in import/ directory
+            if [ -d "import" ]; then
+              csv_files=$(find import -name "*.csv" -type f | tr '\n' ' ')
+              echo "csv_files=$csv_files" >> $GITHUB_OUTPUT
+            else
+              echo "csv_files=" >> $GITHUB_OUTPUT
+            fi
+          fi
+      
+      - name: Import CSV files
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          echo "Importing CSV files: ${{ steps.find-csv.outputs.csv_files }}"
+          
+          # TODO: Implement actual import logic
+          # For now, this is a placeholder that shows the workflow structure
+          
+          for csv_file in ${{ steps.find-csv.outputs.csv_files }}; do
+            echo "Processing: $csv_file"
+            
+            # TODO: Run import_csv.py with the file
+            # python .github/scripts/import_csv.py "$csv_file" \
+            #   --broker "${{ github.event.inputs.broker }}" \
+            #   --output-dir "index.directory/SFTi.Tradez"
+            
+            echo "TODO: Implement import_csv.py fully"
+          done
+      
+      - name: Parse trades into JSON index
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          echo "Parsing trades..."
+          python .github/scripts/parse_trades.py
+      
+      - name: Generate charts
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          echo "Generating charts..."
+          # Install matplotlib if needed
+          pip install matplotlib
+          python .github/scripts/generate_charts.py
+      
+      - name: Generate summaries
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          echo "Generating summaries..."
+          python .github/scripts/generate_summaries.py
+      
+      - name: Generate index
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          echo "Generating index..."
+          python .github/scripts/generate_index.py
+      
+      - name: Configure Git
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Commit imported trades
+        if: steps.find-csv.outputs.csv_files != ''
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-import: Import trades from CSV [skip ci]"
+            git push
+          fi
+      
+      - name: Upload import results
+        if: steps.find-csv.outputs.csv_files != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-results
+          path: |
+            index.directory/trades-index.json
+            index.directory/SFTi.Tradez/
+      
+      - name: No CSV files found
+        if: steps.find-csv.outputs.csv_files == ''
+        run: |
+          echo "No CSV files found to import"
+          echo "Place CSV files in the 'import/' directory or specify a file path in workflow dispatch"
