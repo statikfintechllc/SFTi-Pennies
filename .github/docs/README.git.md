@@ -43,7 +43,7 @@ Complete guides covering every aspect of the system:
 
 ---
 
-### [🤖 scripts/](./scripts/README.md)
+### [🤖 scripts/](../scripts/README.md)
 **Automation Scripts**
 
 Python and shell scripts that power the automated trading journal:
