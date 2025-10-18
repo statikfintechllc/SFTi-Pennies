@@ -215,9 +215,22 @@
   // Create HTML for a note card
   function createNoteCard(note, index) {
     const thumbPath = note.thumbnail ? `./${note.thumbnail}` : 'assets/icons/icon-192.png';
-    const previewText = note.excerpt 
-      ? note.excerpt.replace(/\n+/g, ' ').slice(0, 140) + '…'
+    
+    // Strip markdown formatting from excerpt for clean preview
+    const cleanExcerpt = note.excerpt 
+      ? note.excerpt
+          .replace(/\*\*(.+?)\*\*/g, '$1')  // Remove bold **text**
+          .replace(/\*(.+?)\*/g, '$1')      // Remove italic *text*
+          .replace(/~~(.+?)~~/g, '$1')      // Remove strikethrough ~~text~~
+          .replace(/`(.+?)`/g, '$1')        // Remove inline code `text`
+          .replace(/\[(.+?)\]\(.+?\)/g, '$1') // Remove links [text](url)
+          .replace(/#{1,6}\s+/g, '')        // Remove headers ###
+          .replace(/\n+/g, ' ')             // Replace newlines with spaces
+          .replace(/\s+/g, ' ')             // Normalize whitespace
+          .trim()
       : 'Click to view full note.';
+    
+    const previewText = cleanExcerpt.slice(0, 140) + (cleanExcerpt.length > 140 ? '…' : '');
 
     return `
       <div class="trade-card transition transform hover:scale-105 hover:shadow-lg" 
