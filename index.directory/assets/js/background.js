@@ -14,7 +14,8 @@ class BackgroundAnimation {
     // Animation parameters
     this.columns = Math.floor(this.canvas.width / 20);
     this.drops = new Array(this.columns).fill(1);
-    this.symbols = ['$', '↑', '↓', '▲', '▼', '●', '○', '■', '□', '◆'];
+    // Matrix-style digital rain characters: numbers, letters, and special symbols
+    this.symbols = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+-=[]{}|;:,.<>?/~`'.split('');
     
     // Bind methods
     this.animate = this.animate.bind(this);
