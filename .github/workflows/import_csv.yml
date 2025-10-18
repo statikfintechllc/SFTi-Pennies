@@ -1,0 +1,136 @@
+name: Import CSV Trades
+
+# Trigger when CSV files are pushed to data/imports/
+on:
+  push:
+    paths:
+      - 'data/imports/**.csv'
+  workflow_dispatch:
+    inputs:
+      csv_file:
+        description: 'Path to CSV file in repository'
+        required: true
+        default: 'data/imports/trades.csv'
+      broker:
+        description: 'Broker type'
+        required: true
+        default: 'robinhood'
+        type: choice
+        options:
+          - robinhood
+          - ibkr
+          - schwab
+          - webull
+
+permissions:
+  contents: write
+
+jobs:
+  import-csv:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml matplotlib
+      
+      - name: Detect CSV files
+        id: detect_csv
+        run: |
+          # Find CSV files in data/imports/
+          if [ -d "data/imports" ]; then
+            CSV_FILES=$(find data/imports -name "*.csv" -type f)
+            if [ -n "$CSV_FILES" ]; then
+              echo "Found CSV files:"
+              echo "$CSV_FILES"
+              echo "csv_files<<EOF" >> $GITHUB_OUTPUT
+              echo "$CSV_FILES" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+            else
+              echo "No CSV files found"
+              echo "csv_files=" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "data/imports directory does not exist"
+            echo "csv_files=" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Import CSV trades
+        if: steps.detect_csv.outputs.csv_files != ''
+        run: |
+          # Process each CSV file
+          while IFS= read -r csv_file; do
+            if [ -f "$csv_file" ]; then
+              echo "Processing: $csv_file"
+              
+              # Determine broker from filename or use default
+              broker="robinhood"
+              if [[ "$csv_file" == *"ibkr"* ]] || [[ "$csv_file" == *"interactive"* ]]; then
+                broker="ibkr"
+              elif [[ "$csv_file" == *"schwab"* ]]; then
+                broker="schwab"
+              elif [[ "$csv_file" == *"webull"* ]]; then
+                broker="webull"
+              fi
+              
+              echo "Detected broker: $broker"
+              python .github/scripts/import_csv.py "$csv_file" "$broker" || true
+            fi
+          done <<< "${{ steps.detect_csv.outputs.csv_files }}"
+      
+      - name: Re-run trade pipeline
+        run: |
+          echo "Re-parsing trades..."
+          python .github/scripts/parse_trades.py
+          
+          echo "Generating analytics..."
+          python .github/scripts/generate_analytics.py
+          
+          echo "Generating summaries..."
+          python .github/scripts/generate_summaries.py
+          
+          echo "Generating charts..."
+          python .github/scripts/generate_charts.py
+          
+          echo "Updating homepage..."
+          python .github/scripts/update_homepage.py
+      
+      - name: Archive processed CSV
+        if: steps.detect_csv.outputs.csv_files != ''
+        run: |
+          # Move processed CSV to archive
+          mkdir -p data/imports/archive
+          while IFS= read -r csv_file; do
+            if [ -f "$csv_file" ]; then
+              timestamp=$(date +%Y%m%d_%H%M%S)
+              filename=$(basename "$csv_file" .csv)
+              mv "$csv_file" "data/imports/archive/${filename}_${timestamp}.csv"
+              echo "Archived: $csv_file"
+            fi
+          done <<< "${{ steps.detect_csv.outputs.csv_files }}"
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Commit changes
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-import: Process CSV trades and update analytics [skip ci]"
+            git push
+          fi

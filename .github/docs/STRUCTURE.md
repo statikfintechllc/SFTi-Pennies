@@ -140,3 +140,30 @@ SFTi-Pennies/
 
 6 directories, 28 files
 ```
+
+## Recent Additions (Phase 1 Scaffolding)
+
+### New HTML Pages
+- `analytics.html` - Advanced analytics dashboard with expectancy, profit factor, drawdown, streaks
+- `import.html` - CSV import interface for broker trade files
+- `trade.html` - Individual trade detail page template
+
+### New JavaScript Files
+- `assets/js/analytics.js` - Analytics dashboard logic and charting
+- `assets/js/import.js` - CSV file upload and preview
+
+### New Python Scripts
+- `.github/scripts/generate_analytics.py` - Advanced analytics calculation engine
+- `.github/scripts/import_csv.py` - CSV importer with Robinhood support
+
+### New Workflows
+- `.github/workflows/import_csv.yml` - Automated CSV import processing
+- `.github/workflows/nightly_analytics.yml` - Scheduled analytics regeneration
+
+### New Directories
+- `index.directory/assets/analytics/` - Generated analytics JSON files
+- `index.directory/assets/trade-media/` - Trade screenshots and media (planned)
+
+### New Documentation
+- `.github/docs/ROADMAP.md` - Development roadmap and milestones
+- `.github/docs/MEDIA_SPEC.md` - Media storage and referencing specification
