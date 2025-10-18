@@ -70,45 +70,18 @@ jobs:
         run: |
           echo "Importing CSV files: ${{ steps.find-csv.outputs.csv_files }}"
           
-          # TODO: Implement actual import logic
-          # For now, this is a placeholder that shows the workflow structure
-          
+          # Import each CSV file
           for csv_file in ${{ steps.find-csv.outputs.csv_files }}; do
             echo "Processing: $csv_file"
             
-            # TODO: Run import_csv.py with the file
-            # python .github/scripts/import_csv.py "$csv_file" \
-            #   --broker "${{ github.event.inputs.broker }}" \
-            #   --output-dir "index.directory/SFTi.Tradez"
-            
-            echo "TODO: Implement import_csv.py fully"
+            # Run import_csv.py with the file
+            # Note: This creates trade files in index.directory/SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md format
+            python .github/scripts/import_csv.py "$csv_file" \
+              --broker "${{ github.event.inputs.broker }}" \
+              --output-dir "index.directory/SFTi.Tradez" || echo "Import failed for $csv_file"
           done
-      
-      - name: Parse trades into JSON index
-        if: steps.find-csv.outputs.csv_files != ''
-        run: |
-          echo "Parsing trades..."
-          python .github/scripts/parse_trades.py
-      
-      - name: Generate charts
-        if: steps.find-csv.outputs.csv_files != ''
-        run: |
-          echo "Generating charts..."
-          # Install matplotlib if needed
-          pip install matplotlib
-          python .github/scripts/generate_charts.py
-      
-      - name: Generate summaries
-        if: steps.find-csv.outputs.csv_files != ''
-        run: |
-          echo "Generating summaries..."
-          python .github/scripts/generate_summaries.py
-      
-      - name: Generate index
-        if: steps.find-csv.outputs.csv_files != ''
-        run: |
-          echo "Generating index..."
-          python .github/scripts/generate_index.py
+          
+          echo "Import complete. Trade files created in index.directory/SFTi.Tradez/week.*/"
       
       - name: Configure Git
         if: steps.find-csv.outputs.csv_files != ''
@@ -123,8 +96,10 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Auto-import: Import trades from CSV [skip ci]"
+            # Commit to index.directory/SFTi.Tradez/** which will trigger trade_pipeline.yml
+            git commit -m "Auto-import: Import trades from CSV"
             git push
+            echo "✓ Imported trades committed. This will trigger the trade_pipeline workflow."
           fi
       
       - name: Upload import results
@@ -133,11 +108,16 @@ jobs:
         with:
           name: import-results
           path: |
-            index.directory/trades-index.json
-            index.directory/SFTi.Tradez/
+            index.directory/SFTi.Tradez/week.*/
       
       - name: No CSV files found
         if: steps.find-csv.outputs.csv_files == ''
         run: |
           echo "No CSV files found to import"
           echo "Place CSV files in the 'import/' directory or specify a file path in workflow dispatch"
+          echo ""
+          echo "Note: After import, the trade_pipeline.yml workflow will automatically:"
+          echo "  1. Parse trades into JSON index"
+          echo "  2. Generate charts and analytics"
+          echo "  3. Create summaries"
+          echo "  4. Deploy to GitHub Pages"

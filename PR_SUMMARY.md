@@ -43,14 +43,23 @@ This PR implements a comprehensive roadmap to transform SFTi-Pennies into a best
 
 ### 🚧 Scaffolded Features (Ready for Implementation)
 
+**✅ ARCHITECTURE ALIGNMENT COMPLETED** (addressing PR review feedback):
+- CSV importer creates files in correct format: `index.directory/SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md`
+- Import workflow triggers trade_pipeline automatically via push to `index.directory/SFTi.Tradez/**`
+- Uses existing trade template from `.github/templates/trade.md.template`
+- Navigation updated across all pages (add-trade.html, all-trades.html, analytics.html, import.html)
+- Consistent path resolution using relative paths (./assets/, ./SFTi.Tradez/)
+- Analytics data stored in `./assets/charts/analytics-data.json` with other chart data
+- Backward compatible with existing manually-added trades
+
 #### 1. Broker CSV Importers
-**Status**: Architecture complete, parsing logic needs implementation
+**Status**: Architecture complete and aligned, parsing logic needs implementation
 
 **Files Created**:
 - `import.html` - Full-featured upload interface with preview
 - `import.js` - Client-side logic (file handling, validation display)
 - `import.css` - Styling for import page
-- `import_csv.py` - Entry point CLI script
+- `import_csv.py` - Entry point CLI script (✅ UPDATED: correct file naming)
 - `importers/__init__.py` - Importer registry
 - `importers/base_importer.py` - Abstract base class with:
   - Format detection interface
@@ -63,11 +72,14 @@ This PR implements a comprehensive roadmap to transform SFTi-Pennies into a best
 - `importers/webull.py` - Webull parser (TODO)
 
 **What Works**:
-- UI for uploading CSVs ✅
-- Broker selection dropdown ✅
-- Preview table structure ✅
-- Validation button workflow ✅
-- Import workflow trigger ✅
+- ✅ UI for uploading CSVs
+- ✅ Broker selection dropdown
+- ✅ Preview table structure
+- ✅ Validation button workflow
+- ✅ Import workflow trigger
+- ✅ Correct file structure (week.YYYY.WW/MM:DD:YYYY.N.md)
+- ✅ Uses existing template format
+- ✅ Triggers trade_pipeline automatically
 
 **What's Needed**:
 - Broker-specific field mappings

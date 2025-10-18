@@ -107,9 +107,11 @@ SFTi-Pennies supports CSV imports from the following brokers:
    ```
 
 3. **Workflow triggers automatically**
-   - The import.yml workflow will detect the CSV
-   - Trades will be parsed and added to your journal
-   - Charts and analytics will be regenerated
+   - The import.yml workflow detects the CSV and creates trade files
+   - Files are created in: `index.directory/SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md`
+   - This triggers the trade_pipeline.yml workflow automatically
+   - Trades are parsed, charts regenerated, and analytics updated
+   - Site is deployed with new trades
 
 ### Method 3: Manual Script Execution
 
@@ -121,7 +123,12 @@ SFTi-Pennies supports CSV imports from the following brokers:
 2. **Options:**
    - `--broker`: Specify broker (auto-detect if omitted)
    - `--dry-run`: Validate without creating files
-   - `--output-dir`: Custom output directory
+   - `--output-dir`: Base directory (default: index.directory/SFTi.Tradez)
+
+3. **Output:**
+   - Creates files in week-based structure: `index.directory/SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md`
+   - Uses existing trade template format from `.github/templates/trade.md.template`
+   - Integrates with existing parse_trades.py script
 
 ## Broker-Specific Export Instructions
 

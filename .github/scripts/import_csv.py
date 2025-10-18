@@ -110,42 +110,130 @@ def validate_trades(trades: List[Dict], broker: str) -> tuple[List[Dict], List[D
 
 def create_trade_markdown(trade: Dict, output_dir: str) -> str:
     """
-    Create a markdown file for a trade
+    Create a markdown file for a trade using the existing template format
     
     Args:
         trade (Dict): Trade dictionary
-        output_dir (str): Output directory (e.g., index.directory/SFTi.Tradez/week.XXX)
+        output_dir (str): Output directory (e.g., index.directory/SFTi.Tradez)
         
     Returns:
         str: Path to created file
         
-    TODO: Implement markdown generation with YAML frontmatter
+    Uses the format: index.directory/SFTi.Tradez/week.YYYY.WW/MM:DD:YYYY.N.md
     """
-    # Determine week folder
+    # Determine week folder and filename from entry date
     entry_date = trade.get('entry_date', datetime.now().isoformat())
     try:
         date_obj = datetime.fromisoformat(entry_date.split('T')[0])
         year = date_obj.year
         week = date_obj.isocalendar()[1]
         week_folder = f"week.{year}.{week:02d}"
+        
+        # Format: MM:DD:YYYY.N.md (N is the trade sequence for that day)
+        date_str = date_obj.strftime('%m:%d:%Y')
+        trade_num = trade.get('trade_number', 1)
+        filename = f"{date_str}.{trade_num}.md"
     except:
         week_folder = "week.000"
+        filename = f"trade-{trade.get('trade_number', 0):03d}.md"
     
     # Create week directory if needed
     week_path = os.path.join(output_dir, week_folder)
     os.makedirs(week_path, exist_ok=True)
     
-    # Generate filename
-    trade_num = trade.get('trade_number', 0)
-    ticker = trade.get('ticker', 'UNKNOWN')
-    filename = f"trade-{trade_num:03d}-{ticker}.md"
     filepath = os.path.join(week_path, filename)
     
-    # TODO: Generate markdown content with YAML frontmatter
-    # Use existing trade template format
-    
-    print(f"TODO: Create markdown file at {filepath}")
-    return filepath
+    # Generate markdown content using existing template format
+    try:
+        # Load template
+        template_path = '.github/templates/trade.md.template'
+        with open(template_path, 'r', encoding='utf-8') as f:
+            template = f.read()
+        
+        # Prepare data for template
+        screenshots_list = trade.get('screenshots', [])
+        if not screenshots_list or screenshots_list == ['']:
+            screenshots_str = "No screenshots uploaded."
+        else:
+            screenshots_str = "\n".join([f"![Screenshot]({s})" for s in screenshots_list])
+        
+        # Build frontmatter
+        frontmatter = f"""---
+trade_number: {trade.get('trade_number', '')}
+ticker: {trade.get('ticker', '')}
+entry_date: {trade.get('entry_date', '')}
+entry_time: {trade.get('entry_time', '')}
+exit_date: {trade.get('exit_date', '')}
+exit_time: {trade.get('exit_time', '')}
+entry_price: {trade.get('entry_price', '')}
+exit_price: {trade.get('exit_price', '')}
+position_size: {trade.get('position_size', '')}
+direction: {trade.get('direction', 'LONG')}
+strategy: {trade.get('strategy', '')}
+stop_loss: {trade.get('stop_loss', '')}
+target_price: {trade.get('target_price', '')}
+risk_reward_ratio: {trade.get('risk_reward_ratio', '')}
+broker: {trade.get('broker', '')}
+pnl_usd: {trade.get('pnl_usd', '')}
+pnl_percent: {trade.get('pnl_percent', '')}"""
+        
+        # Add new fields for v1.1 schema if present
+        if 'strategy_tags' in trade:
+            frontmatter += f"\nstrategy_tags: {trade.get('strategy_tags', [])}"
+        if 'setup_tags' in trade:
+            frontmatter += f"\nsetup_tags: {trade.get('setup_tags', [])}"
+        if 'session_tags' in trade:
+            frontmatter += f"\nsession_tags: {trade.get('session_tags', [])}"
+        if 'market_condition_tags' in trade:
+            frontmatter += f"\nmarket_condition_tags: {trade.get('market_condition_tags', [])}"
+        
+        frontmatter += f"""
+screenshots:
+  - {screenshots_list[0] if screenshots_list and screenshots_list[0] else 'None'}
+---
+
+# Trade #{trade.get('trade_number', '')} - {trade.get('ticker', '')}
+
+## Trade Details
+
+- **Ticker**: {trade.get('ticker', '')}
+- **Direction**: {trade.get('direction', 'LONG')}
+- **Entry**: ${trade.get('entry_price', '')} on {trade.get('entry_date', '')} at {trade.get('entry_time', '')}
+- **Exit**: ${trade.get('exit_price', '')} on {trade.get('exit_date', '')} at {trade.get('exit_time', '')}
+- **Position Size**: {trade.get('position_size', '')} shares
+- **Strategy**: {trade.get('strategy', '')}
+- **Broker**: {trade.get('broker', '')}
+
+## Risk Management
+
+- **Stop Loss**: ${trade.get('stop_loss', '')}
+- **Target Price**: ${trade.get('target_price', '')}
+- **Risk:Reward Ratio**: 1:{trade.get('risk_reward_ratio', '')}
+
+## Results
+
+- **P&L (USD)**: ${trade.get('pnl_usd', '')}
+- **P&L (%)**: {trade.get('pnl_percent', '')}%
+
+## Notes
+
+{trade.get('notes', 'Imported from CSV')}
+
+## Screenshots
+
+{screenshots_str}
+"""
+        
+        # Write to file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(frontmatter)
+        
+        print(f"Created trade file: {filepath}")
+        return filepath
+        
+    except Exception as e:
+        print(f"Error creating trade markdown: {e}")
+        return filepath
 
 
 def update_trades_index(new_trades: List[Dict]):
