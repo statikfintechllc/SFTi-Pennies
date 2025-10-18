@@ -146,7 +146,6 @@ Charts are regenerated automatically by GitHub Actions when:
 **Dependencies:**
 - `matplotlib` - Static chart generation
 - `pyyaml` - Data parsing
-- `json` - Data formatting
 
 ### Example Usage
 ```bash
