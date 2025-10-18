@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Detail - SFTi-Pennies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="books.html" class="nav-link">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a href="notes.html" class="nav-link">Notes</a>
+                </li>
+                <li class="nav-item has-submenu">
+                    <a href="#" class="nav-link">Trades</a>
+                    <ul class="nav-submenu">
+                        <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+                        <li><a href="all-trades.html" class="nav-link">View All Trades</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </li>
+                <li class="nav-item">
+                    <a href="import.html" class="nav-link">Import</a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <!-- Trade Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+            <div>
+                <h1 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                    <span id="trade-ticker">TICKER</span>
+                    <span id="trade-direction" class="badge" style="font-size: 0.875rem; padding: 0.25rem 0.75rem; border-radius: 4px;">LONG</span>
+                </h1>
+                <p style="color: var(--text-secondary);">
+                    Trade #<span id="trade-number">001</span> • <span id="trade-date">2025-01-15</span>
+                </p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 2rem; font-weight: 700; margin: 0;" id="trade-pnl">$0.00</p>
+                <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    <span id="trade-pnl-percent">0.00%</span> return
+                </p>
+            </div>
+        </div>
+        
+        <!-- Trade Details Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Entry Info -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">Entry</h3>
+                <p style="margin: 0.5rem 0;"><strong>Date:</strong> <span id="entry-date">-</span></p>
+                <p style="margin: 0.5rem 0;"><strong>Price:</strong> $<span id="entry-price">0.00</span></p>
+                <p style="margin: 0.5rem 0;"><strong>Size:</strong> <span id="position-size">0</span> shares</p>
+            </div>
+            
+            <!-- Exit Info -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">Exit</h3>
+                <p style="margin: 0.5rem 0;"><strong>Date:</strong> <span id="exit-date">-</span></p>
+                <p style="margin: 0.5rem 0;"><strong>Price:</strong> $<span id="exit-price">0.00</span></p>
+                <p style="margin: 0.5rem 0;"><strong>Duration:</strong> <span id="duration">-</span></p>
+            </div>
+            
+            <!-- Risk Management -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 1rem;">Risk Management</h3>
+                <p style="margin: 0.5rem 0;"><strong>Stop Loss:</strong> $<span id="stop-loss">-</span></p>
+                <p style="margin: 0.5rem 0;"><strong>Target:</strong> $<span id="target">-</span></p>
+                <p style="margin: 0.5rem 0;"><strong>R:R Ratio:</strong> <span id="risk-reward">-</span></p>
+            </div>
+        </div>
+        
+        <!-- Strategy & Tags -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Strategy & Tags</h3>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+                <div>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Strategy:</span>
+                    <span id="strategy" class="badge" style="margin-left: 0.5rem; padding: 0.25rem 0.75rem; background-color: var(--accent-green); color: var(--bg-primary); border-radius: 4px;">-</span>
+                </div>
+                <div>
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Tags:</span>
+                    <span id="tags-container" style="margin-left: 0.5rem;">
+                        <span class="badge" style="padding: 0.25rem 0.75rem; background-color: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 4px; margin-right: 0.5rem;">No tags</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trade Notes -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Trade Notes</h3>
+            <div id="trade-notes" style="color: var(--text-secondary); line-height: 1.8;">
+                <p>No notes available for this trade.</p>
+            </div>
+        </div>
+        
+        <!-- Screenshots/Media -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Charts & Screenshots</h3>
+            <div id="trade-images" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+                <div style="text-align: center; padding: 3rem; color: var(--text-dim); border: 2px dashed var(--border-color); border-radius: 8px;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <p>No screenshots attached</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MAE/MFE Section (placeholder for future) -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem;">Advanced Metrics</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">R-Multiple</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; margin: 0;" id="r-multiple">-</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">MAE (Max Adverse Excursion)</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--accent-red);" id="mae">Coming Soon</p>
+                </div>
+                <div>
+                    <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.25rem;">MFE (Max Favorable Excursion)</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; margin: 0; color: var(--accent-green);" id="mfe">Coming Soon</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    </footer>
+    
+    <script src="assets/js/background.js"></script>
+    <script>
+        // Trade detail page logic - to be populated from URL params or JSON
+        // This is a template; actual implementation will load trade data dynamically
+        
+        // Example: Load trade data from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const tradeId = urlParams.get('id');
+        
+        if (tradeId) {
+            // TODO: Fetch trade data from trades-index.json or individual markdown file
+            console.log('Loading trade:', tradeId);
+        }
+    </script>
+</body>
+</html>

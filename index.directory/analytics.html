@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - SFTi-Pennies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="books.html" class="nav-link">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a href="notes.html" class="nav-link">Notes</a>
+                </li>
+                <li class="nav-item has-submenu">
+                    <a href="#" class="nav-link">Trades</a>
+                    <ul class="nav-submenu">
+                        <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+                        <li><a href="all-trades.html" class="nav-link">View All Trades</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-link active">Analytics</a>
+                </li>
+                <li class="nav-item">
+                    <a href="import.html" class="nav-link">Import</a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Advanced Analytics
+        </h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+            Deep dive into your trading performance metrics
+        </p>
+        
+        <!-- Key Metrics Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- Expectancy Card -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Expectancy</h3>
+                <p id="expectancy-value" style="font-size: 2rem; font-weight: 700; color: var(--accent-green); margin: 0;">$0.00</p>
+                <p style="font-size: 0.875rem; color: var(--text-dim); margin-top: 0.5rem;">Average expected return per trade</p>
+            </div>
+            
+            <!-- Profit Factor Card -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Profit Factor</h3>
+                <p id="profit-factor-value" style="font-size: 2rem; font-weight: 700; color: var(--accent-green); margin: 0;">0.00</p>
+                <p style="font-size: 0.875rem; color: var(--text-dim); margin-top: 0.5rem;">Ratio of gross profit to gross loss</p>
+            </div>
+            
+            <!-- Max Drawdown Card -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Max Drawdown</h3>
+                <p id="max-drawdown-value" style="font-size: 2rem; font-weight: 700; color: var(--accent-red); margin: 0;">0.00%</p>
+                <p style="font-size: 0.875rem; color: var(--text-dim); margin-top: 0.5rem;">Peak-to-trough decline</p>
+            </div>
+            
+            <!-- Win Streak Card -->
+            <div class="card">
+                <h3 style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Best Win Streak</h3>
+                <p id="win-streak-value" style="font-size: 2rem; font-weight: 700; color: var(--accent-green); margin: 0;">0</p>
+                <p style="font-size: 0.875rem; color: var(--text-dim); margin-top: 0.5rem;">Consecutive winning trades</p>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <!-- P&L Distribution -->
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">P&L Distribution</h3>
+                <canvas id="pnl-distribution-chart"></canvas>
+            </div>
+            
+            <!-- R-Multiple Distribution -->
+            <div class="card">
+                <h3 style="margin-bottom: 1rem;">R-Multiple Distribution</h3>
+                <canvas id="r-multiple-chart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Strategy Breakdown -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Performance by Strategy</h3>
+            <div id="strategy-breakdown" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--bg-tertiary); text-align: left;">
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Strategy</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Trades</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Win Rate</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Avg P&L</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Total P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="strategy-table-body">
+                        <tr>
+                            <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-dim);">
+                                No data available yet. Import trades or add them manually to see analytics.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Tag Breakdown -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem;">Performance by Tag</h3>
+            <div id="tag-breakdown" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: var(--bg-tertiary); text-align: left;">
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Tag</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Trades</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Win Rate</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Avg P&L</th>
+                            <th style="padding: 0.75rem; color: var(--accent-green);">Total P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tag-table-body">
+                        <tr>
+                            <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-dim);">
+                                No data available yet. Import trades or add them manually to see analytics.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    </footer>
+    
+    <script src="assets/js/background.js"></script>
+    <script src="assets/js/analytics.js"></script>
+</body>
+</html>

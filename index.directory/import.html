@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Trades - SFTi-Pennies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="books.html" class="nav-link">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a href="notes.html" class="nav-link">Notes</a>
+                </li>
+                <li class="nav-item has-submenu">
+                    <a href="#" class="nav-link">Trades</a>
+                    <ul class="nav-submenu">
+                        <li><a href="SFTi.Tradez/README.md" class="nav-link">All Weeks</a></li>
+                        <li><a href="all-trades.html" class="nav-link">View All Trades</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a href="analytics.html" class="nav-link">Analytics</a>
+                </li>
+                <li class="nav-item">
+                    <a href="import.html" class="nav-link active">Import</a>
+                </li>
+                <li class="nav-item">
+                    <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            Import Trades
+        </h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+            Import your trades from broker CSV files
+        </p>
+        
+        <!-- Broker Selection -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Select Your Broker</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <button class="btn btn-secondary broker-btn active" data-broker="robinhood">
+                    Robinhood
+                </button>
+                <button class="btn btn-secondary broker-btn" data-broker="ibkr" disabled>
+                    Interactive Brokers
+                    <span style="font-size: 0.75rem; display: block; margin-top: 0.25rem; opacity: 0.7;">Coming Soon</span>
+                </button>
+                <button class="btn btn-secondary broker-btn" data-broker="schwab" disabled>
+                    Charles Schwab
+                    <span style="font-size: 0.75rem; display: block; margin-top: 0.25rem; opacity: 0.7;">Coming Soon</span>
+                </button>
+                <button class="btn btn-secondary broker-btn" data-broker="webull" disabled>
+                    Webull
+                    <span style="font-size: 0.75rem; display: block; margin-top: 0.25rem; opacity: 0.7;">Coming Soon</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Upload Area -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem;">Upload CSV File</h3>
+            
+            <!-- Drag and Drop Zone -->
+            <div id="drop-zone" style="
+                border: 2px dashed var(--border-color);
+                border-radius: 8px;
+                padding: 3rem;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background-color: var(--bg-secondary);
+            ">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 64px; height: 64px; margin: 0 auto 1rem; color: var(--accent-green);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                <p style="font-size: 1.25rem; margin-bottom: 0.5rem;">Drag & drop your CSV file here</p>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">or click to browse</p>
+                <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                <button class="btn btn-primary" onclick="document.getElementById('csv-file-input').click();">
+                    Choose File
+                </button>
+            </div>
+            
+            <!-- File Info -->
+            <div id="file-info" style="display: none; margin-top: 1rem; padding: 1rem; background-color: var(--bg-tertiary); border-radius: 8px;">
+                <p style="margin: 0;"><strong>Selected file:</strong> <span id="file-name"></span></p>
+                <p style="margin: 0.5rem 0 0;"><strong>Size:</strong> <span id="file-size"></span></p>
+            </div>
+        </div>
+        
+        <!-- Expected Format -->
+        <div class="card">
+            <h3 style="margin-bottom: 1rem;">Expected CSV Format (Robinhood)</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Your CSV file should contain the following columns:
+            </p>
+            <div style="overflow-x: auto; background-color: var(--bg-tertiary); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                <pre style="margin: 0; font-family: var(--font-mono); font-size: 0.875rem;"><code>Symbol, Activity Date, Activity Type, Quantity, Price, Amount
+AAPL, 2025-01-15, Buy, 10, 150.00, -1500.00
+AAPL, 2025-01-16, Sell, 10, 155.00, 1550.00</code></pre>
+            </div>
+            
+            <h4 style="margin-bottom: 0.5rem;">Required Columns:</h4>
+            <ul style="color: var(--text-secondary); margin-bottom: 1rem; list-style-position: inside;">
+                <li><code>Symbol</code> - Stock ticker symbol</li>
+                <li><code>Activity Date</code> - Trade date (YYYY-MM-DD)</li>
+                <li><code>Activity Type</code> - Buy or Sell</li>
+                <li><code>Quantity</code> - Number of shares</li>
+                <li><code>Price</code> - Price per share</li>
+                <li><code>Amount</code> - Total transaction amount</li>
+            </ul>
+            
+            <h4 style="margin-bottom: 0.5rem;">Optional Columns:</h4>
+            <ul style="color: var(--text-secondary); list-style-position: inside;">
+                <li><code>Strategy</code> - Trading strategy used</li>
+                <li><code>Tags</code> - Comma-separated tags (e.g., "scalp,momentum")</li>
+                <li><code>Notes</code> - Trade notes or comments</li>
+            </ul>
+        </div>
+        
+        <!-- Status Messages -->
+        <div id="import-status" style="display: none; margin-top: 2rem;" class="card">
+            <h3 style="margin-bottom: 1rem;">Import Status</h3>
+            <div id="status-message"></div>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    </footer>
+    
+    <script src="assets/js/background.js"></script>
+    <script src="assets/js/import.js"></script>
+</body>
+</html>

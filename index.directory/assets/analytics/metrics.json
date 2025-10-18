@@ -1,0 +1,13 @@
+{
+  "expectancy": 0,
+  "profit_factor": 0,
+  "max_drawdown": 0,
+  "max_drawdown_percent": 0,
+  "best_win_streak": 0,
+  "best_loss_streak": 0,
+  "total_trades": 0,
+  "winning_trades": 0,
+  "losing_trades": 0,
+  "pnl_distribution": [],
+  "r_multiple_distribution": []
+}
