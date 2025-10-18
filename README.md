@@ -26,13 +26,7 @@ Welcome to **SFTi-Pennies** - a comprehensive, fully automated trading journal s
 
 ### 🎯 Purpose Statement
 
-Create a **fully transparent, organized trading account** with complete documentation of strategies, trades, education materials, and performance tracking to achieve **18 months to freedom**. 🚀
-
-### 🌐 Access Points
-
-- **📈 Live Trading Journal**: [statikfintechllc.github.io/SFTi-Pennies](https://statikfintechllc.github.io/SFTi-Pennies/)
-- **🤖 SFTi AI Platform**: [www.sfti-ai.org](https://www.sfti-ai.org) - AI-powered trading tools and analysis
-- **📚 Ascend Institute**: [www.sfti-ai.org/ascend-institute](https://www.sfti-ai.org/ascend-institute) - Trading education and courses
+Created a **fully transparent, organized trading account** with complete documentation of strategies, trades, education materials, and performance tracking to achieve **18 months to freedom**. 🚀
 
 ## 📚 Repository Architecture
 
