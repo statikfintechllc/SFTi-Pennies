@@ -3,7 +3,6 @@
 ```txt
 SFTi-Pennies/
 │
-├── _config.yml
 ├── add-trade.html
 ├── all-trades.html
 ├── books-index.json
@@ -14,6 +13,9 @@ SFTi-Pennies/
 ├── notes-index.json
 ├── notes.html
 ├── README.md
+│
+├── index.directory/
+│   ├── _config.yml         # Jekyll configuration (main)
 │
 ├── Informational.Bookz
 │   │

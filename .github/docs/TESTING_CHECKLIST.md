@@ -2,7 +2,9 @@
 
 ## Pre-Deployment Verification ✓
 
-- [x] _config.yml updated to include content directories
+- [x] index.directory/_config.yml updated with merged configuration from root and index.directory
+- [x] Root _config.yml removed for cleanliness
+- [x] GitHub Actions workflow updated to use index.directory/_config.yml
 - [x] manifest.json copied to index.directory/
 - [x] Duplicate openPDF function removed from books.html
 - [x] All changes committed and pushed

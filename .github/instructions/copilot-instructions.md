@@ -106,9 +106,10 @@ Profit Factor = |Average Winner| / |Average Loser|
 ├── add-trade.html            # Trade submission form
 ├── all-trades.html           # Generated list of all trades
 ├── trades-index.json         # Generated trade data index
-├── _config.yml               # Jekyll configuration
 ├── manifest.json             # PWA manifest
-├── assets/
+├── index.directory/
+│   ├── _config.yml           # Jekyll configuration (main config)
+│   ├── assets/
 │   ├── css/
 │   │   └── main.css         # Main stylesheet
 │   ├── js/

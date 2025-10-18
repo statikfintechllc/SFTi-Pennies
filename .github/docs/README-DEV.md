@@ -363,9 +363,10 @@ Edit the nav menu in:
 ├── add-trade.html            # Trade submission form  
 ├── all-trades.html           # All trades list (generated)
 ├── trades-index.json         # Trade data index (generated)
-├── _config.yml               # Jekyll config
 ├── manifest.json             # PWA manifest
 ├── .gitignore               # Git ignore rules
+├── index.directory/
+│   ├── _config.yml           # Jekyll config (main configuration)
 │
 ├── assets/
 │   ├── css/

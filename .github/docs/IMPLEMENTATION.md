@@ -30,10 +30,12 @@ SFTi-Pennies/
 ├── 📄 all-trades.html              # All trades list (generated)
 ├── 📄 trades-index.json            # Trade data JSON (generated)
 ├── 📄 manifest.json                # PWA manifest
-├── 📄 _config.yml                  # Jekyll config for Pages
 ├── 📄 .gitignore                   # Git ignore rules
 ├── 📄 QUICKSTART.md                # 5-minute setup guide
 ├── 📄 README-DEV.md                # Developer documentation
+│
+├── 📁 index.directory/
+│   ├── 📄 _config.yml              # Jekyll config for Pages (main configuration)
 │
 ├── 📁 assets/
 │   ├── 📁 css/

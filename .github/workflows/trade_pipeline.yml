@@ -145,6 +145,7 @@ jobs:
         with:
           source: ./
           destination: ./_site
+          config: ./index.directory/_config.yml
       
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v2

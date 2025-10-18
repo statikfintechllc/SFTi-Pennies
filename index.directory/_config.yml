@@ -1,5 +1,6 @@
 # GitHub Pages Configuration for SFTi-Pennies Trading Journal
 # This config ensures proper site building and excludes internal files
+# Merged configuration from root and index.directory
 
 # Site settings
 title: "SFTi-Pennies Trading Journal"
@@ -15,6 +16,7 @@ highlighter: rouge
 exclude:
   - README.md
   - README-DEV.md
+  - REFACTORING_SUMMARY.md
   - .github/
   - .gitignore
   - Gemfile
@@ -24,6 +26,8 @@ exclude:
   - Informational.Bookz/
   - SFTi.Notez/
   - SFTi.Tradez/
+  - "**/*:*"
+  - "**/**:**:****.*.md"
 
 # Include necessary files
 include:
@@ -32,7 +36,19 @@ include:
   - trades/
   - index.html
   - add-trade.html
+  - all-trades.html
+  - books.html
+  - notes.html
+  - test_path_resolution.html
   - manifest.json
+
+# Plugins
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: false
 
 # Collections (for future use)
 collections:
