@@ -8,6 +8,20 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 
 ## 📖 Documentation Categories
 
+### 🎯 .github Directory Overview
+
+**Parent Directory Guide:**
+- [**README.git.md**](./README.git.md) - Complete `.github` directory documentation
+  - GitHub-specific configuration and automation hub
+  - Overview of all subdirectories (scripts, workflows, templates, docs)
+  - Automation pipeline architecture
+  - Community guidelines and contribution setup
+  - Configuration files reference
+
+**🎯 Start here for:** Understanding the `.github` infrastructure, automation system, and contribution workflows
+
+---
+
 ### 🚀 Getting Started
 
 **For New Users:**
