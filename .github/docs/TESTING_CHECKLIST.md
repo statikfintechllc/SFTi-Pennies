@@ -5,7 +5,7 @@
 - [x] index.directory/_config.yml updated with merged configuration from root and index.directory
 - [x] Root _config.yml removed for cleanliness
 - [x] GitHub Actions workflow updated to use index.directory/_config.yml
-- [x] manifest.json copied to index.directory/
+- [x] manifest.json remains in root directory
 - [x] Duplicate openPDF function removed from books.html
 - [x] All changes committed and pushed
 - [x] Documentation created
