@@ -198,10 +198,10 @@ Raw, unoptimized assets before processing:
 ## 🔗 Related Documentation
 
 ### Main Repository
-- [Root README](../README.md) - Project overview
-- [Trading Journal](../index.directory/SFTi.Tradez/README.md) - Live trades
-- [Trading Frameworks](../index.directory/SFTi.Notez/README.md) - Strategies
-- [Education Materials](../index.directory/Informational.Bookz/README.md) - PDF library
+- [Root README](../../README.md) - Project overview
+- [Trading Journal](../../index.directory/SFTi.Tradez/README.md) - Live trades
+- [Trading Frameworks](../../index.directory/SFTi.Notez/README.md) - Strategies
+- [Education Materials](../../index.directory/Informational.Bookz/README.md) - PDF library
 
 ### External Resources
 - **[Live Site](https://statikfintechllc.github.io/SFTi-Pennies/)** - Deployed trading journal
