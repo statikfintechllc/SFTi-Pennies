@@ -159,9 +159,9 @@ python .github/scripts/generate_charts.py
 ## 📊 Chart Data Sources
 
 All charts derive from:
-- **Primary:** `trades-index.json` (root directory)
-- **Trades:** Markdown files in `SFTi.Tradez/week.*/`
-- **Summaries:** Generated summary files
+- **Primary:** `index.directory/trades-index.json`
+- **Trades:** Markdown files in `index.directory/SFTi.Tradez/week.*/`
+- **Summaries:** Generated summary files in `index.directory/SFTi.Tradez/summaries/`
 
 ### Data Points Used
 - Entry/exit dates and times
