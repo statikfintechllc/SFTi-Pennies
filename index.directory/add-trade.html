@@ -194,6 +194,48 @@
           </div>
         </div>
         
+        <!-- Trade Tags -->
+        <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+            Tags & Classification
+          </h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="strategy_tags" class="form-label">Strategy Tags</label>
+              <input type="text" id="strategy_tags" class="form-input tag-input" placeholder="e.g., Breakout, Momentum, Reversal">
+              <p class="form-helper">Comma-separated tags for trading strategies</p>
+              <div id="strategy_tags_display" class="tag-display"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="setup_tags" class="form-label">Setup Tags</label>
+              <input type="text" id="setup_tags" class="form-input tag-input" placeholder="e.g., Bull Flag, VWAP Bounce, Gap Fill">
+              <p class="form-helper">Comma-separated tags for chart setups</p>
+              <div id="setup_tags_display" class="tag-display"></div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="session_tags" class="form-label">Session Tags</label>
+              <input type="text" id="session_tags" class="form-input tag-input" placeholder="e.g., Pre-market, Morning, Afternoon">
+              <p class="form-helper">Comma-separated tags for trading sessions</p>
+              <div id="session_tags_display" class="tag-display"></div>
+            </div>
+            
+            <div class="form-group">
+              <label for="market_condition_tags" class="form-label">Market Condition Tags</label>
+              <input type="text" id="market_condition_tags" class="form-input tag-input" placeholder="e.g., Trending, Choppy, High Volume">
+              <p class="form-helper">Comma-separated tags for market conditions</p>
+              <div id="market_condition_tags_display" class="tag-display"></div>
+            </div>
+          </div>
+        </div>
+        
         <!-- Auto-Calculated Results -->
         <div style="background-color: var(--bg-tertiary); border: 2px solid var(--accent-green); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
           <h3 style="margin-bottom: 1rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.5rem;">

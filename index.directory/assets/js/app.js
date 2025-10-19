@@ -304,8 +304,111 @@ class TradingJournal {
       fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
     }
     
+    // Tag inputs
+    this.setupTagInputs();
+    
     // Form submission
     form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+  }
+  
+  /**
+   * Setup tag input handlers
+   */
+  setupTagInputs() {
+    const tagInputs = ['strategy_tags', 'setup_tags', 'session_tags', 'market_condition_tags'];
+    
+    tagInputs.forEach(inputId => {
+      const input = document.getElementById(inputId);
+      if (input) {
+        // Initialize tag storage
+        input.tagList = [];
+        
+        // Handle Enter key to add tags
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ',') {
+            e.preventDefault();
+            this.addTag(inputId);
+          }
+        });
+        
+        // Handle blur to add tag if text exists
+        input.addEventListener('blur', () => {
+          if (input.value.trim()) {
+            this.addTag(inputId);
+          }
+        });
+      }
+    });
+  }
+  
+  /**
+   * Add a tag to the display
+   * @param {string} inputId - ID of the tag input field
+   */
+  addTag(inputId) {
+    const input = document.getElementById(inputId);
+    const display = document.getElementById(`${inputId}_display`);
+    
+    if (!input || !display) return;
+    
+    const tagText = input.value.trim();
+    if (!tagText) return;
+    
+    // Split by comma for multiple tags
+    const tags = tagText.split(',').map(t => t.trim()).filter(t => t);
+    
+    tags.forEach(tag => {
+      // Avoid duplicates
+      if (input.tagList && !input.tagList.includes(tag)) {
+        input.tagList.push(tag);
+        
+        // Create tag element
+        const tagEl = document.createElement('div');
+        tagEl.className = 'tag-item';
+        tagEl.innerHTML = `
+          <span>${tag}</span>
+          <span class="tag-remove" data-tag="${tag}" data-input="${inputId}">×</span>
+        `;
+        
+        // Add remove handler
+        tagEl.querySelector('.tag-remove').addEventListener('click', (e) => {
+          this.removeTag(inputId, tag);
+        });
+        
+        display.appendChild(tagEl);
+      }
+    });
+    
+    // Clear input
+    input.value = '';
+  }
+  
+  /**
+   * Remove a tag from the display
+   * @param {string} inputId - ID of the tag input field
+   * @param {string} tag - Tag to remove
+   */
+  removeTag(inputId, tag) {
+    const input = document.getElementById(inputId);
+    const display = document.getElementById(`${inputId}_display`);
+    
+    if (!input || !display) return;
+    
+    // Remove from list
+    if (input.tagList) {
+      const index = input.tagList.indexOf(tag);
+      if (index > -1) {
+        input.tagList.splice(index, 1);
+      }
+    }
+    
+    // Remove from display
+    const tagElements = display.querySelectorAll('.tag-item');
+    tagElements.forEach(el => {
+      if (el.querySelector(`[data-tag="${tag}"]`)) {
+        el.remove();
+      }
+    });
   }
   
   /**
@@ -515,6 +618,15 @@ class TradingJournal {
       }
     });
     
+    // Add tag data (v1.1 schema)
+    const tagFields = ['strategy_tags', 'setup_tags', 'session_tags', 'market_condition_tags'];
+    tagFields.forEach(tagField => {
+      const input = document.getElementById(tagField);
+      if (input && input.tagList && input.tagList.length > 0) {
+        data[tagField] = input.tagList;
+      }
+    });
+    
     // Add calculated values
     const entryPrice = parseFloat(data.entry_price);
     const exitPrice = parseFloat(data.exit_price);
@@ -553,7 +665,8 @@ class TradingJournal {
       `  - ${this.basePath}/index.directory/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
     ).join('\n');
     
-    return `---
+    // Build YAML frontmatter with optional tags
+    let frontmatter = `---
 trade_number: ${data.trade_number}
 ticker: ${data.ticker}
 entry_date: ${data.entry_date}
@@ -570,10 +683,27 @@ target_price: ${data.target_price}
 risk_reward_ratio: ${data.risk_reward_ratio}
 broker: ${data.broker}
 pnl_usd: ${data.pnl_usd}
-pnl_percent: ${data.pnl_percent}
-screenshots:
+pnl_percent: ${data.pnl_percent}`;
+    
+    // Add tags if present (v1.1 schema)
+    if (data.strategy_tags && data.strategy_tags.length > 0) {
+      frontmatter += `\nstrategy_tags: [${data.strategy_tags.map(t => `"${t}"`).join(', ')}]`;
+    }
+    if (data.setup_tags && data.setup_tags.length > 0) {
+      frontmatter += `\nsetup_tags: [${data.setup_tags.map(t => `"${t}"`).join(', ')}]`;
+    }
+    if (data.session_tags && data.session_tags.length > 0) {
+      frontmatter += `\nsession_tags: [${data.session_tags.map(t => `"${t}"`).join(', ')}]`;
+    }
+    if (data.market_condition_tags && data.market_condition_tags.length > 0) {
+      frontmatter += `\nmarket_condition_tags: [${data.market_condition_tags.map(t => `"${t}"`).join(', ')}]`;
+    }
+    
+    frontmatter += `\nscreenshots:
 ${screenshots || '  - None'}
----
+---`;
+    
+    return `${frontmatter}
 
 # Trade #${data.trade_number} - ${data.ticker}
 
