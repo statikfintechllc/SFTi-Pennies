@@ -1,0 +1,32 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="chartGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1">
+        <animate attributeName="stop-color" values="#dc2626;#ef4444;#dc2626" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1">
+        <animate attributeName="stop-color" values="#000000;#1f2937;#000000" dur="3s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+  </defs>
+  
+  <!-- Frame border -->
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#000000" stroke-width="1.5" rx="2"/>
+  
+  <!-- Axes -->
+  <line x1="4" y1="26" x2="28" y2="26" stroke="#000000" stroke-width="1.5"/>
+  <line x1="4" y1="6" x2="4" y2="26" stroke="#000000" stroke-width="1.5"/>
+  
+  <!-- Animated chart line -->
+  <polyline points="4,22 8,20 12,18 16,14 20,12 24,8 28,6" 
+            fill="none" 
+            stroke="url(#chartGradient)" 
+            stroke-width="2.5" 
+            stroke-linecap="round"
+            stroke-linejoin="round">
+    <animate attributeName="stroke-dasharray" 
+             from="0,100" 
+             to="100,0" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+  </invoke>
