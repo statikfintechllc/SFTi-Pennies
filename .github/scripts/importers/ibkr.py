@@ -63,8 +63,6 @@ class IBKRImporter(BaseImporter):
         """
         Parse IBKR CSV into standard trade format
         
-        TODO: Implement full parsing logic for IBKR CSV format
-        
         IBKR CSV structure (example):
         - Symbol, Date/Time, Quantity, T. Price, C. Price, Proceeds, Comm/Fee, Basis, Realized P/L
         - Or: DataDiscriminator, Asset Category, Currency, Symbol, Date/Time, ...
@@ -76,27 +74,109 @@ class IBKRImporter(BaseImporter):
         4. Calculate P&L and metrics
         """
         trades = []
+        transactions = []
         
-        # TODO: Implement IBKR-specific parsing
-        # Placeholder implementation
+        # Parse CSV and collect all transactions
         reader = csv.DictReader(StringIO(csv_content))
         
         for row in reader:
-            # TODO: Map IBKR fields to standard format
-            # This is a stub - actual mapping depends on IBKR CSV variant
-            trade = {
-                'ticker': row.get('Symbol', '').upper(),
-                'broker': self.broker_name,
-                # TODO: Parse date/time from IBKR format
-                # TODO: Parse quantity and prices
-                # TODO: Detect direction (buy/sell)
-                # TODO: Match entry/exit pairs
-            }
+            # Map IBKR fields to standard format
+            symbol = row.get('Symbol', row.get('symbol', '')).strip().upper()
+            if not symbol:
+                continue
             
-            # Only add if we have minimum required data
-            if trade.get('ticker'):
-                # trades.append(self._calculate_pnl(trade))
-                pass  # Disabled until full implementation
+            # Parse date/time from IBKR format (YYYY-MM-DD HH:MM:SS or variations)
+            date_time_str = row.get('Date/Time', row.get('DateTime', row.get('date/time', '')))
+            if not date_time_str:
+                continue
+                
+            try:
+                dt = datetime.strptime(date_time_str.strip(), '%Y-%m-%d %H:%M:%S')
+            except:
+                try:
+                    dt = datetime.strptime(date_time_str.strip().split()[0], '%Y-%m-%d')
+                except:
+                    continue
+            
+            # Parse quantity and prices
+            quantity_str = row.get('Quantity', row.get('quantity', '0'))
+            try:
+                quantity = int(float(quantity_str.replace(',', '')))
+            except:
+                quantity = 0
+            
+            price_str = row.get('T. Price', row.get('Price', row.get('price', '0')))
+            try:
+                price = float(price_str.replace(',', ''))
+            except:
+                price = 0.0
+            
+            # Detect direction (buy/sell) - positive quantity = buy, negative = sell
+            direction = 'BUY' if quantity > 0 else 'SELL'
+            
+            transactions.append({
+                'symbol': symbol,
+                'datetime': dt,
+                'quantity': abs(quantity),
+                'price': price,
+                'direction': direction,
+                'commission': self._parse_commission(row)
+            })
+        
+        # Match entry/exit pairs for complete trades
+        trades = self._match_transactions(transactions)
+        
+        return trades
+    
+    def _parse_commission(self, row: Dict) -> float:
+        """Parse commission from row"""
+        comm_str = row.get('Comm/Fee', row.get('Commission', row.get('commission', '0')))
+        try:
+            return abs(float(comm_str.replace(',', '')))
+        except:
+            return 0.0
+    
+    def _match_transactions(self, transactions: List[Dict]) -> List[Dict]:
+        """Match buy/sell transactions into complete trades"""
+        trades = []
+        trade_num = 1
+        
+        # Group transactions by symbol
+        by_symbol = {}
+        for t in transactions:
+            if t['symbol'] not in by_symbol:
+                by_symbol[t['symbol']] = []
+            by_symbol[t['symbol']].append(t)
+        
+        # Match pairs for each symbol
+        for symbol, txns in by_symbol.items():
+            # Sort by datetime
+            txns.sort(key=lambda x: x['datetime'])
+            
+            # Simple FIFO matching
+            buys = [t for t in txns if t['direction'] == 'BUY']
+            sells = [t for t in txns if t['direction'] == 'SELL']
+            
+            for buy, sell in zip(buys, sells):
+                trade = {
+                    'trade_number': trade_num,
+                    'ticker': symbol,
+                    'entry_date': buy['datetime'].strftime('%Y-%m-%d'),
+                    'entry_time': buy['datetime'].strftime('%H:%M:%S'),
+                    'entry_price': buy['price'],
+                    'exit_date': sell['datetime'].strftime('%Y-%m-%d'),
+                    'exit_time': sell['datetime'].strftime('%H:%M:%S'),
+                    'exit_price': sell['price'],
+                    'position_size': buy['quantity'],
+                    'direction': 'LONG',
+                    'broker': self.broker_name,
+                    'notes': f'Imported from IBKR CSV'
+                }
+                
+                # Calculate P&L
+                trade = self._calculate_pnl(trade)
+                trades.append(trade)
+                trade_num += 1
         
         return trades
     

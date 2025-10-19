@@ -45,13 +45,13 @@ def list_brokers():
     return list(BROKER_REGISTRY.keys())
 
 
-# TODO: Import and register broker implementations
-# from .ibkr import IBKRImporter
-# from .schwab import SchwabImporter
-# from .robinhood import RobinhoodImporter
-# from .webull import WebullImporter
-# 
-# register_broker('ibkr', IBKRImporter)
-# register_broker('schwab', SchwabImporter)
-# register_broker('robinhood', RobinhoodImporter)
-# register_broker('webull', WebullImporter)
+# Import and register broker implementations
+from .ibkr import IBKRImporter
+from .schwab import SchwabImporter
+from .robinhood import RobinhoodImporter
+from .webull import WebullImporter
+
+register_broker('ibkr', IBKRImporter)
+register_broker('schwab', SchwabImporter)
+register_broker('robinhood', RobinhoodImporter)
+register_broker('webull', WebullImporter)
