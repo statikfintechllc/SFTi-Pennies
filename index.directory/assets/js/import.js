@@ -60,14 +60,66 @@ function handleFileUpload(event) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const csvContent = e.target.result;
+    uploadedFile.content = csvContent;
     
-    // TODO: Auto-detect broker
-    // For now, just enable validation
+    // Auto-detect broker
+    detectedBroker = detectBrokerFromCSV(csvContent);
+    
+    if (detectedBroker) {
+      brokerSelect.value = detectedBroker;
+      brokerInfo.style.display = 'block';
+      brokerInfoText.textContent = `Detected ${getBrokerName(detectedBroker)} format`;
+      showStatus(`Auto-detected ${getBrokerName(detectedBroker)} CSV format. Click Validate to preview trades.`, 'success');
+    } else {
+      showStatus('Could not auto-detect broker. Please select manually and click Validate.', 'warning');
+    }
+    
     validateBtn.disabled = false;
-    
-    showStatus('File uploaded successfully. Select broker and click Validate.', 'info');
   };
   reader.readAsText(file);
+}
+
+/**
+ * Detect broker from CSV content
+ */
+function detectBrokerFromCSV(csvContent) {
+  const header = csvContent.split('\n')[0].toLowerCase();
+  
+  // IBKR detection
+  if (header.includes('symbol') && header.includes('date/time') && 
+      (header.includes('proceeds') || header.includes('realized p/l'))) {
+    return 'ibkr';
+  }
+  
+  // Schwab detection
+  if (header.includes('date') && header.includes('action') && header.includes('description')) {
+    return 'schwab';
+  }
+  
+  // Robinhood detection
+  if (header.includes('activity date') && header.includes('trans code') && header.includes('instrument')) {
+    return 'robinhood';
+  }
+  
+  // Webull detection
+  if (header.includes('time') && header.includes('side') && header.includes('filled/quantity')) {
+    return 'webull';
+  }
+  
+  return null;
+}
+
+/**
+ * Get broker display name
+ */
+function getBrokerName(broker) {
+  const names = {
+    'ibkr': 'Interactive Brokers',
+    'schwab': 'Schwab/TD Ameritrade',
+    'robinhood': 'Robinhood',
+    'webull': 'Webull'
+  };
+  return names[broker] || broker;
 }
 
 /**
@@ -108,65 +160,128 @@ function handleBrokerChange(event) {
 /**
  * Handle validate button click
  */
-function handleValidate() {
-  if (!uploadedFile) {
+async function handleValidate() {
+  if (!uploadedFile || !uploadedFile.content) {
     showStatus('Please upload a CSV file first.', 'error');
     return;
   }
   
-  // TODO: Implement actual validation
-  // For now, show placeholder preview
-  showStatus('TODO: Validation logic not yet implemented. This is a UI scaffold.', 'warning');
+  if (!detectedBroker) {
+    showStatus('Please select a broker.', 'error');
+    return;
+  }
   
-  // Mock preview data
-  const mockTrades = [
-    {
-      status: 'valid',
-      ticker: 'AAPL',
-      entry_date: '2025-01-15',
-      entry_price: 150.25,
-      exit_date: '2025-01-16',
-      exit_price: 152.50,
-      position_size: 100,
-      direction: 'LONG',
-      pnl_usd: 225.00
-    },
-    {
-      status: 'valid',
-      ticker: 'TSLA',
-      entry_date: '2025-01-17',
-      entry_price: 245.75,
-      exit_date: '2025-01-18',
-      exit_price: 243.20,
-      position_size: 50,
-      direction: 'LONG',
-      pnl_usd: -127.50
+  showStatus('Validating CSV and parsing trades...', 'info');
+  validateBtn.disabled = true;
+  
+  try {
+    // Parse CSV content
+    const trades = parseCSVForBroker(uploadedFile.content, detectedBroker);
+    
+    if (trades.length === 0) {
+      showStatus('No valid trades found in CSV. Please check the format.', 'warning');
+      parsedTrades = [];
+      previewPlaceholder.style.display = 'block';
+      previewContainer.style.display = 'none';
+      return;
     }
-  ];
+    
+    parsedTrades = trades;
+    displayPreview(trades);
+    
+    showStatus(`Successfully parsed ${trades.length} trade(s). Review and click Import to add to journal.`, 'success');
+    importBtn.disabled = false;
+    
+  } catch (error) {
+    showStatus(`Error parsing CSV: ${error.message}`, 'error');
+    console.error('Parse error:', error);
+  } finally {
+    validateBtn.disabled = false;
+  }
+}
+
+/**
+ * Parse CSV content based on broker
+ */
+function parseCSVForBroker(csvContent, broker) {
+  const lines = csvContent.trim().split('\n');
+  if (lines.length < 2) return [];
   
-  parsedTrades = mockTrades;
-  displayPreview(mockTrades);
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+  const trades = [];
   
-  importBtn.disabled = false;
+  // Simple parsing for demonstration
+  // In production, this would use the broker-specific parsers
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',').map(v => v.trim());
+    if (values.length < headers.length) continue;
+    
+    const row = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index];
+    });
+    
+    // Basic validation - check for required fields
+    if (row.symbol || row.ticker || row.instrument) {
+      const ticker = (row.symbol || row.ticker || row.instrument || '').toUpperCase();
+      if (ticker) {
+        trades.push({
+          status: 'valid',
+          ticker: ticker,
+          entry_date: row['entry_date'] || row['date'] || row['activity date'] || row['trade date'] || '',
+          entry_price: parseFloat(row['entry_price'] || row['price'] || row['t. price'] || 0),
+          exit_date: row['exit_date'] || '',
+          exit_price: parseFloat(row['exit_price'] || 0),
+          position_size: parseInt(row['quantity'] || row['position_size'] || row['qty'] || 0),
+          direction: 'LONG',
+          pnl_usd: parseFloat(row['realized p/l'] || row['pnl_usd'] || 0),
+          broker: getBrokerName(broker)
+        });
+      }
+    }
+  }
+  
+  return trades;
 }
 
 /**
  * Handle import button click
  */
-function handleImport() {
+async function handleImport() {
   if (!parsedTrades || parsedTrades.length === 0) {
     showStatus('No trades to import. Please validate first.', 'error');
     return;
   }
   
-  // TODO: Implement actual import logic
-  // This would:
-  // 1. Send trades to backend/GitHub API
-  // 2. Create trade markdown files
-  // 3. Update trades-index.json
-  // 4. Trigger workflow
+  showStatus(`Preparing to import ${parsedTrades.length} trade(s)...`, 'info');
+  importBtn.disabled = true;
   
-  showStatus('TODO: Import logic not yet implemented. This is a UI scaffold.', 'warning');
+  try {
+    // In production, this would create CSV in import/ directory and trigger workflow
+    // For now, provide instructions
+    
+    const instructions = `To complete import:\n\n1. Save CSV to 'import/' directory\n2. git add import/file.csv && git commit && git push\n3. Import workflow will auto-process trades\n\nDownloading CSV for you...`;
+    
+    showStatus(instructions, 'info');
+    
+    // Download CSV as convenience
+    if (uploadedFile && uploadedFile.content) {
+      const blob = new Blob([uploadedFile.content], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `import-${detectedBroker}-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showStatus('CSV downloaded. Place in import/ directory and push to complete.', 'success');
+    }
+    
+  } catch (error) {
+    showStatus(`Error: ${error.message}`, 'error');
+  } finally {
+    importBtn.disabled = false;
+  }
 }
 
 /**
