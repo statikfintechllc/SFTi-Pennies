@@ -81,14 +81,70 @@ def update_trade_metadata(trade_file_path, image_paths):
         trade_file_path (str): Path to trade markdown file
         image_paths (list): List of image paths
         
-    TODO: Implement frontmatter update
+    Returns:
+        bool: True if successful, False otherwise
     """
-    # TODO: Read markdown file
-    # TODO: Parse YAML frontmatter
-    # TODO: Update images field
-    # TODO: Write back to file
-    
-    print(f"TODO: Update {trade_file_path} with {len(image_paths)} image(s)")
+    try:
+        # Read markdown file
+        with open(trade_file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Split frontmatter and body
+        if not content.startswith('---'):
+            print(f"  ⚠️  No frontmatter found in {trade_file_path}")
+            return False
+        
+        parts = content.split('---', 2)
+        if len(parts) < 3:
+            print(f"  ⚠️  Invalid frontmatter format in {trade_file_path}")
+            return False
+        
+        frontmatter = parts[1]
+        body = parts[2]
+        
+        # Parse YAML-like frontmatter (simple parsing for images field)
+        lines = frontmatter.split('\n')
+        new_lines = []
+        in_images_section = False
+        images_updated = False
+        
+        for line in lines:
+            if line.strip().startswith('images:') or line.strip().startswith('screenshots:'):
+                in_images_section = True
+                new_lines.append('screenshots:')
+                # Add image paths
+                for img_path in image_paths:
+                    new_lines.append(f'  - {img_path}')
+                images_updated = True
+            elif in_images_section and (line.startswith('  -') or not line.strip()):
+                # Skip old image entries
+                if not line.strip():
+                    in_images_section = False
+                continue
+            else:
+                in_images_section = False
+                new_lines.append(line)
+        
+        # If no images field existed, add it
+        if not images_updated:
+            new_lines.append('screenshots:')
+            for img_path in image_paths:
+                new_lines.append(f'  - {img_path}')
+        
+        # Reconstruct file content
+        new_frontmatter = '\n'.join(new_lines)
+        new_content = f"---{new_frontmatter}---{body}"
+        
+        # Write back to file
+        with open(trade_file_path, 'w', encoding='utf-8') as f:
+            f.write(new_content)
+        
+        print(f"  ✓ Updated {trade_file_path} with {len(image_paths)} image(s)")
+        return True
+        
+    except Exception as e:
+        print(f"  ❌ Error updating {trade_file_path}: {e}")
+        return False
 
 
 def find_orphaned_images(trade_images, trades):
@@ -113,6 +169,168 @@ def find_orphaned_images(trade_images, trades):
     return orphaned
 
 
+def generate_validation_report(trade_images, trades, orphaned, updated_files):
+    """
+    Generate a validation report HTML file
+    
+    Args:
+        trade_images (dict): {trade_id: [image_paths]}
+        trades (list): List of trade dictionaries
+        orphaned (list): List of orphaned image paths
+        updated_files (list): List of updated trade files
+    """
+    total_images = sum(len(imgs) for imgs in trade_images.values())
+    
+    report_html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Validation Report - SFTi-Pennies</title>
+    <style>
+        body {{
+            font-family: 'Inter', sans-serif;
+            background: #0a0e1a;
+            color: #e4e4e7;
+            padding: 2rem;
+            line-height: 1.6;
+        }}
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+        }}
+        h1 {{
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+        }}
+        .summary {{
+            background: #1a1f2e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #00ff88;
+        }}
+        .stat {{
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+        }}
+        .stat-label {{
+            color: #9ca3af;
+        }}
+        .stat-value {{
+            font-weight: 600;
+            color: #00ff88;
+        }}
+        .section {{
+            background: #1a1f2e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }}
+        .section h2 {{
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }}
+        .trade-item {{
+            background: #0f1420;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 0.75rem 0;
+        }}
+        .image-list {{
+            margin-top: 0.5rem;
+            padding-left: 1rem;
+        }}
+        .image-item {{
+            color: #9ca3af;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            padding: 0.25rem 0;
+        }}
+        .warning {{
+            color: #ff4757;
+        }}
+        .success {{
+            color: #00ff88;
+        }}
+        .timestamp {{
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Media Validation Report</h1>
+        <p class="timestamp">Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        
+        <div class="summary">
+            <h2 style="margin-top: 0;">Summary</h2>
+            <div class="stat">
+                <span class="stat-label">Total Images:</span>
+                <span class="stat-value">{total_images}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Trades with Images:</span>
+                <span class="stat-value">{len(trade_images)}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Orphaned Images:</span>
+                <span class="stat-value {'warning' if orphaned else 'success'}">{len(orphaned)}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Updated Files:</span>
+                <span class="stat-value">{len(updated_files)}</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>✓ Linked Images</h2>
+            {''.join([f'''
+            <div class="trade-item">
+                <strong>{trade_id}</strong> ({len(images)} image{'s' if len(images) != 1 else ''})
+                <div class="image-list">
+                    {''.join([f'<div class="image-item">• {img}</div>' for img in images])}
+                </div>
+            </div>
+            ''' for trade_id, images in trade_images.items()])}
+        </div>
+        
+        {f'''
+        <div class="section">
+            <h2 class="warning">⚠️ Orphaned Images</h2>
+            <p style="color: #9ca3af; margin-bottom: 1rem;">
+                These images are not linked to any trade. They may be from deleted trades or incorrectly named directories.
+            </p>
+            <div class="image-list">
+                {''.join([f'<div class="image-item warning">• {img}</div>' for img in orphaned])}
+            </div>
+        </div>
+        ''' if orphaned else '<div class="section"><h2 class="success">✓ No Orphaned Images</h2><p style="color: #9ca3af;">All images are properly linked to trades.</p></div>'}
+        
+        {f'''
+        <div class="section">
+            <h2 class="success">✓ Updated Trade Files</h2>
+            <div class="image-list">
+                {''.join([f'<div class="image-item success">• {f}</div>' for f in updated_files])}
+            </div>
+        </div>
+        ''' if updated_files else ''}
+    </div>
+</body>
+</html>
+"""
+    
+    # Write report to file
+    report_path = Path('index.directory/media-validation-report.html')
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write(report_html)
+    
+    print(f"\n✓ Generated validation report: {report_path}")
+    return report_path
+
+
 def main():
     """Main execution function"""
     print("=" * 60)
@@ -120,7 +338,7 @@ def main():
     print("=" * 60)
     
     # Scan for images
-    print("\n[Step 1/3] Scanning for trade images...")
+    print("\n[Step 1/4] Scanning for trade images...")
     trade_images = scan_trade_images()
     
     if not trade_images:
@@ -137,7 +355,7 @@ def main():
         print(f"  {trade_id}: {len(images)} image(s)")
     
     # Load trades
-    print("\n[Step 2/3] Loading trades index...")
+    print("\n[Step 2/4] Loading trades index...")
     try:
         with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
             index_data = json.load(f)
@@ -148,7 +366,7 @@ def main():
         return
     
     # Find orphaned images
-    print("\n[Step 3/3] Checking for orphaned images...")
+    print("\n[Step 3/4] Checking for orphaned images...")
     orphaned = find_orphaned_images(trade_images, trades)
     
     if orphaned:
@@ -158,15 +376,43 @@ def main():
     else:
         print("✓ No orphaned images found")
     
-    # TODO: Update trade metadata
-    print("\nTODO: Implement trade metadata update")
-    print("This would update markdown frontmatter with image references")
+    # Update trade metadata
+    print("\n[Step 4/4] Updating trade metadata...")
+    updated_files = []
+    
+    for trade in trades:
+        trade_number = trade.get('trade_number', 0)
+        trade_id = f"trade-{trade_number:03d}"
+        
+        if trade_id in trade_images:
+            # Find trade markdown file
+            trade_files = glob.glob(f"index.directory/SFTi.Tradez/**/trade-{trade_number:03d}*.md", recursive=True)
+            
+            if trade_files:
+                trade_file = trade_files[0]
+                # Convert image paths to relative paths from trade file location
+                relative_images = []
+                for img_path in trade_images[trade_id]:
+                    # Make path relative to trade file
+                    rel_path = os.path.relpath(img_path, os.path.dirname(trade_file))
+                    relative_images.append(rel_path)
+                
+                if update_trade_metadata(trade_file, relative_images):
+                    updated_files.append(trade_file)
+            else:
+                print(f"  ⚠️  Trade file not found for {trade_id}")
+    
+    # Generate validation report
+    print("\n[Report] Generating validation report...")
+    report_path = generate_validation_report(trade_images, trades, orphaned, updated_files)
     
     print("\n" + "=" * 60)
     print("Summary:")
     print(f"  Total images: {total_images}")
     print(f"  Linked trades: {len(trade_images)}")
     print(f"  Orphaned images: {len(orphaned)}")
+    print(f"  Updated files: {len(updated_files)}")
+    print(f"  Report: {report_path}")
     print("=" * 60)
 
 
