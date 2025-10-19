@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Trading weeks overview">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>All Weeks - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.0/marked.min.js"></script>
+  
+  <!-- GLightbox for image galleries -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  
+  <style>
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .week-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .week-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.15);
+      border-color: var(--accent-green);
+    }
+    
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .week-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+    }
+    
+    .week-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 0.5rem;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
+      font-family: var(--font-mono);
+    }
+    
+    .positive {
+      color: var(--accent-green);
+    }
+    
+    .negative {
+      color: var(--accent-red);
+    }
+    
+    /* Modal Styles */
+    .week-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    
+    .week-modal.active {
+      display: flex;
+    }
+    
+    .week-modal-content {
+      max-width: 95%;
+      max-height: 95vh;
+      margin: 0 auto;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .week-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+    
+    .week-modal-header h2 {
+      margin: 0;
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+    }
+    
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .close-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--accent-green);
+    }
+    
+    .week-modal-body {
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+      flex: 1;
+      padding: 1.5rem;
+    }
+    
+    .trade-item {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .trade-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .trade-ticker {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+    }
+    
+    .trade-pnl {
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    
+    .trade-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+    }
+    
+    .trade-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    
+    .trade-image-thumb {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+    
+    .trade-image-thumb:hover {
+      border-color: var(--accent-green);
+      transform: scale(1.05);
+    }
+    
+    .markdown-content {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+      color: var(--accent-green);
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .markdown-content p {
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+    
+    .markdown-content ul, .markdown-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .markdown-content code {
+      background: var(--bg-primary);
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-family: var(--font-mono);
+      font-size: 0.875em;
+    }
+    
+    .markdown-content pre {
+      background: var(--bg-primary);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin-bottom: 1rem;
+    }
+    
+    .markdown-content pre code {
+      background: transparent;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        All Weeks
+      </h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        View your trading weeks with summaries, trades, and performance metrics
+      </p>
+      
+      <div class="week-grid" id="weeks-container">
+        <!-- Weeks will be dynamically loaded here -->
+      </div>
+    </section>
+  </main>
+  
+  <!-- Week Detail Modal -->
+  <div id="week-modal" class="week-modal">
+    <div class="week-modal-content" style="width: 90%; max-width: 1200px;">
+      <div class="week-modal-header">
+        <h2 id="modal-week-title">Week Details</h2>
+        <button class="close-btn" onclick="closeWeekModal()">&times;</button>
+      </div>
+      <div class="week-modal-body" id="week-modal-body">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+  </footer>
+  
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/app.js"></script>
+  
+  <script>
+    // Configure marked for proper rendering
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    });
+    
+    let allWeeks = [];
+    let lightbox;
+    
+    // Load weeks data
+    async function loadWeeks() {
+      try {
+        const response = await fetch('./trades-index.json');
+        const trades = await response.json();
+        
+        // Group trades by week
+        const weekMap = {};
+        
+        trades.forEach(trade => {
+          // Extract week from file path (e.g., "SFTi.Tradez/week.2025.01/...")
+          const weekMatch = trade.file?.match(/week\.(\d{4})\.(\d{2})/);
+          if (weekMatch) {
+            const weekKey = `${weekMatch[1]}.${weekMatch[2]}`;
+            if (!weekMap[weekKey]) {
+              weekMap[weekKey] = {
+                year: weekMatch[1],
+                week: weekMatch[2],
+                trades: [],
+                totalPnL: 0,
+                wins: 0,
+                losses: 0
+              };
+            }
+            
+            weekMap[weekKey].trades.push(trade);
+            const pnl = parseFloat(trade.pnl) || 0;
+            weekMap[weekKey].totalPnL += pnl;
+            if (pnl > 0) weekMap[weekKey].wins++;
+            else if (pnl < 0) weekMap[weekKey].losses++;
+          }
+        });
+        
+        // Convert to array and sort by date (most recent first)
+        allWeeks = Object.entries(weekMap)
+          .map(([key, data]) => ({ key, ...data }))
+          .sort((a, b) => b.key.localeCompare(a.key));
+        
+        renderWeeks();
+      } catch (error) {
+        console.error('Error loading weeks:', error);
+        document.getElementById('weeks-container').innerHTML = '<p>Error loading weeks data</p>';
+      }
+    }
+    
+    // Render weeks grid
+    function renderWeeks() {
+      const container = document.getElementById('weeks-container');
+      
+      if (allWeeks.length === 0) {
+        container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary);">No trading weeks found</p>';
+        return;
+      }
+      
+      container.innerHTML = allWeeks.map(week => {
+        const pnlClass = week.totalPnL >= 0 ? 'positive' : 'negative';
+        const pnlSign = week.totalPnL >= 0 ? '+' : '';
+        const winRate = week.trades.length > 0 
+          ? ((week.wins / week.trades.length) * 100).toFixed(1) 
+          : '0.0';
+        
+        return `
+          <div class="week-card" onclick="showWeekModal('${week.key}')">
+            <div class="week-header">
+              <div class="week-title">Week ${week.week}, ${week.year}</div>
+              <div class="stat-value ${pnlClass}">${pnlSign}$${week.totalPnL.toFixed(2)}</div>
+            </div>
+            <div class="week-stats">
+              <div class="stat-item">
+                <div class="stat-label">Trades</div>
+                <div class="stat-value">${week.trades.length}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Win Rate</div>
+                <div class="stat-value">${winRate}%</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Wins</div>
+                <div class="stat-value positive">${week.wins}</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Losses</div>
+                <div class="stat-value negative">${week.losses}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Show week detail modal
+    async function showWeekModal(weekKey) {
+      const week = allWeeks.find(w => w.key === weekKey);
+      if (!week) return;
+      
+      document.getElementById('modal-week-title').textContent = `Week ${week.week}, ${week.year}`;
+      
+      const modalBody = document.getElementById('week-modal-body');
+      modalBody.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading...</p>';
+      
+      // Load master.trade.md if it exists
+      const masterFile = `./SFTi.Tradez/week.${weekKey}/master.trade.md`;
+      let masterContent = '';
+      
+      try {
+        const response = await fetch(masterFile);
+        if (response.ok) {
+          masterContent = await response.text();
+        }
+      } catch (error) {
+        console.log('No master.trade.md found for this week');
+      }
+      
+      // Render trades
+      let content = '';
+      
+      // Render master content if available
+      if (masterContent) {
+        content += `<div class="markdown-content">${marked.parse(masterContent)}</div>`;
+      }
+      
+      // Render individual trades
+      content += '<h3 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Trades</h3>';
+      
+      for (const trade of week.trades) {
+        const pnlClass = (trade.pnl || 0) >= 0 ? 'positive' : 'negative';
+        const pnlSign = (trade.pnl || 0) >= 0 ? '+' : '';
+        
+        content += `
+          <div class="trade-item">
+            <div class="trade-header">
+              <div class="trade-ticker">${trade.ticker || 'N/A'}</div>
+              <div class="trade-pnl ${pnlClass}">${pnlSign}$${(trade.pnl || 0).toFixed(2)}</div>
+            </div>
+            <div class="trade-details">
+              <div><strong>Date:</strong> ${trade.date || 'N/A'}</div>
+              <div><strong>Entry:</strong> $${(trade.entry_price || 0).toFixed(2)}</div>
+              <div><strong>Exit:</strong> $${(trade.exit_price || 0).toFixed(2)}</div>
+              <div><strong>Size:</strong> ${trade.shares || 0} shares</div>
+              <div><strong>Direction:</strong> ${trade.direction || 'LONG'}</div>
+              <div><strong>R:R:</strong> ${trade.risk_reward_ratio || 'N/A'}</div>
+            </div>
+        `;
+        
+        // Add tags if available
+        if (trade.strategy_tags && trade.strategy_tags.length > 0) {
+          content += `<div style="margin-top: 0.5rem;"><strong>Strategy:</strong> ${trade.strategy_tags.join(', ')}</div>`;
+        }
+        
+        // Add images if available
+        if (trade.images && trade.images.length > 0) {
+          content += '<div class="trade-images">';
+          trade.images.forEach((img, idx) => {
+            content += `<a href="${img}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.date}">
+              <img src="${img}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
+            </a>`;
+          });
+          content += '</div>';
+        }
+        
+        content += '</div>';
+      }
+      
+      modalBody.innerHTML = content;
+      
+      // Initialize GLightbox for images
+      if (lightbox) lightbox.destroy();
+      lightbox = GLightbox({
+        selector: '.glightbox'
+      });
+      
+      document.getElementById('week-modal').classList.add('active');
+    }
+    
+    // Close modal
+    function closeWeekModal() {
+      document.getElementById('week-modal').classList.remove('active');
+      if (lightbox) lightbox.destroy();
+    }
+    
+    // Close modal on background click
+    document.getElementById('week-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeWeekModal();
+      }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeWeekModal();
+      }
+    });
+    
+    // Initialize
+    loadWeeks();
+  </script>
+</body>
+</html>

@@ -46,14 +46,42 @@
     
     <nav class="navbar">
         <div class="nav-container">
-            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            <a href="index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+            
             <ul class="nav-menu">
-                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="books.html" class="nav-link">Books</a></li>
-                <li class="nav-item"><a href="notes.html" class="nav-link">Notes</a></li>
-                <li class="nav-item"><a href="analytics.html" class="nav-link">Analytics</a></li>
-                <li class="nav-item"><a href="import.html" class="nav-link">Import</a></li>
-                <li class="nav-item"><a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a></li>
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="books.html" class="nav-link">Books</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="notes.html" class="nav-link">Notes</a>
+                </li>
+                
+                <li class="nav-item has-submenu">
+                    <a href="#" class="nav-link">Trades</a>
+                    <ul class="nav-submenu">
+                        <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+                        <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+                        <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+                        <li><a href="import.html" class="nav-link">Import CSV</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+                </li>
             </ul>
         </div>
     </nav>

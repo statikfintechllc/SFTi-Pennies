@@ -97,14 +97,19 @@ jobs:
           echo "Step 8: Generating trade detail pages..."
           python .github/scripts/generate_trade_pages.py
       
+      - name: Generate week summaries
+        run: |
+          echo "Step 9: Generating week summaries..."
+          python .github/scripts/generate_week_summaries.py
+      
       - name: Update homepage
         run: |
-          echo "Step 9: Updating homepage..."
+          echo "Step 10: Updating homepage..."
           python .github/scripts/update_homepage.py
       
       - name: Optimize images
         run: |
-          echo "Step 10: Optimizing images..."
+          echo "Step 11: Optimizing images..."
           bash .github/scripts/optimize_images.sh
       
       - name: Configure Git

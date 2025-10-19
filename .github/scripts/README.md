@@ -609,10 +609,11 @@ With Phase 2 additions, the workflow now runs:
 4. `generate_summaries.py` - Generate period summaries
 5. `generate_index.py` - Create master index page
 6. `generate_charts.py` - Generate visualizations
-7. **`generate_analytics.py`** - ✨ NEW: Advanced analytics
-8. **`generate_trade_pages.py`** - ✨ NEW: Trade detail pages
-9. `update_homepage.py` - Ensure data accessibility
-10. `optimize_images.sh` - Optimize and move images
+7. **`generate_analytics.py`** - ✨ Advanced analytics (expectancy, Kelly, profit factor)
+8. **`generate_trade_pages.py`** - ✨ Trade detail pages with galleries
+9. **`generate_week_summaries.py`** - ✨ NEW: Week master.trade.md files
+10. `update_homepage.py` - Ensure data accessibility
+11. `optimize_images.sh` - Optimize and move images
 
 ## New Dependencies
 
@@ -636,5 +637,6 @@ All are part of Python standard library - no additional pip installs required be
 
 **Phase 1:** October 13, 2025 (10 scripts)  
 **Phase 2:** October 18, 2025 (+7 scripts)  
-**Total Scripts:** 17  
-**Status:** ✅ Core functional, 🚧 Extensions scaffolded
+**Phase 3:** October 19, 2025 (+1 script - week summaries, all-weeks.html page)  
+**Total Scripts:** 18  
+**Status:** ✅ Core functional, ✅ Week summaries added
