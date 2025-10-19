@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Advanced trading analytics and performance metrics">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Analytics - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <h1>Advanced Analytics</h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Detailed performance metrics, strategy breakdowns, and advanced trading analytics.
+      </p>
+      
+      <!-- Overall Performance Summary -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Overall Performance</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Expectancy</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-green);" id="metric-expectancy">$0.00</div>
+          </div>
+          
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Profit Factor</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow);" id="metric-profit-factor">0.00</div>
+          </div>
+          
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Win Streak</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-green);" id="metric-win-streak">0</div>
+          </div>
+          
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Loss Streak</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-red);" id="metric-loss-streak">0</div>
+          </div>
+          
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Max Drawdown</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-red);" id="metric-max-drawdown">$0.00</div>
+          </div>
+          
+          <div>
+            <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Kelly %</div>
+            <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; color: var(--accent-yellow);" id="metric-kelly">0%</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Performance by Strategy -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Performance by Strategy</h3>
+        <div style="max-height: 400px;">
+          <canvas id="strategy-chart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Performance by Setup -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Performance by Setup</h3>
+        <div style="max-height: 400px;">
+          <canvas id="setup-chart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Win Rate by Tag -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Win Rate Analysis</h3>
+        <div style="max-height: 400px;">
+          <canvas id="winrate-chart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Drawdown Chart -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Drawdown Over Time</h3>
+        <div style="max-height: 400px;">
+          <canvas id="drawdown-chart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Strategy Table -->
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Strategy Breakdown</h3>
+        
+        <div style="overflow-x: auto;">
+          <table id="strategy-table" style="width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.875rem;">
+            <thead>
+              <tr style="background-color: var(--bg-tertiary); border-bottom: 2px solid var(--border-color);">
+                <th style="text-align: left; padding: 0.75rem; color: var(--text-secondary);">Strategy</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--text-secondary);">Trades</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--text-secondary);">Win Rate</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--text-secondary);">Avg P&L</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--text-secondary);">Total P&L</th>
+                <th style="text-align: right; padding: 0.75rem; color: var(--text-secondary);">Expectancy</th>
+              </tr>
+            </thead>
+            <tbody id="strategy-table-body">
+              <!-- Populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- TODO Notice -->
+      <div style="background: var(--bg-tertiary); border: 2px dashed var(--accent-yellow); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-yellow); display: flex; align-items: center; gap: 0.5rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          TODO: Full Analytics Implementation Required
+        </h3>
+        
+        <p style="color: var(--text-secondary); margin: 0;">
+          This page is scaffolded with UI placeholders. The analytics calculations need to be implemented in 
+          <code>generate_analytics.py</code>, which should compute expectancy, streaks, per-tag aggregates, 
+          drawdown series, and profit factors. The results should be saved to <code>analytics-data.json</code> 
+          and consumed by <code>analytics.js</code> for visualization.
+        </p>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/analytics.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

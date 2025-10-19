@@ -87,14 +87,29 @@ jobs:
           echo "Step 6: Generating charts..."
           python .github/scripts/generate_charts.py
       
+      - name: Generate analytics
+        run: |
+          echo "Step 7: Generating analytics..."
+          python .github/scripts/generate_analytics.py
+      
+      - name: Generate trade detail pages
+        run: |
+          echo "Step 8: Generating trade detail pages..."
+          python .github/scripts/generate_trade_pages.py
+      
+      - name: Generate week summaries
+        run: |
+          echo "Step 9: Generating week summaries..."
+          python .github/scripts/generate_week_summaries.py
+      
       - name: Update homepage
         run: |
-          echo "Step 7: Updating homepage..."
+          echo "Step 10: Updating homepage..."
           python .github/scripts/update_homepage.py
       
       - name: Optimize images
         run: |
-          echo "Step 8: Optimizing images..."
+          echo "Step 11: Optimizing images..."
           bash .github/scripts/optimize_images.sh
       
       - name: Configure Git
@@ -122,6 +137,8 @@ jobs:
             index.directory/notes-index.json
             index.directory/assets/charts/
             index.directory/all-trades.html
+            index.directory/trades/
+            index.directory/analytics.html
 
   deploy-pages:
     needs: process-trades

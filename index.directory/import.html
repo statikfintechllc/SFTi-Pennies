@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Import trades from broker CSV files">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Import Trades - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/import.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+        <h1 style="margin: 0;">Import Trades from CSV</h1>
+        <button id="export-csv-btn" class="btn btn-secondary" style="margin-left: auto;">
+          Export CSV
+        </button>
+      </div>
+      
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Import your trades from broker CSV files. Supported brokers: Interactive Brokers (IBKR), 
+        Charles Schwab/TD Ameritrade, Robinhood, and Webull.
+      </p>
+      
+      <!-- Import Status Alert -->
+      <div id="import-status" class="import-status" style="display: none;">
+        <div class="import-status-content">
+          <div class="import-status-icon">ℹ️</div>
+          <div class="import-status-message"></div>
+        </div>
+      </div>
+      
+      <!-- CSV Upload Section -->
+      <div class="import-card">
+        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+          Step 1: Upload CSV File
+        </h3>
+        
+        <div class="file-upload">
+          <input type="file" id="csv-file-input" class="file-upload-input" accept=".csv,text/csv">
+          <label for="csv-file-input" class="file-upload-label">
+            <span style="font-size: 3rem;">📁</span>
+            <span>Click to upload CSV file</span>
+            <span style="font-size: 0.875rem; color: var(--text-dim);">Supports .csv files from supported brokers</span>
+          </label>
+        </div>
+        
+        <div id="csv-file-info" class="csv-file-info" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="font-size: 2rem;">📄</div>
+            <div style="flex: 1;">
+              <div id="csv-filename" style="font-weight: 600; color: var(--accent-green);"></div>
+              <div id="csv-filesize" style="font-size: 0.875rem; color: var(--text-secondary);"></div>
+            </div>
+            <button id="clear-csv-btn" class="btn btn-secondary btn-sm">Clear</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Broker Selection -->
+      <div class="import-card">
+        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          Step 2: Select Broker
+        </h3>
+        
+        <div class="form-group">
+          <label for="broker-select" class="form-label">Broker</label>
+          <select id="broker-select" class="form-select">
+            <option value="">Auto-detect from CSV</option>
+            <option value="ibkr">Interactive Brokers (IBKR)</option>
+            <option value="schwab">Charles Schwab / TD Ameritrade</option>
+            <option value="robinhood">Robinhood</option>
+            <option value="webull">Webull</option>
+          </select>
+          <p class="form-helper">
+            Leave as "Auto-detect" to automatically identify the broker from CSV format.
+            Or manually select if auto-detection fails.
+          </p>
+        </div>
+        
+        <div id="broker-info" style="display: none; margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; border-left: 4px solid var(--accent-green);">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Detected Broker</div>
+          <div id="broker-info-text" style="color: var(--text-secondary);"></div>
+        </div>
+      </div>
+      
+      <!-- Preview Section -->
+      <div class="import-card">
+        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+          </svg>
+          Step 3: Preview & Validate
+        </h3>
+        
+        <div id="preview-container" style="display: none;">
+          <div id="preview-summary" class="preview-summary"></div>
+          
+          <div id="preview-table-container" style="overflow-x: auto; margin-top: 1rem;">
+            <table id="preview-table" class="preview-table">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Ticker</th>
+                  <th>Entry Date</th>
+                  <th>Entry Price</th>
+                  <th>Exit Date</th>
+                  <th>Exit Price</th>
+                  <th>Quantity</th>
+                  <th>Direction</th>
+                  <th>P&L</th>
+                </tr>
+              </thead>
+              <tbody id="preview-table-body">
+                <!-- Populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="preview-placeholder" style="text-align: center; padding: 3rem; color: var(--text-dim);">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 1rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <p>Upload a CSV file to preview trades</p>
+        </div>
+      </div>
+      
+      <!-- Actions -->
+      <div class="import-card">
+        <h3 style="margin-bottom: 1rem;">Step 4: Import or Download</h3>
+        
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button id="validate-btn" class="btn btn-secondary" disabled>
+            Validate Trades
+          </button>
+          
+          <button id="import-btn" class="btn btn-primary" disabled>
+            Import Trades
+          </button>
+          
+          <button id="download-mapping-btn" class="btn btn-secondary">
+            Download Sample Mapping
+          </button>
+        </div>
+        
+        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: 8px; border-left: 4px solid var(--accent-yellow);">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">⚠️ Important Notes</div>
+          <ul style="margin: 0; padding-left: 1.5rem; color: var(--text-secondary);">
+            <li>Validation checks data format and required fields</li>
+            <li>Import creates trade files and updates your journal</li>
+            <li>Duplicate trades (same date + ticker) will be skipped</li>
+            <li>You can export your current trades to CSV using the Export button</li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- TODO Notice -->
+      <div class="import-card" style="background: var(--bg-tertiary); border: 2px dashed var(--accent-yellow);">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-yellow); display: flex; align-items: center; gap: 0.5rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          TODO: Full Implementation Required
+        </h3>
+        
+        <p style="color: var(--text-secondary); margin: 0;">
+          This page is scaffolded with UI placeholders. The actual CSV parsing logic, broker detection, 
+          and import workflow need to be implemented in the Python importers and corresponding JavaScript.
+          See <code>import.js</code> and <code>.github/scripts/importers/</code> for implementation TODOs.
+        </p>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/import.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
