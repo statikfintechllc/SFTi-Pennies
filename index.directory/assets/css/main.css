@@ -748,6 +748,20 @@ code {
     display: block;
   }
   
+  /* Mobile button group styling */
+  .nav-item.nav-buttons-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-item.nav-buttons-group .btn {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+  }
+  
   .hero h1 {
     font-size: 2rem;
   }
