@@ -734,7 +734,7 @@ code {
   
   .nav-submenu {
     position: static;
-    display: none;
+    display: none !important;
     margin-top: var(--spacing-sm);
     margin-left: var(--spacing-md);
     box-shadow: none;
@@ -745,7 +745,7 @@ code {
   }
   
   .nav-item.has-submenu.active .nav-submenu {
-    display: block;
+    display: block !important;
   }
   
   /* Mobile button group styling */
