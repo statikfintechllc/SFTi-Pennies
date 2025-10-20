@@ -690,6 +690,7 @@ code {
   
   .nav-toggle {
     display: block;
+    z-index: 1001;
   }
   
   .nav-menu {
@@ -703,17 +704,44 @@ code {
     padding: var(--spacing-md);
     display: none;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    z-index: 1000;
   }
   
   .nav-menu.active {
     display: flex;
   }
   
+  .nav-item {
+    width: 100%;
+  }
+  
+  .nav-item.has-submenu > .nav-link {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-item.has-submenu > .nav-link::after {
+    transition: transform var(--transition-normal);
+  }
+  
+  .nav-item.has-submenu.active > .nav-link::after {
+    transform: rotate(180deg);
+  }
+  
   .nav-submenu {
     position: static;
     display: none;
     margin-top: var(--spacing-sm);
+    margin-left: var(--spacing-md);
     box-shadow: none;
+    border: none;
+    background-color: var(--bg-tertiary);
+    border-left: 2px solid var(--accent-green);
+    padding-left: var(--spacing-md);
   }
   
   .nav-item.has-submenu.active .nav-submenu {
