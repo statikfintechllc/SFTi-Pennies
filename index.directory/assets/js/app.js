@@ -104,26 +104,24 @@ class TradingJournal {
         navMenu.classList.toggle('active');
       });
       
-      // Handle submenu toggles on mobile
+      // Handle submenu toggles on all screen sizes
       document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
         const link = item.querySelector('.nav-link');
         
         if (link) {
           link.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-              e.preventDefault();
-              e.stopPropagation();
-              
-              // Close other submenus
-              document.querySelectorAll('.nav-item.has-submenu').forEach(otherItem => {
-                if (otherItem !== item) {
-                  otherItem.classList.remove('active');
-                }
-              });
-              
-              // Toggle this submenu
-              item.classList.toggle('active');
-            }
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Close other submenus
+            document.querySelectorAll('.nav-item.has-submenu').forEach(otherItem => {
+              if (otherItem !== item) {
+                otherItem.classList.remove('active');
+              }
+            });
+            
+            // Toggle this submenu
+            item.classList.toggle('active');
           });
         }
       });
@@ -142,12 +140,14 @@ class TradingJournal {
       // Close submenus when clicking on submenu items
       document.querySelectorAll('.nav-submenu .nav-link').forEach(link => {
         link.addEventListener('click', () => {
+          // Close all submenus
+          document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
+            item.classList.remove('active');
+          });
+          // Close mobile menu if open
           if (window.innerWidth <= 768) {
             navToggle.classList.remove('active');
             navMenu.classList.remove('active');
-            document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
-              item.classList.remove('active');
-            });
           }
         });
       });
