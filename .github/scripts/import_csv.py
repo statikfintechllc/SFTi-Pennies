@@ -32,7 +32,9 @@ def detect_broker(csv_content: str) -> str:
     Returns:
         str: Detected broker name or None
     """
-    from .importers import list_brokers, get_importer
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import list_brokers, get_importer
     
     for broker_name in list_brokers():
         importer = get_importer(broker_name)
@@ -69,7 +71,9 @@ def parse_csv_file(csv_path: str, broker: str = None) -> List[Dict]:
         print(f"Detected broker: {broker}")
     
     # Get importer and parse
-    from .importers import get_importer
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import get_importer
     importer = get_importer(broker)
     if not importer:
         print(f"No importer found for broker: {broker}")
@@ -94,7 +98,9 @@ def validate_trades(trades: List[Dict], broker: str) -> tuple[List[Dict], List[D
     Returns:
         tuple: (valid_trades, invalid_trades_with_errors)
     """
-    from .importers import get_importer
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import get_importer
     
     importer = get_importer(broker)
     if not importer:
@@ -361,7 +367,7 @@ def main():
         sys.exit(0)
     
     if args.dry_run:
-        print("\n[DRY RUN] Would import {len(valid_trades)} trade(s)")
+        print(f"\n[DRY RUN] Would import {len(valid_trades)} trade(s)")
         sys.exit(0)
     
     # Create trade files
