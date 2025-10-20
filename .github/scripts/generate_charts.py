@@ -2,16 +2,23 @@
 """
 Generate Charts Script
 Generates equity curve data in Chart.js compatible JSON format
-and creates a static chart image using matplotlib
+and creates a static chart image using matplotlib (if available)
 """
 
 import json
 import os
 from datetime import datetime
-import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+
+# Try to import matplotlib, but don't fail if it's not available
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Use non-interactive backend
+    import matplotlib.pyplot as plt
+    import matplotlib.dates as mdates
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    print("Note: matplotlib not available, skipping static chart generation")
 
 
 def load_trades_index():
@@ -97,6 +104,10 @@ def generate_static_chart(trades, output_path='index.directory/assets/charts/equ
         trades (list): List of trade dictionaries
         output_path (str): Output file path for the chart
     """
+    if not MATPLOTLIB_AVAILABLE:
+        print("Skipping static chart generation (matplotlib not available)")
+        return
+        
     if not trades:
         print("No trades to chart")
         return
@@ -182,6 +193,10 @@ def generate_trade_distribution_chart(trades, output_path='index.directory/asset
         trades (list): List of trade dictionaries
         output_path (str): Output file path for the chart
     """
+    if not MATPLOTLIB_AVAILABLE:
+        print("Skipping trade distribution chart generation (matplotlib not available)")
+        return
+        
     if not trades:
         return
     
@@ -238,6 +253,174 @@ def generate_trade_distribution_chart(trades, output_path='index.directory/asset
     print(f"Distribution chart saved to {output_path}")
 
 
+def generate_trade_distribution_data(trades):
+    """
+    Generate trade distribution data (wins vs losses) in Chart.js format
+    
+    Args:
+        trades (list): List of trade dictionaries
+        
+    Returns:
+        dict: Chart.js compatible data structure
+    """
+    if not trades:
+        return {
+            'labels': [],
+            'datasets': [{
+                'label': 'P&L',
+                'data': [],
+                'backgroundColor': []
+            }]
+        }
+    
+    # Sort trades by exit date
+    sorted_trades = sorted(trades, key=lambda t: t.get('exit_date', t.get('entry_date', '')))
+    
+    # Get trade numbers and P&L values
+    labels = []
+    pnls = []
+    colors = []
+    
+    for i, trade in enumerate(sorted_trades, 1):
+        pnl = trade.get('pnl_usd', 0)
+        trade_num = trade.get('trade_number', i)
+        
+        labels.append(f"Trade #{trade_num}")
+        pnls.append(round(pnl, 2))
+        colors.append('#00ff88' if pnl >= 0 else '#ff4757')
+    
+    return {
+        'labels': labels,
+        'datasets': [{
+            'label': 'P&L ($)',
+            'data': pnls,
+            'backgroundColor': colors,
+            'borderColor': colors,
+            'borderWidth': 2
+        }]
+    }
+
+
+def generate_performance_by_day_data(trades):
+    """
+    Generate performance by day of week data in Chart.js format
+    
+    Args:
+        trades (list): List of trade dictionaries
+        
+    Returns:
+        dict: Chart.js compatible data structure
+    """
+    if not trades:
+        return {
+            'labels': [],
+            'datasets': [{
+                'label': 'Average P&L',
+                'data': [],
+                'backgroundColor': []
+            }]
+        }
+    
+    # Initialize day statistics
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    day_stats = {day: {'total_pnl': 0, 'count': 0} for day in days}
+    
+    # Aggregate by day of week
+    for trade in trades:
+        exit_date_str = trade.get('exit_date', trade.get('entry_date', ''))
+        try:
+            date_obj = datetime.fromisoformat(str(exit_date_str))
+            day_name = date_obj.strftime('%A')
+            pnl = trade.get('pnl_usd', 0)
+            
+            day_stats[day_name]['total_pnl'] += pnl
+            day_stats[day_name]['count'] += 1
+        except (ValueError, TypeError):
+            continue
+    
+    # Calculate averages
+    labels = []
+    avg_pnls = []
+    colors = []
+    
+    for day in days:
+        if day_stats[day]['count'] > 0:
+            labels.append(day)
+            avg_pnl = day_stats[day]['total_pnl'] / day_stats[day]['count']
+            avg_pnls.append(round(avg_pnl, 2))
+            colors.append('#00ff88' if avg_pnl >= 0 else '#ff4757')
+    
+    return {
+        'labels': labels,
+        'datasets': [{
+            'label': 'Average P&L ($)',
+            'data': avg_pnls,
+            'backgroundColor': colors,
+            'borderColor': colors,
+            'borderWidth': 2
+        }]
+    }
+
+
+def generate_ticker_performance_data(trades):
+    """
+    Generate performance by ticker data in Chart.js format
+    
+    Args:
+        trades (list): List of trade dictionaries
+        
+    Returns:
+        dict: Chart.js compatible data structure
+    """
+    if not trades:
+        return {
+            'labels': [],
+            'datasets': [{
+                'label': 'Total P&L',
+                'data': [],
+                'backgroundColor': []
+            }]
+        }
+    
+    # Aggregate by ticker
+    ticker_stats = {}
+    
+    for trade in trades:
+        ticker = trade.get('ticker', 'UNKNOWN')
+        pnl = trade.get('pnl_usd', 0)
+        
+        if ticker not in ticker_stats:
+            ticker_stats[ticker] = {'total_pnl': 0, 'count': 0}
+        
+        ticker_stats[ticker]['total_pnl'] += pnl
+        ticker_stats[ticker]['count'] += 1
+    
+    # Sort by total P&L (descending)
+    sorted_tickers = sorted(ticker_stats.items(), key=lambda x: x[1]['total_pnl'], reverse=True)
+    
+    # Prepare data
+    labels = []
+    total_pnls = []
+    colors = []
+    
+    for ticker, stats in sorted_tickers[:20]:  # Top 20 tickers
+        labels.append(ticker)
+        total_pnl = stats['total_pnl']
+        total_pnls.append(round(total_pnl, 2))
+        colors.append('#00ff88' if total_pnl >= 0 else '#ff4757')
+    
+    return {
+        'labels': labels,
+        'datasets': [{
+            'label': 'Total P&L ($)',
+            'data': total_pnls,
+            'backgroundColor': colors,
+            'borderColor': colors,
+            'borderWidth': 2
+        }]
+    }
+
+
 def main():
     """Main execution function"""
     print("Generating charts...")
@@ -254,16 +437,38 @@ def main():
     
     print(f"Processing {len(trades)} trades...")
     
-    # Generate Chart.js data
-    chartjs_data = generate_equity_curve_data(trades)
-    
-    # Save Chart.js data
+    # Ensure output directory exists
     os.makedirs('index.directory/assets/charts', exist_ok=True)
-    with open('index.directory/assets/charts/equity-curve-data.json', 'w', encoding='utf-8') as f:
-        json.dump(chartjs_data, f, indent=2)
-    print("Chart.js data saved to index.directory/assets/charts/equity-curve-data.json")
     
-    # Generate static charts
+    # Generate all Chart.js data files
+    print("Generating Chart.js data files...")
+    
+    # 1. Equity Curve
+    equity_data = generate_equity_curve_data(trades)
+    with open('index.directory/assets/charts/equity-curve-data.json', 'w', encoding='utf-8') as f:
+        json.dump(equity_data, f, indent=2)
+    print("  ✓ Equity curve data saved")
+    
+    # 2. Trade Distribution
+    distribution_data = generate_trade_distribution_data(trades)
+    with open('index.directory/assets/charts/trade-distribution-data.json', 'w', encoding='utf-8') as f:
+        json.dump(distribution_data, f, indent=2)
+    print("  ✓ Trade distribution data saved")
+    
+    # 3. Performance by Day
+    day_data = generate_performance_by_day_data(trades)
+    with open('index.directory/assets/charts/performance-by-day-data.json', 'w', encoding='utf-8') as f:
+        json.dump(day_data, f, indent=2)
+    print("  ✓ Performance by day data saved")
+    
+    # 4. Ticker Performance
+    ticker_data = generate_ticker_performance_data(trades)
+    with open('index.directory/assets/charts/ticker-performance-data.json', 'w', encoding='utf-8') as f:
+        json.dump(ticker_data, f, indent=2)
+    print("  ✓ Ticker performance data saved")
+    
+    # Generate static charts (PNG images)
+    print("\nGenerating static chart images...")
     try:
         generate_static_chart(trades)
         generate_trade_distribution_chart(trades)

@@ -1,0 +1,12 @@
+{
+  "labels": [],
+  "datasets": [
+    {
+      "label": "Average P&L ($)",
+      "data": [],
+      "backgroundColor": [],
+      "borderColor": [],
+      "borderWidth": 2
+    }
+  ]
+}
