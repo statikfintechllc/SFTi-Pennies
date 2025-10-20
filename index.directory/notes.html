@@ -351,14 +351,7 @@
       lightbox = GLightbox({ selector: '.glightbox' });
     }
 
-    const navToggle = document.querySelector('.nav-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    if (navToggle && navMenu) {
-      navToggle.addEventListener('click', () => {
-        navToggle.classList.toggle('active');
-        navMenu.classList.toggle('active');
-      });
-    }
+    // Navigation handlers moved to app.js
 
     document.getElementById('close-note').addEventListener('click', closeNote);
     document.getElementById('note-modal').addEventListener('click', e => {
@@ -366,5 +359,8 @@
     });
   });
 </script>
+
+<!-- Navigation dropdown handlers -->
+<script src="assets/js/app.js"></script>
 </body>
 </html>
