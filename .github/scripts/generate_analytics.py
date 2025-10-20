@@ -5,8 +5,6 @@ Computes advanced analytics from trades data including expectancy, streaks,
 per-tag aggregates, drawdown series, and profit factors.
 
 Output: analytics-data.json
-
-TODO: Implement full analytics calculations
 """
 
 import json
@@ -198,13 +196,13 @@ def aggregate_by_tag(trades: List[Dict], tag_field: str) -> Dict:
     Returns:
         Dict: {tag_value: {stats...}, ...}
     """
-    # TODO: Implement once tags are added to trade data model
-    # For now, use 'strategy' field if available
-    
     aggregates = {}
     
     for trade in trades:
-        tag_value = trade.get(tag_field, 'Unknown')
+        # Get tag value, default to 'Unclassified' if not present
+        tag_value = trade.get(tag_field)
+        if not tag_value or tag_value == '':
+            tag_value = 'Unclassified'
         
         if tag_value not in aggregates:
             aggregates[tag_value] = {
@@ -280,9 +278,8 @@ def main():
         
         # Aggregate by tags
         by_strategy = aggregate_by_tag(sorted_trades, 'strategy')
-        # TODO: Add more tag aggregations when tag fields are implemented
-        # by_setup = aggregate_by_tag(sorted_trades, 'setup')
-        # by_session = aggregate_by_tag(sorted_trades, 'session')
+        by_setup = aggregate_by_tag(sorted_trades, 'setup')
+        by_session = aggregate_by_tag(sorted_trades, 'session')
         
         analytics = {
             'expectancy': expectancy,
@@ -292,8 +289,8 @@ def main():
             'max_drawdown': max_drawdown,
             'kelly_criterion': kelly,
             'by_strategy': by_strategy,
-            'by_setup': {},  # TODO: Implement when setup tags added
-            'by_session': {},  # TODO: Implement when session tags added
+            'by_setup': by_setup,
+            'by_session': by_session,
             'drawdown_series': drawdown_series,
             'generated_at': datetime.now().isoformat()
         }

@@ -21,7 +21,6 @@ class SchwabImporter(BaseImporter):
     - TD Ameritrade legacy formats
     - Combined Schwab/TDA CSV
     
-    TODO: Implement full Schwab CSV parsing logic
     Reference: Schwab > Accounts > History > Export
     """
     
@@ -37,8 +36,6 @@ class SchwabImporter(BaseImporter):
         Schwab CSVs typically have headers like:
         - "Date,Action,Symbol,Description,Quantity,Price,Fees & Comm,Amount"
         - Or TDA specific headers
-        
-        TODO: Implement detection logic
         """
         lines = csv_content.strip().split('\n')
         if not lines:
@@ -60,7 +57,6 @@ class SchwabImporter(BaseImporter):
         matches = sum(1 for indicator in schwab_indicators if indicator in header)
         tda_matches = sum(1 for indicator in tda_indicators if indicator in header)
         
-        # TODO: Refine detection logic
         return matches >= 4 or tda_matches >= 4
     
     def parse_csv(self, csv_content: str) -> List[Dict]:

@@ -1,8 +1,7 @@
 /**
  * Analytics Page JavaScript
- * Loads analytics data and renders advanced charts and metrics
- * 
- * TODO: Implement full analytics visualization with real data from analytics-data.json
+ * Loads analytics data from analytics-data.json and renders advanced charts and metrics
+ * Falls back to mock data if analytics-data.json is not available
  */
 
 // State
@@ -28,9 +27,20 @@ let drawdownChart = null;
  */
 async function initAnalytics() {
   try {
-    // TODO: Load analytics-data.json
-    // For now, use mock data
-    analyticsData = getMockAnalyticsData();
+    // Load analytics-data.json
+    try {
+      const response = await fetch('assets/charts/analytics-data.json');
+      if (response.ok) {
+        analyticsData = await response.json();
+        console.log('Loaded analytics data from file');
+      } else {
+        console.warn('Analytics data not found, using mock data');
+        analyticsData = getMockAnalyticsData();
+      }
+    } catch (fetchError) {
+      console.warn('Error fetching analytics data, using mock data:', fetchError);
+      analyticsData = getMockAnalyticsData();
+    }
     
     // Update metrics
     updateMetrics(analyticsData);
@@ -307,8 +317,7 @@ function renderStrategyTable(data) {
 }
 
 /**
- * Get mock analytics data
- * TODO: Replace with actual data from analytics-data.json
+ * Get mock analytics data (fallback when analytics-data.json is not available)
  */
 function getMockAnalyticsData() {
   return {

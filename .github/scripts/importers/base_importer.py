@@ -98,7 +98,7 @@ class BaseImporter(ABC):
         return {
             'broker_field_1': 'standard_field_1',
             'broker_field_2': 'standard_field_2',
-            # TODO: Implement in subclass
+            # Implement in subclass for specific broker mappings
         }
     
     def _validate_required_fields(self, trade: Dict) -> tuple[bool, List[str]]:

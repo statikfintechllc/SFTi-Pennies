@@ -235,20 +235,41 @@
         </div>
       </div>
       
-      <!-- TODO Notice -->
-      <div class="import-card" style="background: var(--bg-tertiary); border: 2px dashed var(--accent-yellow);">
-        <h3 style="margin-bottom: 1rem; color: var(--accent-yellow); display: flex; align-items: center; gap: 0.5rem;">
+      <!-- Implementation Status -->
+      <div class="import-card" style="background: var(--bg-tertiary); border: 2px solid var(--accent-green);">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.5rem;">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          TODO: Full Implementation Required
+          CSV Import Implementation Status
         </h3>
         
-        <p style="color: var(--text-secondary); margin: 0;">
-          This page is scaffolded with UI placeholders. The actual CSV parsing logic, broker detection, 
-          and import workflow need to be implemented in the Python importers and corresponding JavaScript.
-          See <code>import.js</code> and <code>.github/scripts/importers/</code> for implementation TODOs.
-        </p>
+        <div style="color: var(--text-secondary);">
+          <p style="margin-bottom: 0.75rem;">
+            <strong>✓ Frontend UI:</strong> Full CSV upload, broker detection, and preview interface
+          </p>
+          
+          <p style="margin-bottom: 0.75rem;">
+            <strong>✓ Backend Importers:</strong> Broker-specific parsers implemented in <code>.github/scripts/importers/</code>
+          </p>
+          <ul style="margin: 0 0 0.75rem 1.5rem; padding: 0;">
+            <li><strong>IBKR:</strong> Interactive Brokers Flex Query and Activity Statement support</li>
+            <li><strong>Schwab:</strong> Schwab/TD Ameritrade transaction exports</li>
+            <li><strong>Robinhood:</strong> Robinhood activity history</li>
+            <li><strong>Webull:</strong> Webull trade history</li>
+          </ul>
+          
+          <p style="margin-bottom: 0.75rem;">
+            <strong>✓ Import Pipeline:</strong> <code>import_csv.py</code> with auto-detection, validation, and index updates
+          </p>
+          
+          <p style="margin-bottom: 0;">
+            <strong>Usage:</strong> Upload CSV via this UI for preview, or use the command-line tool:
+            <code style="display: block; margin-top: 0.5rem; padding: 0.5rem; background: var(--bg-primary); border-radius: 4px;">
+              python .github/scripts/import_csv.py path/to/broker-export.csv
+            </code>
+          </p>
+        </div>
       </div>
     </section>
   </main>
