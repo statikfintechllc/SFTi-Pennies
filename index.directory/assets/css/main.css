@@ -937,3 +937,17 @@ code {
     color: black;
   }
 }
+
+/* Chart Container Styles */
+.chart-wrapper {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
+
+.chart-wrapper canvas {
+  display: block;
+  box-sizing: border-box;
+  height: 100% !important;
+  width: 100% !important;
+}

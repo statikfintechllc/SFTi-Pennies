@@ -9,33 +9,51 @@
  * - This code does NOT leak tokens - they are only stored client-side
  */
 
+// Debug flag - set to true to enable debug logging
+const AUTH_DEBUG = false;
+
 class GitHubAuth {
   constructor() {
     this.token = null;
     this.authMethod = null;
     this.username = null;
-    // Get repository name from the page URL or use default
+    
+    // Auto-detect owner and repo from GitHub Pages URL
     // This makes the code portable across different forks/deployments
-    this.repo = this.getRepoFromURL() || 'SFTi-Pennies';
-    this.owner = 'statikfintechllc';
+    const urlInfo = this.getRepoInfoFromURL();
+    this.owner = urlInfo.owner || 'statikfintechllc';
+    this.repo = urlInfo.repo || 'SFTi-Pennies';
+    
+    if (AUTH_DEBUG) {
+      console.log(`Auto-detected: Owner=${this.owner}, Repo=${this.repo}`);
+    }
     
     // Check for stored PAT
     this.checkStoredAuth();
   }
   
   /**
-   * Extract repository name from current URL
+   * Extract repository and owner information from current URL
    * Works with GitHub Pages URLs like: username.github.io/repo-name
-   * @returns {string|null} - Repository name or null
+   * @returns {Object} - { owner: string|null, repo: string|null }
    */
-  getRepoFromURL() {
+  getRepoInfoFromURL() {
+    const hostname = window.location.hostname;
     const pathSegments = window.location.pathname.split('/').filter(Boolean);
-    // For GitHub Pages, the first path segment is usually the repo name
-    // unless it's a custom domain
-    if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-      return pathSegments[0];
+    
+    // GitHub Pages format: username.github.io/repo-name
+    if (hostname.includes('github.io')) {
+      // Extract username from subdomain (e.g., username.github.io)
+      const owner = hostname.split('.')[0];
+      
+      // Extract repo from first path segment
+      const repo = pathSegments.length > 0 ? pathSegments[0] : null;
+      
+      return { owner, repo };
     }
-    return null;
+    
+    // Custom domain or local development
+    return { owner: null, repo: null };
   }
   
   /**
@@ -46,7 +64,9 @@ class GitHubAuth {
     if (storedPAT) {
       this.token = storedPAT;
       this.authMethod = 'pat';
-      console.log('Using stored PAT for authentication');
+      if (AUTH_DEBUG) {
+        console.log('Using stored PAT for authentication');
+      }
     }
   }
   
@@ -81,7 +101,9 @@ class GitHubAuth {
     
     // Store in localStorage (user should be aware of the risks)
     localStorage.setItem('github_pat', pat);
-    console.log('PAT stored in localStorage. Authentication method: PAT');
+    if (AUTH_DEBUG) {
+      console.log('PAT stored in localStorage. Authentication method: PAT');
+    }
   }
   
   /**
@@ -92,7 +114,9 @@ class GitHubAuth {
     this.authMethod = null;
     this.username = null;
     localStorage.removeItem('github_pat');
-    console.log('Authentication cleared');
+    if (AUTH_DEBUG) {
+      console.log('Authentication cleared');
+    }
   }
   
   /**
@@ -139,7 +163,9 @@ class GitHubAuth {
       
       const user = await response.json();
       this.username = user.login;
-      console.log(`Authenticated as: ${this.username}`);
+      if (AUTH_DEBUG) {
+        console.log(`Authenticated as: ${this.username}`);
+      }
       return user;
     } catch (error) {
       console.error('Authentication verification failed:', error);
