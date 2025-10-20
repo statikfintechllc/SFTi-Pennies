@@ -67,6 +67,24 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
   - JSON indices
   - GitHub Actions integration
 
+### 📊 Import & Analytics
+
+**CSV Import System:**
+- [**importing.md**](./importing.md) - Complete CSV import guide
+  - Supported brokers (IBKR, Schwab, Robinhood, Webull)
+  - Export instructions
+  - Import methods (Web, CLI, Workflow)
+  - Field mapping
+  - Troubleshooting
+
+**Analytics Engine:**
+- [**ANALYTICS.md**](./ANALYTICS.md) - Analytics system documentation
+  - Core metrics (Expectancy, Profit Factor, Kelly Criterion)
+  - Win/Loss streaks
+  - Maximum drawdown
+  - Tag aggregations
+  - Visualization system
+
 ### 🔧 Troubleshooting & Debugging
 
 **Debug Guides:**
@@ -109,6 +127,8 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 - **Get started quickly** → [QUICKSTART.md](./QUICKSTART.md)
 - **Understand the architecture** → [README-DEV.md](./README-DEV.md) + [STRUCTURE.md](./STRUCTURE.md)
 - **Learn about the automation** → [TRADE_PIPELINE.md](./TRADE_PIPELINE.md)
+- **Import trades from broker** → [importing.md](./importing.md)
+- **Understand analytics metrics** → [ANALYTICS.md](./ANALYTICS.md)
 - **Fix a modal issue** → [MODAL_DEBUG_GUIDE.md](./MODAL_DEBUG_GUIDE.md)
 - **Debug path problems** → [PATH_RESOLUTION_STRATEGY.md](./PATH_RESOLUTION_STRATEGY.md)
 - **Test after deployment** → [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
@@ -145,6 +165,10 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 │   ├── IMPLEMENTATION.md                  # System implementation
 │   └── BOOKS-NOTES-IMPLEMENTATION.md      # Books/Notes features
 │
+├── 📊 Import & Analytics
+│   ├── importing.md                       # CSV import guide
+│   └── ANALYTICS.md                       # Analytics documentation
+│
 └── 🔧 Troubleshooting
     ├── BUG_FIX_SUMMARY.md                 # 404 error fixes
     ├── MODAL_DEBUG_GUIDE.md               # Modal debugging
@@ -178,6 +202,17 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 - Syntax highlighting (Highlight.js)
 - JSON indices generation
 - Modal viewers
+
+### Import & Analytics
+- CSV import from 4 major brokers (IBKR, Schwab, Robinhood, Webull)
+- Broker auto-detection
+- Entry/exit transaction matching (FIFO)
+- Trade validation and duplicate detection
+- Advanced analytics engine (Expectancy, Profit Factor, Kelly Criterion)
+- Win/Loss streak tracking
+- Maximum drawdown calculation
+- Strategy/setup/session aggregations
+- Interactive Chart.js visualizations
 
 ### UI/UX
 - Dark terminal theme
