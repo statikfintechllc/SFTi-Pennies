@@ -9,6 +9,9 @@
  * - This code does NOT leak tokens - they are only stored client-side
  */
 
+// Debug flag - set to true to enable debug logging
+const AUTH_DEBUG = false;
+
 class GitHubAuth {
   constructor() {
     this.token = null;
@@ -21,7 +24,9 @@ class GitHubAuth {
     this.owner = urlInfo.owner || 'statikfintechllc';
     this.repo = urlInfo.repo || 'SFTi-Pennies';
     
-    console.log(`Auto-detected: Owner=${this.owner}, Repo=${this.repo}`);
+    if (AUTH_DEBUG) {
+      console.log(`Auto-detected: Owner=${this.owner}, Repo=${this.repo}`);
+    }
     
     // Check for stored PAT
     this.checkStoredAuth();
@@ -59,7 +64,9 @@ class GitHubAuth {
     if (storedPAT) {
       this.token = storedPAT;
       this.authMethod = 'pat';
-      console.log('Using stored PAT for authentication');
+      if (AUTH_DEBUG) {
+        console.log('Using stored PAT for authentication');
+      }
     }
   }
   
@@ -94,7 +101,9 @@ class GitHubAuth {
     
     // Store in localStorage (user should be aware of the risks)
     localStorage.setItem('github_pat', pat);
-    console.log('PAT stored in localStorage. Authentication method: PAT');
+    if (AUTH_DEBUG) {
+      console.log('PAT stored in localStorage. Authentication method: PAT');
+    }
   }
   
   /**
@@ -105,7 +114,9 @@ class GitHubAuth {
     this.authMethod = null;
     this.username = null;
     localStorage.removeItem('github_pat');
-    console.log('Authentication cleared');
+    if (AUTH_DEBUG) {
+      console.log('Authentication cleared');
+    }
   }
   
   /**
@@ -152,7 +163,9 @@ class GitHubAuth {
       
       const user = await response.json();
       this.username = user.login;
-      console.log(`Authenticated as: ${this.username}`);
+      if (AUTH_DEBUG) {
+        console.log(`Authenticated as: ${this.username}`);
+      }
       return user;
     } catch (error) {
       console.error('Authentication verification failed:', error);
