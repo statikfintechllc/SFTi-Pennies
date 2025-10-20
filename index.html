@@ -221,33 +221,50 @@
       </div>
     </section>
     
-    <!-- Equity Curve (Placeholder for  Chart.js) -->
+    <!-- Trading Performance Charts -->
     <section class="trades-section">
-      <h2>Equity Chart</h2>
-      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; text-align: center;">
-        <p style="color: var(--text-secondary);">Equity curve will be displayed here once trades are added and the GitHub Actions workflow generates the chart data.</p>
-        <canvas id="equity-curve" style="max-width: 100%; height: 400px;"></canvas>
+      <div class="section-header">
+        <h2>Trading Performance Charts</h2>
+        <select id="chart-selector" class="btn btn-secondary" style="min-width: 200px; padding: 0.5rem 1rem;">
+          <option value="equity-curve">Equity Curve</option>
+          <option value="trade-distribution">Trade Distribution</option>
+          <option value="performance-by-day">Performance By Day</option>
+          <option value="ticker-performance">Ticker Performance</option>
+        </select>
       </div>
-    </section>
-    <section class="trades-section">
-      <h2>Distribution Chart</h2>
-      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; text-align: center;">
-        <p style="color: var(--text-secondary);">You're trade distribution will be displayed here once trades are added and the GitHub Actions workflow generates the chart data.</p>
-        <canvas id="equity-curve" style="max-width: 100%; height: 400px;"></canvas>
-      </div>
-    </section>
-    <section class="trades-section">
-      <h2>Performance By Day Chart</h2>
-      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; text-align: center;">
-        <p style="color: var(--text-secondary);">Your're performance by day will be displayed here once trades are added and the GitHub Actions workflow generates the chart data.</p>
-        <canvas id="equity-curve" style="max-width: 100%; height: 400px;"></canvas>
-      </div>
-    </section>
-    <section class="trades-section">
-      <h2>Ticker Performance Chart</h2>
-      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem; text-align: center;">
-        <p style="color: var(--text-secondary);">You're performance by ticker will display here once enough data is collected.</p>
-        <canvas id="ticker-performance" style="max-width: 100%; height: 400px;"></canvas>
+      
+      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem;">
+        <!-- Equity Curve Chart -->
+        <div id="equity-curve-container" class="chart-container" style="display: block;">
+          <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
+            Equity curve shows your cumulative profit/loss over time
+          </p>
+          <canvas id="equity-curve-chart" style="max-width: 100%; height: 400px;"></canvas>
+        </div>
+        
+        <!-- Trade Distribution Chart -->
+        <div id="trade-distribution-container" class="chart-container" style="display: none;">
+          <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
+            Trade distribution shows your win/loss breakdown
+          </p>
+          <canvas id="trade-distribution-chart" style="max-width: 100%; height: 400px;"></canvas>
+        </div>
+        
+        <!-- Performance By Day Chart -->
+        <div id="performance-by-day-container" class="chart-container" style="display: none;">
+          <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
+            Performance by day of the week shows which days you trade best
+          </p>
+          <canvas id="performance-by-day-chart" style="max-width: 100%; height: 400px;"></canvas>
+        </div>
+        
+        <!-- Ticker Performance Chart -->
+        <div id="ticker-performance-container" class="chart-container" style="display: none;">
+          <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
+            Ticker performance shows your P&L by stock symbol
+          </p>
+          <canvas id="ticker-performance-chart" style="max-width: 100%; height: 400px;"></canvas>
+        </div>
       </div>
     </section>
   </main>
@@ -267,81 +284,11 @@
   <script src="index.directory/assets/js/auth.js"></script>
   <script src="index.directory/assets/js/app.js"></script>
   
-  <!-- Chart.js for equity curve -->
+  <!-- Chart.js for all charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
-  <!-- Initialize equity curve chart -->
-  <script>
-    // Get base path dynamically to support different deployments
-    const getBasePath = () => {
-      const pathSegments = window.location.pathname.split('/').filter(Boolean);
-      if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-        return '/' + pathSegments[0];
-      }
-      return '';
-    };
-    const basePath = getBasePath();
-    
-    // Load and display equity curve
-    fetch(`${basePath}/index.directory/assets/charts/equity-curve-data.json`)
-      .then(response => response.json())
-      .then(data => {
-        const ctx = document.getElementById('equity-curve');
-        if (ctx) {
-          new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: true,
-                  labels: {
-                    color: '#e4e4e7',
-                    font: {
-                      family: 'JetBrains Mono',
-                      size: 12
-                    }
-                  }
-                },
-                title: {
-                  display: false
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: {
-                    color: 'rgba(161, 161, 170, 0.2)'
-                  },
-                  ticks: {
-                    color: '#e4e4e7',
-                    font: {
-                      family: 'JetBrains Mono'
-                    }
-                  }
-                },
-                x: {
-                  grid: {
-                    color: 'rgba(161, 161, 170, 0.2)'
-                  },
-                  ticks: {
-                    color: '#e4e4e7',
-                    font: {
-                      family: 'JetBrains Mono'
-                    }
-                  }
-                }
-              }
-            }
-          });
-        }
-      })
-      .catch(error => {
-        console.log('Equity curve data not yet available:', error);
-      });
-  </script>
+  <!-- Initialize all charts -->
+  <script src="index.directory/assets/js/charts.js"></script>
   
   <!-- GLightbox for image lightbox -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
