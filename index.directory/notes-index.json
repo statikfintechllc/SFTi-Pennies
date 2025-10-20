@@ -7,7 +7,17 @@
       "excerpt": "**The 7-Step Penny-Stocking Framework** **Step #1**: The Pre-Pump or Promotion",
       "thumbnail": "assets/sfti.notez.assets/7.step.framework.assets/Step.1.png",
       "size": 8462,
-      "modified": "2025-10-19T14:44:39.043236",
+      "modified": "2025-10-20T14:44:13.292072",
+      "tags": []
+    },
+    {
+      "title": "Dip n Rip",
+      "file": "index.directory/SFTi.Notez/Dip.n.Rip.md",
+      "filename": "Dip.n.Rip.md",
+      "excerpt": "",
+      "thumbnail": null,
+      "size": 0,
+      "modified": "2025-10-20T14:44:13.292072",
       "tags": []
     },
     {
@@ -17,7 +27,7 @@
       "excerpt": "**GSTRWT** Grind.Scan.Trace.Research.Watch.Trade Build a watch list Daily",
       "thumbnail": null,
       "size": 1495,
-      "modified": "2025-10-19T14:44:39.044186",
+      "modified": "2025-10-20T14:44:13.293604",
       "tags": []
     },
     {
@@ -27,21 +37,21 @@
       "excerpt": "**Penny Indicators** *Here are the top 5 most commonly used technical indicators for penny stocks*:",
       "thumbnail": null,
       "size": 11001,
-      "modified": "2025-10-19T14:44:39.044186",
+      "modified": "2025-10-20T14:44:13.293604",
       "tags": []
     },
     {
       "title": "Trade Plan",
       "file": "index.directory/SFTi.Notez/Trade.Plan.md",
       "filename": "Trade.Plan.md",
-      "excerpt": "**Trading Plan** 🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫 🚫APPLE,NVDA,TSLA,MSFT,GOOG🚫",
-      "thumbnail": "assets/sfti.notez.assets/trade.plan.assets/Trade_Plan.png",
-      "size": 713,
-      "modified": "2025-10-19T14:44:39.044186",
+      "excerpt": "**THE TARGET**: - The *Dip n Rip*(1-2 tight red ticks)",
+      "thumbnail": "assets/sfti.notez.assets/trade.plan.assets/Penny_Plan.png",
+      "size": 861,
+      "modified": "2025-10-20T14:44:13.293604",
       "tags": []
     }
   ],
-  "total_count": 4,
-  "generated_at": "2025-10-19T14:46:15.501291",
+  "total_count": 5,
+  "generated_at": "2025-10-20T14:44:46.147230",
   "version": "1.0"
 }
