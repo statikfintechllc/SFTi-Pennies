@@ -14,28 +14,41 @@ class GitHubAuth {
     this.token = null;
     this.authMethod = null;
     this.username = null;
-    // Get repository name from the page URL or use default
+    
+    // Auto-detect owner and repo from GitHub Pages URL
     // This makes the code portable across different forks/deployments
-    this.repo = this.getRepoFromURL() || 'SFTi-Pennies';
-    this.owner = 'statikfintechllc';
+    const urlInfo = this.getRepoInfoFromURL();
+    this.owner = urlInfo.owner || 'statikfintechllc';
+    this.repo = urlInfo.repo || 'SFTi-Pennies';
+    
+    console.log(`Auto-detected: Owner=${this.owner}, Repo=${this.repo}`);
     
     // Check for stored PAT
     this.checkStoredAuth();
   }
   
   /**
-   * Extract repository name from current URL
+   * Extract repository and owner information from current URL
    * Works with GitHub Pages URLs like: username.github.io/repo-name
-   * @returns {string|null} - Repository name or null
+   * @returns {Object} - { owner: string|null, repo: string|null }
    */
-  getRepoFromURL() {
+  getRepoInfoFromURL() {
+    const hostname = window.location.hostname;
     const pathSegments = window.location.pathname.split('/').filter(Boolean);
-    // For GitHub Pages, the first path segment is usually the repo name
-    // unless it's a custom domain
-    if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-      return pathSegments[0];
+    
+    // GitHub Pages format: username.github.io/repo-name
+    if (hostname.includes('github.io')) {
+      // Extract username from subdomain (e.g., username.github.io)
+      const owner = hostname.split('.')[0];
+      
+      // Extract repo from first path segment
+      const repo = pathSegments.length > 0 ? pathSegments[0] : null;
+      
+      return { owner, repo };
     }
-    return null;
+    
+    // Custom domain or local development
+    return { owner: null, repo: null };
   }
   
   /**
