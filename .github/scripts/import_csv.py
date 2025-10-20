@@ -31,16 +31,15 @@ def detect_broker(csv_content: str) -> str:
         
     Returns:
         str: Detected broker name or None
-        
-    TODO: Implement broker detection by trying each importer's detect_format()
     """
-    # TODO: Import and try each importer
-    # from .importers import list_brokers, get_importer
-    # 
-    # for broker_name in list_brokers():
-    #     importer = get_importer(broker_name)
-    #     if importer.detect_format(csv_content):
-    #         return broker_name
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import list_brokers, get_importer
+    
+    for broker_name in list_brokers():
+        importer = get_importer(broker_name)
+        if importer and importer.detect_format(csv_content):
+            return broker_name
     
     return None
 
@@ -55,8 +54,6 @@ def parse_csv_file(csv_path: str, broker: str = None) -> List[Dict]:
         
     Returns:
         List[Dict]: List of parsed trades
-        
-    TODO: Implement full CSV parsing with broker detection
     """
     try:
         with open(csv_path, 'r', encoding='utf-8') as f:
@@ -73,18 +70,21 @@ def parse_csv_file(csv_path: str, broker: str = None) -> List[Dict]:
             return []
         print(f"Detected broker: {broker}")
     
-    # TODO: Get importer and parse
-    # from .importers import get_importer
-    # importer = get_importer(broker)
-    # if not importer:
-    #     print(f"No importer found for broker: {broker}")
-    #     return []
-    # 
-    # trades = importer.parse_csv(csv_content)
-    # return trades
+    # Get importer and parse
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import get_importer
+    importer = get_importer(broker)
+    if not importer:
+        print(f"No importer found for broker: {broker}")
+        return []
     
-    print("TODO: Implement CSV parsing")
-    return []
+    try:
+        trades = importer.parse_csv(csv_content)
+        return trades
+    except Exception as e:
+        print(f"Error parsing CSV: {e}")
+        return []
 
 
 def validate_trades(trades: List[Dict], broker: str) -> tuple[List[Dict], List[Dict]]:
@@ -97,15 +97,27 @@ def validate_trades(trades: List[Dict], broker: str) -> tuple[List[Dict], List[D
         
     Returns:
         tuple: (valid_trades, invalid_trades_with_errors)
-        
-    TODO: Implement validation
     """
-    # TODO: Use importer.validate_trade() for each trade
+    import sys
+    sys.path.insert(0, os.path.dirname(__file__))
+    from importers import get_importer
+    
+    importer = get_importer(broker)
+    if not importer:
+        # If no importer, return all as valid (basic validation)
+        return trades, []
+    
     valid = []
     invalid = []
     
-    # Placeholder
-    return trades, []
+    for trade in trades:
+        is_valid, errors = importer.validate_trade(trade)
+        if is_valid:
+            valid.append(trade)
+        else:
+            invalid.append((trade, errors))
+    
+    return valid, invalid
 
 
 def create_trade_markdown(trade: Dict, output_dir: str) -> str:
@@ -242,8 +254,6 @@ def update_trades_index(new_trades: List[Dict]):
     
     Args:
         new_trades (List[Dict]): List of new trades to add
-        
-    TODO: Implement index update with de-duplication
     """
     index_path = 'index.directory/trades-index.json'
     
@@ -258,11 +268,35 @@ def update_trades_index(new_trades: List[Dict]):
             'version': '1.0'
         }
     
-    # TODO: Merge new trades (check for duplicates by trade_number or date+ticker)
-    # TODO: Recalculate statistics
-    # TODO: Save updated index
+    existing_trades = index_data.get('trades', [])
     
-    print("TODO: Update trades index")
+    # Create a set of existing trade identifiers (date + ticker)
+    existing_ids = set()
+    for trade in existing_trades:
+        trade_id = f"{trade.get('entry_date', '')}_{trade.get('ticker', '')}"
+        existing_ids.add(trade_id)
+    
+    # Add new trades, checking for duplicates
+    added_count = 0
+    for trade in new_trades:
+        trade_id = f"{trade.get('entry_date', '')}_{trade.get('ticker', '')}"
+        if trade_id not in existing_ids:
+            existing_trades.append(trade)
+            existing_ids.add(trade_id)
+            added_count += 1
+        else:
+            print(f"  Skipping duplicate trade: {trade.get('ticker', '')} on {trade.get('entry_date', '')}")
+    
+    # Update index
+    index_data['trades'] = existing_trades
+    
+    # Save updated index
+    try:
+        with open(index_path, 'w', encoding='utf-8') as f:
+            json.dump(index_data, f, indent=2)
+        print(f"Updated trades index with {added_count} new trade(s)")
+    except Exception as e:
+        print(f"Error saving trades index: {e}")
 
 
 def main():
@@ -333,7 +367,7 @@ def main():
         sys.exit(0)
     
     if args.dry_run:
-        print("\n[DRY RUN] Would import {len(valid_trades)} trade(s)")
+        print(f"\n[DRY RUN] Would import {len(valid_trades)} trade(s)")
         sys.exit(0)
     
     # Create trade files

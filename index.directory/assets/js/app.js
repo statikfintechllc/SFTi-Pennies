@@ -98,6 +98,7 @@ class TradingJournal {
     const navMenu = document.querySelector('.nav-menu');
     
     if (navToggle && navMenu) {
+      // Toggle mobile menu
       navToggle.addEventListener('click', () => {
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
@@ -105,10 +106,48 @@ class TradingJournal {
       
       // Handle submenu toggles on mobile
       document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
-        item.addEventListener('click', (e) => {
+        const link = item.querySelector('.nav-link');
+        
+        if (link) {
+          link.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+              e.preventDefault();
+              e.stopPropagation();
+              
+              // Close other submenus
+              document.querySelectorAll('.nav-item.has-submenu').forEach(otherItem => {
+                if (otherItem !== item) {
+                  otherItem.classList.remove('active');
+                }
+              });
+              
+              // Toggle this submenu
+              item.classList.toggle('active');
+            }
+          });
+        }
+      });
+      
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
+          navToggle.classList.remove('active');
+          navMenu.classList.remove('active');
+          document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
+            item.classList.remove('active');
+          });
+        }
+      });
+      
+      // Close submenus when clicking on submenu items
+      document.querySelectorAll('.nav-submenu .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
           if (window.innerWidth <= 768) {
-            e.preventDefault();
-            item.classList.toggle('active');
+            navToggle.classList.remove('active');
+            navMenu.classList.remove('active');
+            document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
+              item.classList.remove('active');
+            });
           }
         });
       });

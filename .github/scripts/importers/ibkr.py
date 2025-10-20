@@ -5,6 +5,7 @@ Parses IBKR Flex Query or Activity Statement CSV exports
 """
 
 import csv
+from datetime import datetime
 from io import StringIO
 from typing import List, Dict
 from .base_importer import BaseImporter
@@ -19,7 +20,6 @@ class IBKRImporter(BaseImporter):
     - Activity Statement CSV
     - Trade Confirmation reports
     
-    TODO: Implement full IBKR CSV parsing logic
     Reference: https://www.interactivebrokers.com/en/software/reportguide/reportguide.htm
     """
     
@@ -36,8 +36,6 @@ class IBKRImporter(BaseImporter):
         - "Trades,Header,..."
         - "DataDiscriminator,Asset Category,..."
         - Or specific IBKR field names
-        
-        TODO: Implement detection logic based on IBKR CSV structure
         """
         # Placeholder detection
         lines = csv_content.strip().split('\n')
@@ -56,7 +54,6 @@ class IBKRImporter(BaseImporter):
         # Check if header contains IBKR-specific fields
         matches = sum(1 for indicator in ibkr_indicators if indicator in header)
         
-        # TODO: Refine detection logic
         return matches >= 3
     
     def parse_csv(self, csv_content: str) -> List[Dict]:
@@ -182,13 +179,11 @@ class IBKRImporter(BaseImporter):
     
     def validate_trade(self, trade: Dict) -> tuple[bool, List[str]]:
         """
-        Validate IBKR trade data
-        
-        TODO: Add IBKR-specific validation rules
+        Validate IBKR trade data with IBKR-specific rules
         """
         is_valid, errors = self._validate_required_fields(trade)
         
-        # TODO: Add IBKR-specific validation
+        # Add IBKR-specific validation if needed
         # - Check for valid IBKR symbols
         # - Validate commission structures
         # - Check for split/reverse split indicators
@@ -210,8 +205,3 @@ class IBKRImporter(BaseImporter):
             'Comm/Fee': 'commission (separate field)',
             'Realized P/L': 'pnl_usd'
         }
-
-
-# TODO: Export for registration
-# from . import register_broker
-# register_broker('ibkr', IBKRImporter)

@@ -182,21 +182,34 @@
         </div>
       </div>
       
-      <!-- TODO Notice -->
-      <div style="background: var(--bg-tertiary); border: 2px dashed var(--accent-yellow); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h3 style="margin-bottom: 1rem; color: var(--accent-yellow); display: flex; align-items: center; gap: 0.5rem;">
+      <!-- Implementation Status -->
+      <div style="background: var(--bg-tertiary); border: 2px solid var(--accent-green); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-green); display: flex; align-items: center; gap: 0.5rem;">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          TODO: Full Analytics Implementation Required
+          Analytics Implementation Status
         </h3>
         
-        <p style="color: var(--text-secondary); margin: 0;">
-          This page is scaffolded with UI placeholders. The analytics calculations need to be implemented in 
-          <code>generate_analytics.py</code>, which should compute expectancy, streaks, per-tag aggregates, 
-          drawdown series, and profit factors. The results should be saved to <code>analytics-data.json</code> 
-          and consumed by <code>analytics.js</code> for visualization.
-        </p>
+        <div style="color: var(--text-secondary);">
+          <p style="margin-bottom: 0.75rem;">
+            <strong>✓ Core Analytics Engine:</strong> Fully implemented in <code>generate_analytics.py</code>
+          </p>
+          <ul style="margin: 0 0 0.75rem 1.5rem; padding: 0;">
+            <li>Expectancy, profit factor, and Kelly criterion calculations</li>
+            <li>Win/loss streak tracking</li>
+            <li>Drawdown series computation</li>
+            <li>Strategy, setup, and session aggregations</li>
+          </ul>
+          
+          <p style="margin-bottom: 0.75rem;">
+            <strong>✓ Data Loading:</strong> <code>analytics.js</code> loads from <code>analytics-data.json</code>
+          </p>
+          
+          <p style="margin-bottom: 0;">
+            <strong>Note:</strong> Run <code>python .github/scripts/generate_analytics.py</code> to compute analytics from your trades and populate <code>analytics-data.json</code>. Mock data is displayed as fallback when the file is not available.
+          </p>
+        </div>
       </div>
     </section>
   </main>

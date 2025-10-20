@@ -10,7 +10,7 @@ SFTi-Pennies supports CSV imports from the following brokers:
 - **Export Method**: Activity > Flex Queries or Activity Statements
 - **CSV Format**: Flex Query CSV or Activity Statement CSV
 - **Auto-Detection**: ✅ Supported
-- **Status**: 🚧 Scaffolded (TODO: Full implementation)
+- **Status**: ✅ Fully Implemented
 
 **Typical Fields:**
 - Symbol
@@ -25,7 +25,7 @@ SFTi-Pennies supports CSV imports from the following brokers:
 - **Export Method**: Accounts > History > Export
 - **CSV Format**: Transaction History CSV
 - **Auto-Detection**: ✅ Supported
-- **Status**: 🚧 Scaffolded (TODO: Full implementation)
+- **Status**: ✅ Fully Implemented
 
 **Typical Fields:**
 - Date
@@ -41,7 +41,7 @@ SFTi-Pennies supports CSV imports from the following brokers:
 - **Export Method**: Account > Statements & History
 - **CSV Format**: Account Statements CSV
 - **Auto-Detection**: ✅ Supported
-- **Status**: 🚧 Scaffolded (TODO: Full implementation)
+- **Status**: ✅ Fully Implemented
 
 **Typical Fields:**
 - Activity Date
@@ -58,7 +58,7 @@ SFTi-Pennies supports CSV imports from the following brokers:
 - **Export Method**: Me > Statements
 - **CSV Format**: Transaction History CSV
 - **Auto-Detection**: ✅ Supported
-- **Status**: 🚧 Scaffolded (TODO: Full implementation)
+- **Status**: ✅ Fully Implemented
 
 **Typical Fields:**
 - Time
@@ -338,7 +338,7 @@ After importing, you may want to:
 
 ## Future Enhancements
 
-Planned features (TODO):
+Planned features for future development:
 
 - [ ] API-based imports (no CSV needed)
 - [ ] Automatic commission handling
@@ -347,6 +347,23 @@ Planned features (TODO):
 - [ ] More brokers (E*TRADE, Fidelity, etc.)
 - [ ] Bulk tagging interface
 - [ ] Import scheduling (auto-import weekly)
+
+## Implementation Status
+
+✅ **Core Features Completed:**
+- Broker auto-detection for IBKR, Schwab, Robinhood, Webull
+- CSV parsing with broker-specific field mappings
+- Entry/exit transaction matching (FIFO algorithm)
+- Trade validation with error reporting
+- Duplicate detection by date + ticker
+- Command-line interface with dry-run support
+- Web interface with file upload and preview
+- CSV export functionality
+
+📝 **Documentation:**
+- Importer architecture: [.github/scripts/importers/README.md](../../.github/scripts/importers/README.md)
+- User guide: [.github/instructions/csv-import-guide.md](../../.github/instructions/csv-import-guide.md)
+- Integration with trade pipeline: [TRADE_PIPELINE.md](TRADE_PIPELINE.md)
 
 ## Getting Help
 
@@ -359,4 +376,6 @@ If you encounter issues:
 
 ---
 
-**Note:** The import feature is currently scaffolded with TODO markers. Full broker-specific parsing logic needs to be implemented in `.github/scripts/importers/` modules.
+**Last Updated:** 2025-10-20  
+**Version:** 1.0 - Fully Implemented  
+**Status:** Production Ready

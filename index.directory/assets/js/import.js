@@ -2,7 +2,8 @@
  * Import Page JavaScript
  * Handles CSV upload, broker detection, preview, and import workflow
  * 
- * TODO: Implement full import workflow with backend integration
+ * Note: Backend CSV processing uses Python importers in .github/scripts/importers/
+ * This frontend provides UI for file upload, validation, and preview.
  */
 
 // State management
@@ -295,16 +296,45 @@ function handleDownloadMapping() {
     return;
   }
   
-  // TODO: Generate actual mapping based on broker
+  // Generate broker-specific field mapping
+  const mappings = {
+    'ibkr': {
+      'Symbol': 'ticker',
+      'Date/Time': 'entry_date + entry_time',
+      'Quantity': 'position_size',
+      'T. Price': 'entry_price / exit_price',
+      'Proceeds': 'calculated from price * quantity',
+      'Comm/Fee': 'commission',
+      'Realized P/L': 'pnl_usd'
+    },
+    'schwab': {
+      'Symbol': 'ticker',
+      'Date': 'entry_date',
+      'Action': 'BUY/SELL indicator',
+      'Quantity': 'position_size',
+      'Price': 'entry_price / exit_price',
+      'Amount': 'total transaction value'
+    },
+    'robinhood': {
+      'Instrument': 'ticker',
+      'Activity Date': 'entry_date',
+      'Trans Code': 'transaction type',
+      'Quantity': 'position_size',
+      'Price': 'entry_price / exit_price'
+    },
+    'webull': {
+      'Ticker': 'ticker',
+      'Time': 'entry_date + entry_time',
+      'Side': 'BUY/SELL indicator',
+      'Filled/Quantity': 'position_size',
+      'Price': 'entry_price / exit_price'
+    }
+  };
+  
   const mapping = {
     broker: getBrokerDisplayName(broker),
-    fields: {
-      'Broker_Field_1': 'ticker',
-      'Broker_Field_2': 'entry_date',
-      'Broker_Field_3': 'entry_price',
-      // TODO: Add actual broker-specific mappings
-    },
-    notes: 'TODO: Implement broker-specific field mappings'
+    fields: mappings[broker] || {},
+    notes: `Field mapping for ${getBrokerDisplayName(broker)} CSV format. These mappings show how broker CSV columns are converted to the standard trade format.`
   };
   
   const blob = new Blob([JSON.stringify(mapping, null, 2)], { type: 'application/json' });
@@ -321,10 +351,60 @@ function handleDownloadMapping() {
 /**
  * Handle export to CSV
  */
-function handleExportCsv() {
-  // TODO: Implement export logic
-  // Fetch trades-index.json and convert to CSV
-  showStatus('TODO: Export logic not yet implemented. This is a UI scaffold.', 'warning');
+async function handleExportCsv() {
+  try {
+    showStatus('Loading trades data...', 'info');
+    
+    // Try to fetch trades-index.json
+    const response = await fetch('trades-index.json');
+    if (!response.ok) {
+      showStatus('No trades data found to export. trades-index.json not available.', 'warning');
+      return;
+    }
+    
+    const tradesData = await response.json();
+    const trades = tradesData.trades || [];
+    
+    if (trades.length === 0) {
+      showStatus('No trades found to export.', 'warning');
+      return;
+    }
+    
+    // Convert trades to CSV
+    const headers = [
+      'trade_number', 'ticker', 'entry_date', 'entry_time', 'entry_price',
+      'exit_date', 'exit_time', 'exit_price', 'position_size', 'direction',
+      'strategy', 'broker', 'pnl_usd', 'pnl_percent'
+    ];
+    
+    let csvContent = headers.join(',') + '\n';
+    
+    for (const trade of trades) {
+      const row = headers.map(header => {
+        const value = trade[header] || '';
+        // Escape values that contain commas
+        return typeof value === 'string' && value.includes(',') 
+          ? `"${value}"` 
+          : value;
+      });
+      csvContent += row.join(',') + '\n';
+    }
+    
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sfti-pennies-trades-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showStatus(`Exported ${trades.length} trade(s) to CSV.`, 'success');
+    
+  } catch (error) {
+    showStatus(`Error exporting trades: ${error.message}`, 'error');
+    console.error('Export error:', error);
+  }
 }
 
 /**
