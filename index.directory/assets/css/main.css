@@ -223,7 +223,7 @@ code {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-.nav-item.has-submenu:hover .nav-submenu {
+.nav-item.has-submenu.active .nav-submenu {
   display: block;
 }
 
