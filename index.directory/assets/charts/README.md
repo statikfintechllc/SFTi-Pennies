@@ -8,6 +8,20 @@ This directory contains automatically generated performance charts and analytics
 
 ## 📊 Generated Charts
 
+All charts are available in two formats:
+1. **Interactive Chart.js Data (JSON)** - Used on the homepage with a dropdown selector
+2. **Static PNG Images** - Generated when matplotlib is available
+
+### Chart Selector Dropdown
+
+The homepage (`index.html`) includes a dropdown menu that allows users to switch between different chart views:
+- **Equity Curve** - Cumulative P&L over time
+- **Trade Distribution** - Individual trade P&L breakdown
+- **Performance By Day** - Average P&L by day of week
+- **Ticker Performance** - Total P&L by stock symbol
+
+All charts use the same Chart.js styling and can be switched dynamically without reloading the page.
+
 ### Equity Curve Charts
 
 #### `equity-curve-data.json`
@@ -28,6 +42,72 @@ This directory contains automatically generated performance charts and analytics
 ```
 
 **Used By:** Homepage equity curve widget, trade dashboard
+
+---
+
+#### `trade-distribution-data.json`
+**Format:** JSON  
+**Purpose:** Data source for Chart.js trade distribution bar chart
+
+**Structure:**
+```json
+{
+  "labels": ["Trade #1", "Trade #2", "Trade #3", ...],
+  "datasets": [{
+    "label": "P&L ($)",
+    "data": [125.50, -45.25, 89.75, ...],
+    "backgroundColor": ["#00ff88", "#ff4757", "#00ff88", ...],
+    "borderColor": ["#00ff88", "#ff4757", "#00ff88", ...],
+    "borderWidth": 2
+  }]
+}
+```
+
+**Used By:** Homepage chart selector, trade analysis
+
+---
+
+#### `performance-by-day-data.json`
+**Format:** JSON  
+**Purpose:** Data source for Chart.js day-of-week performance bar chart
+
+**Structure:**
+```json
+{
+  "labels": ["Monday", "Tuesday", "Wednesday", ...],
+  "datasets": [{
+    "label": "Average P&L ($)",
+    "data": [85.50, -23.00, 156.75, ...],
+    "backgroundColor": ["#00ff88", "#ff4757", "#00ff88", ...],
+    "borderColor": ["#00ff88", "#ff4757", "#00ff88", ...],
+    "borderWidth": 2
+  }]
+}
+```
+
+**Used By:** Homepage chart selector, trading pattern analysis
+
+---
+
+#### `ticker-performance-data.json`
+**Format:** JSON  
+**Purpose:** Data source for Chart.js ticker performance horizontal bar chart
+
+**Structure:**
+```json
+{
+  "labels": ["NVDA", "AAPL", "AMD", "TSLA", ...],
+  "datasets": [{
+    "label": "Total P&L ($)",
+    "data": [421.50, 307.25, 156.25, -123.75, ...],
+    "backgroundColor": ["#00ff88", "#00ff88", "#00ff88", "#ff4757", ...],
+    "borderColor": ["#00ff88", "#00ff88", "#00ff88", "#ff4757", ...],
+    "borderWidth": 2
+  }]
+}
+```
+
+**Used By:** Homepage chart selector, ticker analysis (top 20 tickers by total P&L)
 
 ---
 
@@ -211,6 +291,28 @@ All charts derive from:
 ## 🎯 Usage Examples
 
 ### In HTML (Chart.js)
+
+**Homepage with Chart Selector:**
+```html
+<select id="chart-selector">
+  <option value="equity-curve">Equity Curve</option>
+  <option value="trade-distribution">Trade Distribution</option>
+  <option value="performance-by-day">Performance By Day</option>
+  <option value="ticker-performance">Ticker Performance</option>
+</select>
+
+<div id="equity-curve-container">
+  <canvas id="equity-curve-chart"></canvas>
+</div>
+<div id="trade-distribution-container" style="display: none;">
+  <canvas id="trade-distribution-chart"></canvas>
+</div>
+<!-- Additional containers for other charts -->
+
+<script src="index.directory/assets/js/charts.js"></script>
+```
+
+**Single Chart Example:**
 ```html
 <canvas id="equity-curve"></canvas>
 <script>
