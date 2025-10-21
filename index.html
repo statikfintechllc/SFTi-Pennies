@@ -18,6 +18,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="index.directory/assets/css/main.css">
+  <!-- iOS 26 Liquid Glass Effects -->
+  <link rel="stylesheet" href="index.directory/assets/css/glass-effects.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
@@ -33,7 +35,7 @@
   <canvas id="bg-canvas"></canvas>
   
   <!-- Navigation -->
-  <nav class="navbar">
+  <nav class="navbar glass-nav">
     <div class="nav-container">
       <a href="index.html" class="nav-brand">
         <img src="index.directory/assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
@@ -80,8 +82,8 @@
         </li>
         
         <li class="nav-item nav-buttons-group">
-          <a href="index.directory/add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
+          <a href="index.directory/add-trade.html" class="nav-link btn btn-primary glass-btn">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary glass-btn-secondary">Login</button>
         </li>
       </ul>
     </div>
@@ -100,22 +102,22 @@
       <p>Professional penny stock trading journal with automated tracking, analysis, and performance metrics</p>
       
       <div class="hero-stats">
-        <div class="stat-card">
+        <div class="stat-card glass-stat">
           <div class="stat-label">Total Trades</div>
           <div class="stat-value" id="stat-total-trades">0</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card glass-stat">
           <div class="stat-label">Win Rate</div>
           <div class="stat-value positive" id="stat-win-rate">0%</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card glass-stat">
           <div class="stat-label">Total P&L</div>
           <div class="stat-value" id="stat-total-pnl">$0.00</div>
         </div>
         
-        <div class="stat-card">
+        <div class="stat-card glass-stat">
           <div class="stat-label">Avg P&L</div>
           <div class="stat-value" id="stat-avg-pnl">$0.00</div>
         </div>
@@ -126,7 +128,7 @@
     <section class="trades-section">
       <div class="section-header">
         <h2>Recent Trades</h2>
-        <a href="index.directory/add-trade.html" class="btn btn-primary">+ Add Trade</a>
+        <a href="index.directory/add-trade.html" class="btn btn-primary glass-btn">+ Add Trade</a>
       </div>
       
       <div class="trades-grid" id="recent-trades">
@@ -142,7 +144,7 @@
       <h2>The Journal</h2>
       <div class="trades-grid">
         <!-- Education Materials Card -->
-        <div class="trade-card">
+        <div class="trade-card glass-card">
           <div class="quick-links-card">
             <div class="quick-links-icon icon-green">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,13 +154,13 @@
             <div class="quick-links-content">
               <h3>Education Materials</h3>
               <p>Trading patterns, strategies, and psychology resources</p>
-              <a href="index.directory/books.html" class="btn btn-secondary">View Books</a>
+              <a href="index.directory/books.html" class="btn btn-secondary glass-btn-secondary">View Books</a>
             </div>
           </div>
         </div>
         
         <!-- Trading Frameworks Card -->
-        <div class="trade-card">
+        <div class="trade-card glass-card">
           <div class="quick-links-card">
             <div class="quick-links-icon icon-cyan">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,13 +170,13 @@
             <div class="quick-links-content">
               <h3>Trading Frameworks</h3>
               <p>7-Step Framework, GSTRWT Method, and indicator guides</p>
-              <a href="index.directory/notes.html" class="btn btn-secondary">View Notes</a>
+              <a href="index.directory/notes.html" class="btn btn-secondary glass-btn-secondary">View Notes</a>
             </div>
           </div>
         </div>
         
         <!-- Trade Journal Card -->
-        <div class="trade-card">
+        <div class="trade-card glass-card">
           <div class="quick-links-card">
             <div class="quick-links-icon icon-purple">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,7 +186,7 @@
             <div class="quick-links-content">
               <h3>Completed Trades</h3>
               <p>Weekly trade logs with detailed analysis and screenshots</p>
-              <a href="index.directory/all-trades.html" class="btn btn-secondary">View All Trades</a>
+              <a href="index.directory/all-trades.html" class="btn btn-secondary glass-btn-secondary">View All Trades</a>
             </div>
           </div>
         </div>
@@ -194,7 +196,7 @@
     <section class="trades-section">
       <h2>Meet My Mentors</h2>
       <div class="trades-grid">
-        <div class="trade-card">
+        <div class="trade-card glass-card">
           <div class="quick-links-card">
             <div class="quick-links-icon icon-green">
               <img src="index.directory/assets/sfti.mentor.assets/Sykes.png" alt="Timothy Sykes" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.5rem;">
@@ -202,12 +204,12 @@
             <div class="quick-links-content">
               <h3>Meet My Mentor</h3>
               <p>Learn from Timothy Sykes, penny stock trading expert</p>
-              <a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Website</a>
+              <a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary glass-btn-secondary">Visit Website</a>
             </div>
           </div>
         </div>     
   
-        <div class="trade-card">
+        <div class="trade-card glass-card">
           <div class="quick-links-card">
             <div class="quick-links-icon icon-amber">
               <img src="index.directory/assets/sfti.mentor.assets/Bohen.png" alt="Tim Bohen" style="width: 100%; height: 100%; object-fit: cover; border-radius: 0.5rem;">
@@ -215,7 +217,7 @@
             <div class="quick-links-content">
               <h3>Meet My Mentor</h3>
               <p>Learn from Tim Bohen, penny stock trading expert</p>
-              <a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Visit Website</a>
+              <a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary glass-btn-secondary">Visit Website</a>
             </div>
           </div>
         </div>
@@ -226,7 +228,7 @@
     <section class="trades-section">
       <div class="section-header">
         <h2>Trading Performance Charts</h2>
-        <select id="chart-selector" class="btn btn-secondary" style="min-width: 200px; padding: 0.5rem 1rem;">
+        <select id="chart-selector" class="btn btn-secondary glass-select" style="min-width: 200px;">
           <option value="equity-curve">Equity Curve</option>
           <option value="trade-distribution">Trade Distribution</option>
           <option value="performance-by-day">Performance By Day</option>
@@ -234,7 +236,7 @@
         </select>
       </div>
       
-      <div style="background-color: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 2rem;">
+      <div class="glass-chart" style="background-color: transparent;">
         <!-- Equity Curve Chart -->
         <div id="equity-curve-container" class="chart-container" style="display: block;">
           <p style="color: var(--text-secondary); text-align: center; margin-bottom: 1rem;">
