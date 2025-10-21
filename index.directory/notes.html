@@ -18,6 +18,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
+    <!-- iOS 26 Liquid Glass Effects -->
+    <link rel="stylesheet" href="assets/css/glass-effects.css">
   
   <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
   <script src="assets/js/bundle.min.js"></script>
@@ -96,7 +98,7 @@
   <canvas id="bg-canvas"></canvas>
   
   <!-- Navigation -->
-  <nav class="navbar">
+  <nav class="navbar glass-nav">
     <div class="nav-container">
       <a href="index.html" class="nav-brand">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
@@ -143,8 +145,8 @@
         </li>
         
         <li class="nav-item nav-buttons-group">
-          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
+          <a href="add-trade.html" class="nav-link btn btn-primary glass-btn">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary glass-btn-secondary">Login</button>
         </li>
       </ul>
     </div>
@@ -178,7 +180,7 @@
     <div class="note-modal-content">
       <div class="note-modal-header">
         <h2 id="note-title">Loading...</h2>
-        <button id="close-note" class="btn btn-secondary">✕ Close</button>
+        <button id="close-note" class="btn btn-secondary glass-btn-secondary">✕ Close</button>
       </div>
       <div id="note-content" class="markdown-body">
         <!-- Markdown content will be rendered here -->
@@ -254,7 +256,7 @@
           <div class="quick-links-content">
             <h3>${note.title}</h3>
             <p>${previewText}</p>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Read Note</button>
+            <button class="btn btn-primary glass-btn" style="width: 100%; margin-top: 1rem;">Read Note</button>
           </div>
         </div>
       </div>

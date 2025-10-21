@@ -18,6 +18,8 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
+    <!-- iOS 26 Liquid Glass Effects -->
+    <link rel="stylesheet" href="assets/css/glass-effects.css">
   <link rel="stylesheet" href="assets/css/import.css">
   
   <!-- PWA Manifest -->
@@ -31,7 +33,7 @@
   <canvas id="bg-canvas"></canvas>
   
   <!-- Navigation -->
-  <nav class="navbar">
+  <nav class="navbar glass-nav">
     <div class="nav-container">
       <a href="index.html" class="nav-brand">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
@@ -78,8 +80,8 @@
         </li>
         
         <li class="nav-item nav-buttons-group">
-          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
+          <a href="add-trade.html" class="nav-link btn btn-primary glass-btn">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary glass-btn-secondary">Login</button>
         </li>
       </ul>
     </div>
@@ -90,7 +92,7 @@
     <section>
       <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
         <h1 style="margin: 0;">Import Trades from CSV</h1>
-        <button id="export-csv-btn" class="btn btn-secondary" style="margin-left: auto;">
+        <button id="export-csv-btn" class="btn btn-secondary glass-btn-secondary" style="margin-left: auto;">
           Export CSV
         </button>
       </div>
@@ -149,7 +151,7 @@
         
         <div class="form-group">
           <label for="broker-select" class="form-label">Broker</label>
-          <select id="broker-select" class="form-select">
+          <select id="broker-select" class="form-select glass-select">
             <option value="">Auto-detect from CSV</option>
             <option value="ibkr">Interactive Brokers (IBKR)</option>
             <option value="schwab">Charles Schwab / TD Ameritrade</option>
@@ -216,15 +218,15 @@
         <h3 style="margin-bottom: 1rem;">Step 4: Import or Download</h3>
         
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <button id="validate-btn" class="btn btn-secondary" disabled>
+          <button id="validate-btn" class="btn btn-secondary glass-btn-secondary" disabled>
             Validate Trades
           </button>
           
-          <button id="import-btn" class="btn btn-primary" disabled>
+          <button id="import-btn" class="btn btn-primary glass-btn" disabled>
             Import Trades
           </button>
           
-          <button id="download-mapping-btn" class="btn btn-secondary">
+          <button id="download-mapping-btn" class="btn btn-secondary glass-btn-secondary">
             Download Sample Mapping
           </button>
         </div>
