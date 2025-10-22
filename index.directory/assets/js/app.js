@@ -5,7 +5,12 @@
 
 class TradingJournal {
   constructor() {
-    this.auth = new GitHubAuth();
+    try {
+      this.auth = new GitHubAuth();
+    } catch (e) {
+      console.error('GitHubAuth initialization failed:', e);
+      this.auth = null;
+    }
     this.uploadedImages = [];
     // Get base path from URL to make code portable
     this.basePath = this.getBasePath();
@@ -97,11 +102,17 @@ class TradingJournal {
     const navToggle = document.querySelector('.nav-toggle');
     const navMenu = document.querySelector('.nav-menu');
     
+    console.log('setupNavigation called', { navToggle: !!navToggle, navMenu: !!navMenu });
+    
     if (navToggle && navMenu) {
       // Toggle mobile menu
-      navToggle.addEventListener('click', () => {
+      navToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Nav toggle clicked');
         navToggle.classList.toggle('active');
         navMenu.classList.toggle('active');
+        console.log('Nav menu active:', navMenu.classList.contains('active'));
       });
       
       // Handle submenu toggles on all screen sizes

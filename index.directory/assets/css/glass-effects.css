@@ -110,16 +110,19 @@
     box-shadow: var(--glass-shadow-md);
     z-index: 10001 !important;
     pointer-events: auto;
+    display: none !important;
   }
   
   /* Ensure the active state shows the menu */
   .glass-nav .nav-menu.active {
     display: flex !important;
+    flex-direction: column !important;
   }
   
   .glass-nav .nav-toggle {
     z-index: 10002 !important;
     pointer-events: auto;
+    display: block !important;
   }
   
   /* Ensure nav menu items are clickable */
