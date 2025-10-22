@@ -104,20 +104,24 @@
 @media (max-width: 768px) {
   /* Apply glass visual effects only - don't override layout properties */
   .nav-menu {
+    background: rgba(10, 14, 39, 0.98) !important;
     background: var(--glass-bg-darker) !important;
     backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
     -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
     border: 1px solid var(--glass-border-subtle) !important;
     box-shadow: var(--glass-shadow-md) !important;
+    z-index: 10001 !important;
   }
   
-  /* Ensure high z-index for menu */
+  /* Ensure active menu is visible */
+  .nav-menu.active {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Ensure high z-index for toggle button */
   .nav-toggle {
     z-index: 10002 !important;
-  }
-  
-  .nav-menu {
-    z-index: 10001 !important;
   }
 }
 
