@@ -47,6 +47,7 @@ Created a **fully transparent, organized trading account** with complete documen
 - 🔄 [GSTRWT Daily Workflow](./index.directory/SFTi.Notez/GSTRWT.md)
 - 📊 [Top 5 Penny Indicators](./index.directory/SFTi.Notez/Penny.Indicators.md)
 - 📋 [Complete Trading Plan](./index.directory/SFTi.Notez/Trade.Plan.md)
+- 💹 [Dip and Rip Pattern](./index.directory/SFTi.Notez/Dip.n.Rip.md)
 
 #### 3. [📊 index.directory/SFTi.Tradez](./index.directory/SFTi.Tradez/README.md)
 **Live Trading Journal** - Real trades, real results:
@@ -131,6 +132,7 @@ Created a **fully transparent, organized trading account** with complete documen
 | **🔄 GSTRWT Method** | Daily workflow & scanning | [View](./index.directory/SFTi.Notez/GSTRWT.md) |
 | **📊 Penny Indicators** | Top 5 technical tools | [View](./index.directory/SFTi.Notez/Penny.Indicators.md) |
 | **📋 Trading Plan** | Complete strategy | [View](./index.directory/SFTi.Notez/Trade.Plan.md) |
+| **💹 Dip and Rip** | Timing breakout patterns | [View](./index.directory/SFTi.Notez/Dip.n.Rip.md) |
 | **📚 PDF Library** | Education materials | [View](./index.directory/Informational.Bookz/README.md) |
 | **📊 Live Trades** | Real trade journal | [View](./index.directory/SFTi.Tradez/README.md) |
 

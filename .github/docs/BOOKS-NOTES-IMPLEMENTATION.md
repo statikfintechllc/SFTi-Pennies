@@ -162,14 +162,15 @@ Updated files:
 
 ### Notes Index
 - **File**: `notes-index.json`
-- **Location**: Repository root
-- **Size**: 1.6 KB
-- **Content**: 4 notes (21.7 KB total)
+- **Location**: `index.directory/notes-index.json`
+- **Size**: ~2 KB
+- **Content**: 5 notes (total size varies)
 - **Notes**:
   1. The 7-Step Penny-Stocking Framework (8.5 KB)
-  2. SCANNER (1.5 KB)
-  3. Penny Indicators (11 KB)
-  4. Trade Plan (721 bytes)
+  2. What is the Dip and Rip Pattern? (3.2 KB)
+  3. SCANNER (1.5 KB)
+  4. Penny Indicators (11 KB)
+  5. Trade Plan (861 bytes)
 
 ## UI/UX Features
 
@@ -269,12 +270,14 @@ Features:
 4. New books appear on books.html
 
 **Adding Notes:**
-1. Create markdown files in `SFTi.Notez/`
+1. Create markdown files in `index.directory/SFTi.Notez/` (note: not `SFTi-Notes/`)
 2. Use standard markdown syntax
 3. Include images with markdown syntax
 4. Commit and push changes
 5. GitHub Actions automatically updates `notes-index.json`
 6. New notes appear on notes.html
+
+**Note:** README.md files are automatically excluded from the notes index as they serve as navigational documentation rather than trading note content.
 
 ## Future Enhancements
 

@@ -45,6 +45,15 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 
 ### Execution Strategy
 
+- **[Dip.n.Rip.md](./Dip.n.Rip.md)** - The Dip and Rip pattern - timing low-float stocks with news catalysts for premarket and opening plays.
+  - **Key Concepts:**
+    - Low-float stock selection
+    - News catalyst identification
+    - Premarket movement analysis
+    - Entry timing on pullbacks
+    - Quick profit-taking strategies
+  - **Best For:** Premarket and opening range breakout trades
+
 - **[Trade.Plan.md](./Trade.Plan.md)** - Complete trading plan with specific indicator combinations and strategy setups.
   - **Related Assets:** [Trade Plan Diagram](../.github/assets/sfti.notez.assets/trade.plan.assets/README.md)
   - **Strategy Combinations:**
@@ -61,7 +70,7 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 | Phase | Document | Purpose |
 |-------|----------|---------|
 | **Pre-Market** | GSTRWT.md | Build watchlist, run scanners |
-| **Market Open** | Trade.Plan.md | Execute setups with indicator confirmation |
+| **Market Open** | Trade.Plan.md, Dip.n.Rip.md | Execute setups with indicator confirmation |
 | **During Trade** | Penny.Indicators.md | Monitor technical signals |
 | **Pattern Analysis** | 7.Step.Frame.md | Identify which phase stock is in |
 | **Review** | All files | Compare execution to plan |
@@ -71,7 +80,8 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 1. **Start:** 7.Step.Frame.md - Understand the big picture pattern
 2. **Daily Workflow:** GSTRWT.md - Learn the process
 3. **Technical Skills:** Penny.Indicators.md - Master the tools
-4. **Execution:** Trade.Plan.md - Put it all together
+4. **Pattern Strategies:** Dip.n.Rip.md - Learn specific setups
+5. **Execution:** Trade.Plan.md - Put it all together
 
 ## 🔗 Related Resources
 
@@ -107,4 +117,4 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 
 **Last Updated:** October 2025
 
-**Total Framework Files:** 4
+**Total Framework Files:** 5
