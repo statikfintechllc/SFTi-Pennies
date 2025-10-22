@@ -102,43 +102,21 @@
 
 /* Mobile nav menu with glass effects */
 @media (max-width: 768px) {
-  .glass-nav .nav-menu {
-    position: fixed !important;
-    top: 60px !important;
-    left: 0 !important;
-    right: 0 !important;
-    background: var(--glass-bg-darker);
+  /* Apply glass visual effects only - don't override layout properties */
+  .nav-menu {
+    background: var(--glass-bg-darker) !important;
     backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
     -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
-    border: 1px solid var(--glass-border-subtle);
-    box-shadow: var(--glass-shadow-md);
-    z-index: 10001 !important;
-    pointer-events: auto;
-    display: none !important;
-    max-height: calc(100vh - 60px) !important;
-    overflow-y: auto !important;
+    border: 1px solid var(--glass-border-subtle) !important;
+    box-shadow: var(--glass-shadow-md) !important;
   }
   
-  /* Ensure the active state shows the menu */
-  .glass-nav .nav-menu.active {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  .glass-nav .nav-toggle {
+  /* Ensure high z-index for menu */
+  .nav-toggle {
     z-index: 10002 !important;
-    pointer-events: auto;
-    display: block !important;
   }
   
-  /* Ensure nav menu items are clickable */
-  .glass-nav .nav-menu * {
-    pointer-events: auto;
-    z-index: auto;
-  }
-  
-  /* Ensure nav submenu is also high z-index */
-  .glass-nav .nav-submenu {
+  .nav-menu {
     z-index: 10001 !important;
   }
 }
