@@ -87,17 +87,75 @@
   z-index: 1000;
 }
 
+/* Two-row navigation layout */
+.glass-nav .nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Top Row: Logo, Title, and Action Buttons */
+.navbar-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-bottom: 1px solid var(--glass-border-subtle);
+}
+
+.navbar-top-row .nav-brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-green);
+  text-decoration: none;
+}
+
+.navbar-top-row .nav-buttons-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* Bottom Row: Navigation Links */
+.navbar-nav-row {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-lg);
+  min-height: 50px;
+}
+
+/* Mobile responsive adjustments for navbar */
+@media (max-width: 768px) {
+  .navbar-top-row {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+  
+  .navbar-top-row .nav-brand {
+    font-size: 1rem;
+  }
+  
+  .navbar-nav-row {
+    padding: 0 var(--spacing-md);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .navbar-top-row .nav-buttons-group .btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.875rem;
+  }
+}
+
 /* Ensure nav-toggle button is above glass effects */
 .glass-nav .nav-toggle {
   position: relative;
   z-index: 1002;
   pointer-events: auto;
-}
-
-/* Ensure nav-container doesn't block clicks */
-.glass-nav .nav-container {
-  position: relative;
-  z-index: 1001;
 }
 
 /* Mobile nav menu with glass effects */
