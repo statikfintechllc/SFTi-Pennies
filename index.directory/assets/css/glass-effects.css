@@ -103,6 +103,10 @@
 /* Mobile nav menu with glass effects */
 @media (max-width: 768px) {
   .glass-nav .nav-menu {
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    right: 0 !important;
     background: var(--glass-bg-darker);
     backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
     -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
@@ -111,6 +115,8 @@
     z-index: 10001 !important;
     pointer-events: auto;
     display: none !important;
+    max-height: calc(100vh - 60px) !important;
+    overflow-y: auto !important;
   }
   
   /* Ensure the active state shows the menu */
