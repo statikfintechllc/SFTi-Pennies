@@ -18,8 +18,6 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
-    <!-- iOS 26 Liquid Glass Effects -->
-    <link rel="stylesheet" href="assets/css/glass-effects.css">
   
   <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
   <script src="assets/js/bundle.min.js"></script>
@@ -47,31 +45,39 @@
   <!-- Navigation -->
   <nav class="navbar glass-nav">
     <div class="nav-container">
-      <a href="../index.html" class="nav-brand">
-        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
       </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
       
       <ul class="nav-menu">
         <li class="nav-item">
           <a href="../index.html" class="nav-link">Home</a>
         </li>
         
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Trading</a>
-          <ul class="nav-submenu">
-            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="add-trade.html" class="nav-link">Add Trade</a></li>
-            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
-            <li><a href="import.html" class="nav-link">Import CSV</a></li>
-          </ul>
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
         </li>
         
         <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Studies</a>
+          <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
-            <li><a href="notes.html" class="nav-link">Notes</a></li>
-            <li><a href="books.html" class="nav-link">Books</a></li>
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
           </ul>
         </li>
         
@@ -84,8 +90,8 @@
         </li>
         
         <li class="nav-item nav-buttons-group">
-          <a href="add-trade.html" class="nav-link btn btn-primary glass-btn">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary glass-btn-secondary">Login</button>
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
         </li>
       </ul>
     </div>
@@ -115,11 +121,11 @@
   </main>
   
   <!-- PDF Viewer Modal -->
-  <div id="pdf-modal" class="modal glass-modal-backdrop" style="display: none;">
-    <div class="modal-content glass-modal" style="max-width: 95%; max-height: 95vh; overflow: hidden;">
+  <div id="pdf-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 95%; max-height: 95vh; background: var(--bg-secondary); border-radius: 8px; overflow: hidden;">
       <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-primary); border-bottom: 1px solid var(--border-color);">
         <h2 id="pdf-title" style="margin: 0; color: var(--accent-green); font-family: var(--font-mono);">Loading...</h2>
-        <button id="close-pdf" class="btn btn-secondary glass-btn-secondary">✕ Close</button>
+        <button id="close-pdf" class="btn btn-secondary">✕ Close</button>
       </div>
       <div id="pdf-viewer-root" style="height: calc(95vh - 80px); background: var(--bg-tertiary);"></div>
     </div>
@@ -261,7 +267,7 @@
                   <div class="trade-detail-value">PDF</div>
                 </div>
               </div>
-              <button class="btn btn-primary glass-btn" style="width: 100%; margin-top: 1rem;">Open PDF</button>
+              <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Open PDF</button>
             </div>
           </div>
         </div>

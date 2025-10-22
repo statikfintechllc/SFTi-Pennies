@@ -18,8 +18,6 @@
   
   <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/css/main.css">
-    <!-- iOS 26 Liquid Glass Effects -->
-    <link rel="stylesheet" href="assets/css/glass-effects.css">
   <link rel="stylesheet" href="assets/css/import.css">
   
   <!-- PWA Manifest -->
@@ -35,31 +33,39 @@
   <!-- Navigation -->
   <nav class="navbar glass-nav">
     <div class="nav-container">
-      <a href="../index.html" class="nav-brand">
-        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+      <a href="index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
       </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
       
       <ul class="nav-menu">
         <li class="nav-item">
           <a href="../index.html" class="nav-link">Home</a>
         </li>
         
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Trading</a>
-          <ul class="nav-submenu">
-            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="add-trade.html" class="nav-link">Add Trade</a></li>
-            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
-            <li><a href="import.html" class="nav-link">Import CSV</a></li>
-          </ul>
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
         </li>
         
         <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Studies</a>
+          <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
-            <li><a href="notes.html" class="nav-link">Notes</a></li>
-            <li><a href="books.html" class="nav-link">Books</a></li>
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
           </ul>
         </li>
         
@@ -72,8 +78,8 @@
         </li>
         
         <li class="nav-item nav-buttons-group">
-          <a href="add-trade.html" class="nav-link btn btn-primary glass-btn">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary glass-btn-secondary">Login</button>
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
         </li>
       </ul>
     </div>
@@ -84,7 +90,7 @@
     <section>
       <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
         <h1 style="margin: 0;">Import Trades from CSV</h1>
-        <button id="export-csv-btn" class="btn btn-secondary glass-btn-secondary" style="margin-left: auto;">
+        <button id="export-csv-btn" class="btn btn-secondary" style="margin-left: auto;">
           Export CSV
         </button>
       </div>
@@ -143,7 +149,7 @@
         
         <div class="form-group">
           <label for="broker-select" class="form-label">Broker</label>
-          <select id="broker-select" class="form-select glass-select">
+          <select id="broker-select" class="form-select">
             <option value="">Auto-detect from CSV</option>
             <option value="ibkr">Interactive Brokers (IBKR)</option>
             <option value="schwab">Charles Schwab / TD Ameritrade</option>
@@ -210,15 +216,15 @@
         <h3 style="margin-bottom: 1rem;">Step 4: Import or Download</h3>
         
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-          <button id="validate-btn" class="btn btn-secondary glass-btn-secondary" disabled>
+          <button id="validate-btn" class="btn btn-secondary" disabled>
             Validate Trades
           </button>
           
-          <button id="import-btn" class="btn btn-primary glass-btn" disabled>
+          <button id="import-btn" class="btn btn-primary" disabled>
             Import Trades
           </button>
           
-          <button id="download-mapping-btn" class="btn btn-secondary glass-btn-secondary">
+          <button id="download-mapping-btn" class="btn btn-secondary">
             Download Sample Mapping
           </button>
         </div>
