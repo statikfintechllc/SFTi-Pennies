@@ -8,9 +8,10 @@ These stocks attract attention, and that’s exactly what you want—because att
 
 The “dip” phase occurs when the market opens. These stocks often fade as short sellers pile in, thinking the run is over.
 
-The “rip” happens when buyers step back in, pushing the stock to new highs and forcing short sellers to cover.
-
-This creates a domino effect of buying pressure, leading to explosive moves.
+> [!IMPORTANT]
+> 
+> The “rip” happens when buyers step back in, pushing the stock to new highs and forcing short sellers to cover. 
+> This creates a domino effect of buying pressure, leading to explosive moves.
 
 ## Why This Pattern Works
 
@@ -39,7 +40,9 @@ By 9:00 AM, the stock should have traded at least 3 million shares to ensure liq
 **Float:**
 Stick to stocks with a float under 10 million shares. Low float equals big moves.
 
-This is where float rotation comes in. Low-float stocks rotate quickly, and that’s what fuels those explosive moves. The higher the rotation, the better. Look for a minimum of 5X after the market opens.
+> [!IMPORTANT]
+> 
+> This is where float rotation comes in. Low-float stocks rotate quickly, and that’s what fuels those explosive moves. The higher the rotation, the better. Look for a minimum of 5X after the market opens.
 
 ## How to Trade the Dip and Rip
 
@@ -55,7 +58,7 @@ If the stock rips, let it run. No one ever sells perfectly at the top, but that�
 
 We aim to find consistent and reliable setups that will grow your account over time.
 
-## Examples
+## Some Real Examples
 
 On December 30th, MicroCloud Hologram Inc. (NASDAQ: HOLO), a low float stock, had news in the morning which caused the stock to spike premarket.
 
