@@ -651,3 +651,93 @@
   z-index: 10000;
   animation: fadeIn 0.2s ease;
 }
+
+/* ===== MOBILE NAVIGATION - ALL IN ONE PLACE ===== */
+@media (max-width: 768px) {
+  /* Mobile nav toggle button */
+  .nav-toggle {
+    display: block;
+    z-index: 10002 !important;
+  }
+  
+  /* Mobile nav menu - ALL properties including layout and styling */
+  .nav-menu {
+    /* Layout properties */
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    padding: var(--spacing-md);
+    display: none;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+    
+    /* Glass styling */
+    background: rgba(10, 14, 39, 0.98) !important;
+    background: var(--glass-bg-darker) !important;
+    backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+    -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(200%);
+    border: 1px solid var(--glass-border-subtle) !important;
+    box-shadow: var(--glass-shadow-md) !important;
+    z-index: 10001 !important;
+  }
+  
+  /* Active menu state - CRITICAL */
+  .nav-menu.active {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  
+  /* Mobile nav items */
+  .nav-item {
+    width: 100%;
+  }
+  
+  /* Nav items with submenus */
+  .nav-item.has-submenu > .nav-link {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-item.has-submenu > .nav-link::after {
+    transition: transform var(--transition-normal);
+  }
+  
+  .nav-item.has-submenu.active > .nav-link::after {
+    transform: rotate(180deg);
+  }
+  
+  /* Mobile submenus */
+  .nav-submenu {
+    position: static;
+    display: none !important;
+    margin-top: var(--spacing-sm);
+    margin-left: var(--spacing-md);
+    box-shadow: none;
+    border: none;
+    background-color: var(--bg-tertiary);
+    border-left: 2px solid var(--accent-green);
+    padding-left: var(--spacing-md);
+  }
+  
+  .nav-item.has-submenu.active .nav-submenu {
+    display: block !important;
+  }
+  
+  /* Mobile button group */
+  .nav-item.nav-buttons-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .nav-item.nav-buttons-group .btn {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+  }
+}

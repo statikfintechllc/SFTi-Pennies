@@ -702,74 +702,8 @@ code {
     font-size: 14px;
   }
   
-  .nav-toggle {
-    display: block;
-  }
-  
-  .nav-menu {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    flex-direction: column;
-    padding: var(--spacing-md);
-    display: none;
-    max-height: calc(100vh - 60px);
-    overflow-y: auto;
-  }
-  
-  .nav-menu.active {
-    display: flex;
-  }
-  
-  .nav-item {
-    width: 100%;
-  }
-  
-  .nav-item.has-submenu > .nav-link {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .nav-item.has-submenu > .nav-link::after {
-    transition: transform var(--transition-normal);
-  }
-  
-  .nav-item.has-submenu.active > .nav-link::after {
-    transform: rotate(180deg);
-  }
-  
-  .nav-submenu {
-    position: static;
-    display: none !important;
-    margin-top: var(--spacing-sm);
-    margin-left: var(--spacing-md);
-    box-shadow: none;
-    border: none;
-    background-color: var(--bg-tertiary);
-    border-left: 2px solid var(--accent-green);
-    padding-left: var(--spacing-md);
-  }
-  
-  .nav-item.has-submenu.active .nav-submenu {
-    display: block !important;
-  }
-  
-  /* Mobile button group styling */
-  .nav-item.nav-buttons-group {
-    display: flex;
-    gap: var(--spacing-sm);
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .nav-item.nav-buttons-group .btn {
-    flex: 1;
-    text-align: center;
-    min-width: 0;
-  }
+  /* ALL NAVIGATION CSS MOVED TO glass-effects.css */
+  /* This keeps everything in one place for the glass look */
   
   .hero h1 {
     font-size: 2rem;
