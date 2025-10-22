@@ -233,7 +233,7 @@ code {
   border-radius: 28px;
   box-shadow: 0 16px 64px rgba(0, 0, 0, 0.22), 0 8px 32px rgba(0, 0, 0, 0.16);
   overflow: hidden;
-  position: relative;
+  z-index: 1000;
 }
 
 /* Glass reflection on top of dropdown */
@@ -249,6 +249,7 @@ code {
     rgba(255, 255, 255, 0.35) 50%, 
     transparent 100%);
   opacity: 0.8;
+  z-index: 1;
 }
 
 .nav-item.has-submenu.active .nav-submenu {
@@ -262,6 +263,7 @@ code {
 .nav-submenu .nav-link {
   padding: var(--spacing-sm) var(--spacing-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 /* Hover effect for glass dropdown items */
@@ -272,6 +274,19 @@ code {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-left: 2px solid rgba(0, 255, 136, 0.85);
+  padding-left: calc(var(--spacing-md) - 2px);
+}
+
+/* Navigation buttons group alignment */
+.nav-item.nav-buttons-group {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.nav-item.nav-buttons-group .nav-link,
+.nav-item.nav-buttons-group .btn {
+  margin: 0;
 }
 
 /* Container */
@@ -435,7 +450,7 @@ code {
     rgba(0, 0, 0, 0.05) 100%);
   pointer-events: none;
   opacity: 0.6;
-  z-index: 0;
+  z-index: -1;
 }
 
 .trade-card:hover {

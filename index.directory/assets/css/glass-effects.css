@@ -360,7 +360,7 @@
   .glass-chart,
   .glass-stat,
   .glass-modal {
-    background: rgba(15, 20, 41, 0.95);
+    background: rgba(15, 20, 41, 1.0);
   }
   
   .glass-btn {
@@ -378,7 +378,7 @@
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
-  contain: layout style paint;
+  contain: paint;
 }
 
 /* ===== Accessibility - Respect user preferences ===== */
