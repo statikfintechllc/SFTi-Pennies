@@ -126,6 +126,12 @@ code {
   top: 0;
   z-index: 1000;
   padding: var(--spacing-md) 0;
+  /* Apply glass effect for navigation on desktop */
+  background: rgba(10, 14, 39, 0.85);
+  backdrop-filter: blur(70px) saturate(200%);
+  -webkit-backdrop-filter: blur(70px) saturate(200%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .nav-container {
@@ -214,13 +220,36 @@ code {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
   min-width: 200px;
   padding: var(--spacing-sm) 0;
   margin-top: var(--spacing-sm);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  /* Apply glass effect to dropdown menus (Trades & Mentors) */
+  background: linear-gradient(135deg,
+    rgba(15, 20, 41, 0.65) 0%,
+    rgba(10, 14, 39, 0.75) 100%);
+  backdrop-filter: blur(45px) saturate(180%);
+  -webkit-backdrop-filter: blur(45px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.22), 0 8px 32px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  z-index: 1000;
+}
+
+/* Glass reflection on top of dropdown */
+.nav-submenu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.35) 50%, 
+    transparent 100%);
+  opacity: 0.8;
+  z-index: 1;
 }
 
 .nav-item.has-submenu.active .nav-submenu {
@@ -233,6 +262,31 @@ code {
 
 .nav-submenu .nav-link {
   padding: var(--spacing-sm) var(--spacing-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Hover effect for glass dropdown items */
+.nav-submenu .nav-link:hover {
+  background: linear-gradient(135deg,
+    rgba(0, 255, 136, 0.12) 0%,
+    rgba(0, 255, 136, 0.08) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-left: 2px solid rgba(0, 255, 136, 0.85);
+  padding-left: calc(var(--spacing-md) - 2px);
+}
+
+/* Navigation buttons group alignment */
+.nav-item.nav-buttons-group {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.nav-item.nav-buttons-group .nav-link,
+.nav-item.nav-buttons-group .btn {
+  margin: 0;
 }
 
 /* Container */
@@ -272,18 +326,41 @@ code {
 }
 
 .stat-card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: var(--spacing-lg);
   min-width: 150px;
   text-align: center;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  /* Apply glass effect */
+  background: linear-gradient(135deg,
+    rgba(15, 20, 41, 0.6) 0%,
+    rgba(10, 14, 39, 0.8) 100%);
+  backdrop-filter: blur(45px);
+  -webkit-backdrop-filter: blur(45px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  padding: var(--spacing-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Top gradient line for glass stat cards */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    rgba(0, 255, 136, 0.85) 0%, 
+    rgba(6, 182, 212, 0.85) 100%);
+  opacity: 0.7;
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1);
+  transform: translateY(-3px) translateZ(0);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.22), 0 8px 32px rgba(0, 0, 0, 0.16);
+  border-color: rgba(0, 255, 136, 0.4);
 }
 
 .stat-label {
@@ -327,13 +404,59 @@ code {
 }
 
 .trade-card {
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
   padding: var(--spacing-lg);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
   animation: phaseIn 0.6s ease;
   animation-fill-mode: both;
+  /* Apply glass effect */
+  background: rgba(10, 14, 39, 0.55);
+  backdrop-filter: blur(45px) saturate(190%);
+  -webkit-backdrop-filter: blur(45px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.12);
+  position: relative;
+  overflow: hidden;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Top glass reflection */
+.trade-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 100%);
+  opacity: 0.7;
+}
+
+/* Subtle gradient overlay for depth */
+.trade-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.05) 100%);
+  pointer-events: none;
+  opacity: 0.6;
+  z-index: -1;
+}
+
+.trade-card:hover {
+  transform: translateY(-4px) translateZ(0);
+  box-shadow: 0 16px 64px rgba(0, 0, 0, 0.22), 0 8px 32px rgba(0, 0, 0, 0.16);
+  border-color: rgba(0, 255, 136, 0.4);
 }
 
 .trade-card:nth-child(1) {
@@ -346,12 +469,6 @@ code {
 
 .trade-card:nth-child(3) {
   animation-delay: 0.3s;
-}
-
-.trade-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 16px rgba(0, 255, 136, 0.15);
-  border-color: var(--accent-green);
 }
 
 .trade-header {
@@ -445,38 +562,86 @@ code {
 .btn {
   font-family: var(--font-mono);
   padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: 4px;
   border: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   display: inline-block;
   text-align: center;
+  /* Apply glass base */
+  border-radius: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary {
-  background-color: var(--accent-green);
   color: var(--bg-primary);
+  /* Apply glass effect */
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.85) 0%, 
+    rgba(0, 200, 108, 0.92) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(0, 255, 136, 0.35),
+    0 8px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Glass shimmer effect on buttons */
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  transition: left 0.6s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 
 .btn-primary:hover {
-  background-color: var(--accent-green-dim);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 136, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 8px 24px rgba(0, 255, 136, 0.45),
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
   text-decoration: none;
 }
 
+.btn-primary:active {
+  transform: translateY(0px) scale(0.98);
+}
+
 .btn-secondary {
-  background-color: transparent;
   color: var(--accent-green);
-  border: 1px solid var(--accent-green);
+  /* Apply glass effect */
+  background: rgba(0, 255, 136, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 136, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .btn-secondary:hover {
-  background-color: var(--accent-green);
+  background: linear-gradient(135deg, 
+    rgba(0, 255, 136, 0.85) 0%, 
+    rgba(0, 200, 108, 0.92) 100%);
   color: var(--bg-primary);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 
+    0 8px 24px rgba(0, 255, 136, 0.45),
+    0 12px 36px rgba(0, 0, 0, 0.28);
   text-decoration: none;
 }
 
@@ -737,11 +902,18 @@ code {
     display: none !important;
     margin-top: var(--spacing-sm);
     margin-left: var(--spacing-md);
-    box-shadow: none;
-    border: none;
-    background-color: var(--bg-tertiary);
-    border-left: 2px solid var(--accent-green);
     padding-left: var(--spacing-md);
+    /* Apply glass effect to mobile dropdowns (Trades & Mentors) */
+    background: linear-gradient(135deg,
+      rgba(15, 20, 41, 0.65) 0%,
+      rgba(10, 14, 39, 0.75) 100%);
+    backdrop-filter: blur(35px) saturate(180%);
+    -webkit-backdrop-filter: blur(35px) saturate(180%);
+    border: none;
+    border-left: 3px solid rgba(0, 255, 136, 0.85);
+    border-radius: 18px;
+    padding: var(--spacing-sm);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.12);
   }
   
   .nav-item.has-submenu.active .nav-submenu {
