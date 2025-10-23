@@ -701,7 +701,7 @@ class TradingJournal {
     const dateFormatted = this.formatDateForFilename(data.entry_date);
     
     const screenshots = this.uploadedImages.map(img => 
-      `  - ${this.basePath}/index.directory/assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
+      `  - ./assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name}`
     ).join('\n');
     
     // Build YAML frontmatter with optional tags
@@ -774,7 +774,7 @@ ${data.notes || 'No additional notes.'}
 ## Screenshots
 
 ${this.uploadedImages.length > 0 ? this.uploadedImages.map(img => 
-  `![${img.name}](assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name})`
+  `![${img.name}](./assets/sfti.tradez.assets/${weekFolder}/${dateFormatted}.${data.trade_number}/${img.name})`
 ).join('\n\n') : 'No screenshots uploaded.'}
 `;
   }
