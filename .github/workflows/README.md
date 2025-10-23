@@ -204,7 +204,9 @@ Currently no custom environment variables required. The workflow uses:
 
 ### Secrets
 
-No custom secrets required. Uses built-in `GITHUB_TOKEN`.
+**For trade_pipeline.yml and import.yml**: No custom secrets required. Uses built-in `GITHUB_TOKEN`.
+
+**For site-submit.yml**: Requires a repository secret named `PAT_GITHUB`. This is a Personal Access Token with `repo` scope, needed for the `peter-evans/create-pull-request` action to create PRs that trigger other workflows. See [README-DEV.md](../docs/README-DEV.md#2-required-secrets) for setup instructions.
 
 ### Concurrency
 

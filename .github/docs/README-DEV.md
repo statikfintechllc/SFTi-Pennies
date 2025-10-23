@@ -64,13 +64,33 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 
 ### 2. Required Secrets
 
-No custom secrets are required for the GitHub Actions workflow. The workflow uses the built-in `GITHUB_TOKEN` which has sufficient permissions to:
+#### For Main Workflows (trade_pipeline.yml, import.yml)
+
+No custom secrets are required for the main GitHub Actions workflows. These workflows use the built-in `GITHUB_TOKEN` which has sufficient permissions to:
 - Read repository contents
 - Write files to the repository
 
 GitHub Pages builds and deploys automatically from the branch.
 
-**Note**: If you need to add a custom Personal Access Token as a repository secret (for advanced use cases), name it `PAT_GITHUB` instead of `GITHUB_TOKEN` to avoid confusion with the built-in token.
+#### For Site Submit Workflow (site-submit.yml)
+
+If you plan to use the site-submit workflow (for creating PRs from trade submissions), you need to create a repository secret:
+
+1. **Create a Personal Access Token (PAT)**
+   - Go to https://github.com/settings/tokens
+   - Click "Generate new token (classic)"
+   - Give it a descriptive name (e.g., "SFTi-Pennies Workflow")
+   - Select scope: `repo` (full control of private repositories)
+   - Generate token and copy it
+
+2. **Add as Repository Secret**
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Click "New repository secret"
+   - Name: `PAT_GITHUB`
+   - Value: Paste your PAT
+   - Click "Add secret"
+
+**Why PAT_GITHUB is needed**: The `peter-evans/create-pull-request` action requires a PAT (not the built-in `GITHUB_TOKEN`) to create pull requests that can trigger other workflows.
 
 ### 3. Authentication Setup
 

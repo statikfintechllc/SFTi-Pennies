@@ -82,7 +82,7 @@ jobs:
         if: env.NO_CHANGES == 'false'
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_GITHUB }}
           branch: ${{ env.BRANCH_NAME }}
           title: ${{ github.event.inputs.pr_title || 'Trade submission' }}
           body: |
