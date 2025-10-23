@@ -628,7 +628,7 @@ All are part of Python standard library - no additional pip installs required be
 ## Related Documentation
 
 - [Importing Guide](../docs/importing.md) - CSV import instructions
-- [QUICKSTART_TEMPLATE.md](../../QUICKSTART_TEMPLATE.md) - Template user guide
+- [Quick Start Guide](../docs/QUICKSTART.md) - Setup guide
 - [GitHub Actions Workflow](../workflows/README.md)
 - [Trade Pipeline Documentation](../docs/TRADE_PIPELINE.md)
 - [Developer Guide](../docs/README-DEV.md)

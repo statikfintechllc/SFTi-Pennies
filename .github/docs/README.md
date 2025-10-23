@@ -4,23 +4,9 @@
 
 ## Overview
 
-This directory contains comprehensive documentation for the SFTi-Pennies trading journal system. The documentation covers everything from quick setup guides to detailed technical architecture, troubleshooting, and development guidelines.
+This directory contains essential documentation for the SFTi-Pennies trading journal system. The documentation covers setup guides, technical architecture, and feature implementation details.
 
 ## 📖 Documentation Categories
-
-### 🎯 .github Directory Overview
-
-**Parent Directory Guide:**
-- [**README.git.md**](./README.git.md) - Complete `.github` directory documentation
-  - GitHub-specific configuration and automation hub
-  - Overview of all subdirectories (scripts, workflows, templates, docs)
-  - Automation pipeline architecture
-  - Community guidelines and contribution setup
-  - Configuration files reference
-
-**🎯 Start here for:** Understanding the `.github` infrastructure, automation system, and contribution workflows
-
----
 
 ### 🚀 Getting Started
 
@@ -55,7 +41,7 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
   - Deployment process
 
 **Implementation Details:**
-- [**IMPLEMENTATION.md**](./IMPLEMENTATION.md) - Original system implementation
+- [**IMPLEMENTATION.md**](./IMPLEMENTATION.md) - System features and capabilities
   - Features built
   - Technical stack
   - Statistics
@@ -85,40 +71,6 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
   - Tag aggregations
   - Visualization system
 
-### 🔧 Troubleshooting & Debugging
-
-**Debug Guides:**
-- [**BUG_FIX_SUMMARY.md**](./BUG_FIX_SUMMARY.md) - Notes/Books 404 fixes
-  - Jekyll configuration
-  - Path resolution
-  - Common issues
-
-- [**MODAL_DEBUG_GUIDE.md**](./MODAL_DEBUG_GUIDE.md) - Modal debugging
-  - Console logging features
-  - Expected output examples
-  - Troubleshooting steps
-
-- [**MODAL_AND_MANIFEST_FIX_SUMMARY.md**](./MODAL_AND_MANIFEST_FIX_SUMMARY.md) - Modal visibility fixes
-  - CSS structure
-  - JavaScript behavior
-  - Manifest consolidation
-
-**Reference Materials:**
-- [**CONSOLE_OUTPUT_EXAMPLES.md**](./CONSOLE_OUTPUT_EXAMPLES.md) - Real console outputs
-  - Success cases
-  - Failure cases
-  - What to look for
-
-- [**PATH_RESOLUTION_STRATEGY.md**](./PATH_RESOLUTION_STRATEGY.md) - Path handling
-  - Resolution logic
-  - Edge cases
-  - Future considerations
-
-- [**TESTING_CHECKLIST.md**](./TESTING_CHECKLIST.md) - Post-deployment testing
-  - Verification steps
-  - Success criteria
-  - Troubleshooting tips
-
 ## 📋 Quick Reference
 
 ### Common Tasks
@@ -129,9 +81,7 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 - **Learn about the automation** → [TRADE_PIPELINE.md](./TRADE_PIPELINE.md)
 - **Import trades from broker** → [importing.md](./importing.md)
 - **Understand analytics metrics** → [ANALYTICS.md](./ANALYTICS.md)
-- **Fix a modal issue** → [MODAL_DEBUG_GUIDE.md](./MODAL_DEBUG_GUIDE.md)
-- **Debug path problems** → [PATH_RESOLUTION_STRATEGY.md](./PATH_RESOLUTION_STRATEGY.md)
-- **Test after deployment** → [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md)
+- **Learn about features** → [IMPLEMENTATION.md](./IMPLEMENTATION.md)
 
 ### For Different Roles
 
@@ -144,10 +94,9 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 2. Architecture: [STRUCTURE.md](./STRUCTURE.md), [TRADE_PIPELINE.md](./TRADE_PIPELINE.md)
 3. Reference: [IMPLEMENTATION.md](./IMPLEMENTATION.md), [BOOKS-NOTES-IMPLEMENTATION.md](./BOOKS-NOTES-IMPLEMENTATION.md)
 
-**Troubleshooters:**
-1. Modal issues: [MODAL_DEBUG_GUIDE.md](./MODAL_DEBUG_GUIDE.md), [MODAL_AND_MANIFEST_FIX_SUMMARY.md](./MODAL_AND_MANIFEST_FIX_SUMMARY.md)
-2. Path issues: [PATH_RESOLUTION_STRATEGY.md](./PATH_RESOLUTION_STRATEGY.md), [BUG_FIX_SUMMARY.md](./BUG_FIX_SUMMARY.md)
-3. Testing: [TESTING_CHECKLIST.md](./TESTING_CHECKLIST.md), [CONSOLE_OUTPUT_EXAMPLES.md](./CONSOLE_OUTPUT_EXAMPLES.md)
+**Data Import Users:**
+1. CSV Import: [importing.md](./importing.md)
+2. Analytics: [ANALYTICS.md](./ANALYTICS.md)
 
 ## 🗂️ Documentation Structure
 
@@ -162,20 +111,12 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 ├── 🏗️ Architecture
 │   ├── STRUCTURE.md                       # Repository structure
 │   ├── TRADE_PIPELINE.md                  # Automation pipeline
-│   ├── IMPLEMENTATION.md                  # System implementation
+│   ├── IMPLEMENTATION.md                  # System features
 │   └── BOOKS-NOTES-IMPLEMENTATION.md      # Books/Notes features
 │
-├── 📊 Import & Analytics
-│   ├── importing.md                       # CSV import guide
-│   └── ANALYTICS.md                       # Analytics documentation
-│
-└── 🔧 Troubleshooting
-    ├── BUG_FIX_SUMMARY.md                 # 404 error fixes
-    ├── MODAL_DEBUG_GUIDE.md               # Modal debugging
-    ├── MODAL_AND_MANIFEST_FIX_SUMMARY.md  # Modal visibility
-    ├── CONSOLE_OUTPUT_EXAMPLES.md         # Console output reference
-    ├── PATH_RESOLUTION_STRATEGY.md        # Path handling
-    └── TESTING_CHECKLIST.md               # Post-deployment tests
+└── 📊 Import & Analytics
+    ├── importing.md                       # CSV import guide
+    └── ANALYTICS.md                       # Analytics documentation
 ```
 
 ## 🎯 Key Features Documented
@@ -231,7 +172,7 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 1. **Choose the right location:**
    - Getting Started → User-facing guides
    - Architecture → Technical/design docs
-   - Troubleshooting → Debug/fix guides
+   - Import & Analytics → Feature-specific docs
 
 2. **Follow naming conventions:**
    - Use UPPERCASE for main docs
@@ -267,7 +208,7 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 **Do's ✅**
 - Use clear, concise language
 - Provide examples and code snippets
-- Include troubleshooting sections
+- Include troubleshooting in README-DEV.md
 - Add screenshots where helpful
 - Keep docs up to date
 - Test procedures before documenting
@@ -275,7 +216,7 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 
 **Don'ts ❌**
 - Don't duplicate information (link instead)
-- Don't use vague descriptions
+- Don't create patch-specific documentation (integrate into main docs)
 - Don't forget to update the index (this file)
 - Don't include sensitive information
 - Don't use outdated screenshots
@@ -289,43 +230,32 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 - **Setup** → QUICKSTART.md, README-DEV.md
 - **Architecture** → STRUCTURE.md, TRADE_PIPELINE.md
 - **Features** → IMPLEMENTATION.md, BOOKS-NOTES-IMPLEMENTATION.md
-- **Debugging** → MODAL_DEBUG_GUIDE.md, BUG_FIX_SUMMARY.md
-- **Testing** → TESTING_CHECKLIST.md, CONSOLE_OUTPUT_EXAMPLES.md
+- **Import** → importing.md
+- **Analytics** → ANALYTICS.md
 
 **By File Type:**
 - **Configuration** → README-DEV.md (setup section)
 - **Scripts** → TRADE_PIPELINE.md, [scripts/README.md](../scripts/README.md)
-- **Styles** → [assets/css/README.md](../../index.directory/assets/css/README.md)
-- **JavaScript** → [assets/js/README.md](../../index.directory/assets/js/README.md)
-
-**By Problem:**
-- **404 errors** → BUG_FIX_SUMMARY.md, PATH_RESOLUTION_STRATEGY.md
-- **Modal not showing** → MODAL_DEBUG_GUIDE.md, MODAL_AND_MANIFEST_FIX_SUMMARY.md
-- **Paths not resolving** → PATH_RESOLUTION_STRATEGY.md
-- **Workflow failing** → TRADE_PIPELINE.md, [workflows/README.md](../workflows/README.md)
+- **Workflows** → TRADE_PIPELINE.md, [workflows/README.md](../workflows/README.md)
 
 ## 🔗 Related Documentation
 
 ### In Repository
 - [Root README](../../README.md) - Project overview
-- [.github README](../README.md) - GitHub directory overview
 - [Scripts Documentation](../scripts/README.md) - Automation scripts
 - [Workflows Documentation](../workflows/README.md) - GitHub Actions
 - [Templates Documentation](../templates/README.md) - Content templates
 
 ### In Application
 - [Assets README](../../index.directory/assets/README.md) - Asset organization
-- [CSS Documentation](../../index.directory/assets/css/README.md) - Styles
-- [JavaScript Documentation](../../index.directory/assets/js/README.md) - Client-side code
-- [Render Documentation](../../index.directory/render/README.md) - Content rendering
 
 ## 📊 Documentation Statistics
 
-- **Total Documents:** 13
+- **Total Documents:** 9 (streamlined for clarity)
 - **Getting Started:** 2 documents
 - **Architecture:** 4 documents
-- **Troubleshooting:** 6 documents
-- **Reference:** 1 document (this file)
+- **Import & Analytics:** 2 documents
+- **Index:** 1 document (this file)
 
 ## 🔄 Maintenance
 
@@ -333,13 +263,11 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 - Review docs after major changes
 - Update screenshots if UI changes
 - Verify all links still work
-- Archive outdated debug docs
 - Keep version info current
 
 ### Document Lifecycle
 1. **Active** - Current, referenced documentation
-2. **Archive** - Historical, rarely needed (consider moving to `/archive`)
-3. **Deprecated** - Outdated, needs update or removal
+2. **Deprecated** - Outdated, needs update or removal
 
 ### Version Control
 - All docs tracked in git
@@ -350,5 +278,5 @@ This directory contains comprehensive documentation for the SFTi-Pennies trading
 ---
 
 **Last Updated:** October 2025  
-**Document Count:** 13  
-**Purpose:** Comprehensive system documentation and guides
+**Document Count:** 9  
+**Purpose:** Essential system documentation and guides

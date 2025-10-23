@@ -3,36 +3,17 @@
 This file contains all TODO items found throughout the repository, organized by category.
 
 **Last Updated:** 2025-10-23  
-**Total Items:** 59
+**Total Items:** 43
 
 ---
 
-## 📚 Documentation (23 items)
+## 📚 Documentation (7 items)
 
 ### `.github/docs/IMPLEMENTATION.md`
 
 - **Line 307**: The following features have been **scaffolded** with TODOs for full implementation
 - **Line 365**: 🚧 Tagging System (TODO)
 - **Line 454**: Scaffolded with TODOs 🚧
-
-### `.github/docs/PR_SUMMARY.md`
-
-- **Line 69**: `importers/ibkr.py` - Interactive Brokers parser (TODO)
-- **Line 70**: `importers/schwab.py` - Schwab/TD Ameritrade parser (TODO)
-- **Line 71**: `importers/robinhood.py` - Robinhood parser (TODO)
-- **Line 72**: `importers/webull.py` - Webull parser (TODO)
-- **Line 320**: All scaffolded features documented with TODOs
-- **Line 330**: Clear TODO markers for future work
-- **Line 368**: TODOs clearly marked
-
-### `.github/docs/QUICKSTART_TEMPLATE.md`
-
-- **Line 201**: Future: OAuth Mode (TODO)
-- **Line 205**: 🛠️ Advanced Features (TODO)
-
-### `.github/docs/TESTING_CHECKLIST.md`
-
-- **Line 63**: HTML rendered, length: XXXX
 
 ### `.github/docs/importing.md`
 
@@ -151,7 +132,7 @@ This file contains all TODO items found throughout the repository, organized by 
 
 1. **OAuth Authentication Mode**
    - Enhanced security option
-   - Documented in QUICKSTART_TEMPLATE.md
+   - Documented in QUICKSTART.md
 
 2. **Advanced Tagging System**
    - Better trade categorization
@@ -168,10 +149,10 @@ This file contains all TODO items found throughout the repository, organized by 
 | Category | Count |
 |----------|-------|
 | Scripts | 32 |
-| Documentation | 23 |
+| Documentation | 7 |
 | Workflows | 1 |
 | Other | 3 |
-| **TOTAL** | **59** |
+| **TOTAL** | **43** |
 
 ---
 
@@ -249,7 +230,6 @@ When implementing TODO items:
 
 - [Developer Guide](.github/docs/README-DEV.md)
 - [Implementation Details](.github/docs/IMPLEMENTATION.md)
-- [Testing Checklist](.github/docs/TESTING_CHECKLIST.md)
 - [Import Documentation](.github/docs/importing.md)
 
 ---
