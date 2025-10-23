@@ -414,8 +414,6 @@ index.directory/
 │   │   └── analytics-data.json # Analytics data (NEW)
 │   └── trade-images/           # Screenshot storage (NEW)
 │       └── trade-{id}/
-
-QUICKSTART_TEMPLATE.md          # Template guide (NEW)
 ```
 
 ## Updated Workflow Pipeline
@@ -437,7 +435,7 @@ The trade_pipeline.yml now includes:
 
 New documentation added:
 
-- **QUICKSTART_TEMPLATE.md** - Guide for template users
+- **QUICKSTART.md** - Quick start guide for new users
 - **.github/docs/importing.md** - Comprehensive import guide with broker instructions
 - **Updated IMPLEMENTATION.md** - This file with Phase 2 features
 
