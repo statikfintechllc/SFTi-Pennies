@@ -6,7 +6,7 @@
       "filename": "10_Patterns.pdf",
       "size": 7107001,
       "size_mb": 6.78,
-      "modified": "2025-10-23T16:30:46.437009",
+      "modified": "2025-10-23T16:35:15.873869",
       "cover": null
     },
     {
@@ -15,7 +15,7 @@
       "filename": "20_Strategies.pdf",
       "size": 1607802,
       "size_mb": 1.53,
-      "modified": "2025-10-23T16:30:46.443009",
+      "modified": "2025-10-23T16:35:15.878869",
       "cover": null
     },
     {
@@ -24,7 +24,7 @@
       "filename": "7_Figure_MindSet.pdf",
       "size": 2161020,
       "size_mb": 2.06,
-      "modified": "2025-10-23T16:30:46.448009",
+      "modified": "2025-10-23T16:35:15.883869",
       "cover": null
     },
     {
@@ -33,7 +33,7 @@
       "filename": "American_Hedge_Fund.pdf",
       "size": 5899107,
       "size_mb": 5.63,
-      "modified": "2025-10-23T16:30:46.467009",
+      "modified": "2025-10-23T16:35:15.897869",
       "cover": null
     },
     {
@@ -42,11 +42,20 @@
       "filename": "Protect_Profit.pdf",
       "size": 376802,
       "size_mb": 0.36,
-      "modified": "2025-10-23T16:30:46.469009",
+      "modified": "2025-10-23T16:35:15.898869",
+      "cover": null
+    },
+    {
+      "title": "The Complete Penny Course",
+      "file": "index.directory/Informational.Bookz/The_Complete_Penny_Course.pdf",
+      "filename": "The_Complete_Penny_Course.pdf",
+      "size": 16973439,
+      "size_mb": 16.19,
+      "modified": "2025-10-23T16:35:15.966869",
       "cover": null
     }
   ],
-  "total_count": 5,
-  "generated_at": "2025-10-23T16:31:23.798740",
+  "total_count": 6,
+  "generated_at": "2025-10-23T16:35:51.343066",
   "version": "1.0"
 }
