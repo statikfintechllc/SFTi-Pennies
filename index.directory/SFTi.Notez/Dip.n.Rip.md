@@ -70,7 +70,7 @@ Around 1:00 PM CST, HOLO hit the high from premarket and proceeded to run up aga
 > [!NOTE]
 >
 > HOLO Intraday, 5-Minute Candles Chart;
-STT
+> Platform: STT
 
 On October 22, Branchout Food Inc (NASDAQ: BOF), a low float stock, had news in the early in the morning which caused the stock to spike premarket in the Image Perfect Dip n Rip
 
@@ -80,4 +80,4 @@ Around 6:30 AM CST, BOF hit the scanner on the first leg, and proceeded to run u
 > [!NOTE]
 >
 > BOF Pre-Market, 5-Minute Candles Chart;
-IBKR
+> Platform: IBKR

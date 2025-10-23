@@ -161,6 +161,8 @@ def scan_notes_directory(directory='index.directory/SFTi.Notez'):
         return notes
     
     # Get all markdown files except README.md
+    # Note: README.md is intentionally excluded as it's a navigational/documentation file,
+    # not an actual trading note with content meant to be displayed as a card
     md_files = [f for f in os.listdir(directory) 
                 if f.endswith('.md') and f != 'README.md']
     
