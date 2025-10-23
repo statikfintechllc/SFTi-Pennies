@@ -1,16 +1,50 @@
 {
-  "expectancy": 0,
-  "profit_factor": 0,
+  "expectancy": -3.9,
+  "profit_factor": 0.0,
   "max_win_streak": 0,
-  "max_loss_streak": 0,
-  "max_drawdown": 0,
-  "kelly_criterion": 0,
-  "by_strategy": {},
-  "by_setup": {},
-  "by_session": {},
-  "drawdown_series": {
-    "labels": [],
-    "values": []
+  "max_loss_streak": 1,
+  "max_drawdown": 0.0,
+  "kelly_criterion": 0.0,
+  "by_strategy": {
+    "Dip Buy for a VWAP Test": {
+      "total_trades": 1,
+      "winning_trades": 0,
+      "losing_trades": 1,
+      "win_rate": 0.0,
+      "total_pnl": -3.9,
+      "avg_pnl": -3.9,
+      "expectancy": -3.9
+    }
   },
-  "generated_at": "2025-10-23T16:52:14.357331"
+  "by_setup": {
+    "Unclassified": {
+      "total_trades": 1,
+      "winning_trades": 0,
+      "losing_trades": 1,
+      "win_rate": 0.0,
+      "total_pnl": -3.9,
+      "avg_pnl": -3.9,
+      "expectancy": -3.9
+    }
+  },
+  "by_session": {
+    "Unclassified": {
+      "total_trades": 1,
+      "winning_trades": 0,
+      "losing_trades": 1,
+      "win_rate": 0.0,
+      "total_pnl": -3.9,
+      "avg_pnl": -3.9,
+      "expectancy": -3.9
+    }
+  },
+  "drawdown_series": {
+    "labels": [
+      "10/23"
+    ],
+    "values": [
+      0.0
+    ]
+  },
+  "generated_at": "2025-10-23T22:06:36.160952"
 }

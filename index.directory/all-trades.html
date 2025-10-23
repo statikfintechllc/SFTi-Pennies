@@ -3,22 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="All trades history and performance tracking">
-    <meta name="theme-color" content="#00ff88">
-    
     <title>All Trades - SFTi-Pennies</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/glass-effects.css">
     <style>
         table {
             width: 100%;
@@ -57,68 +44,18 @@
 <body>
     <canvas id="bg-canvas"></canvas>
     
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="all-trades.html" class="nav-brand">
-        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
-        SFTi-Pennies
-      </a>
-      
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <div class="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-brand">📈 SFTi-Pennies</a>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="../index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a></li>
+            </ul>
         </div>
-      </button>
-      
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="../index.html" class="nav-link">Home</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="books.html" class="nav-link">Books</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="notes.html" class="nav-link">Notes</a>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Trades</a>
-          <ul class="nav-submenu">
-            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
-            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="import.html" class="nav-link">Import CSV</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Mentors</a>
-          <ul class="nav-submenu">
-            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
-            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item nav-buttons-group">
-          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
-        </li>
-      </ul>
-    </div>
-  </nav>
+    </nav>
     
     <main class="container">
-        <h1 style="display: flex; align-items: center; gap: 0.75rem;">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-            </svg>
-            All Trades
-        </h1>
+        <h1>All Trades</h1>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">
             Complete list of all recorded trades
         </p>
@@ -140,7 +77,17 @@
                 </thead>
                 <tbody>
                     
-                    
+        <tr>
+            <td>#1</td>
+            <td><strong>SGBX</strong></td>
+            <td>LONG</td>
+            <td>$3.4300</td>
+            <td>$3.1700</td>
+            <td>15.0</td>
+            <td class="negative">$3.90</td>
+            <td>2025-10-23</td>
+            <td>Dip Buy for a VWAP Test</td>
+        </tr>
         
                 </tbody>
             </table>
@@ -152,7 +99,5 @@
     </footer>
     
     <script src="assets/js/background.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <script src="assets/js/app.js"></script>
 </body>
 </html>
