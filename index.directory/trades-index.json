@@ -37,9 +37,9 @@
         "Weak Trend"
       ],
       "screenshots": [
-        "/SFTi-Pennies/index.directory/assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2707.jpeg",
-        "/SFTi-Pennies/index.directory/assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2703.jpeg",
-        "/SFTi-Pennies/index.directory/assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2704.jpeg"
+        "../../assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2707.jpeg",
+        "../../assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2703.jpeg",
+        "../../assets/sfti.tradez.assets/week.2025.43/10:23:2025.1/IMG_2704.jpeg"
       ]
     }
   ],
@@ -58,6 +58,6 @@
     "max_drawdown": 0,
     "profit_factor": 0.0
   },
-  "generated_at": "2025-10-23T22:06:33.413242",
+  "generated_at": "2025-10-23T23:09:01.840740",
   "version": "1.0"
 }
