@@ -67,7 +67,8 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 No secrets are required for the GitHub Actions workflow. The workflow uses the built-in `GITHUB_TOKEN` which has sufficient permissions to:
 - Read repository contents
 - Write files to the repository
-- Deploy to GitHub Pages
+
+GitHub Pages builds and deploys automatically from the branch.
 
 ### 3. Authentication Setup
 
@@ -269,10 +270,10 @@ The workflow runs automatically when you:
    - Optimizes JPEGs with jpegoptim
    - Reduces file sizes for faster loading
 
-7. **Deploy to Pages**
-   - Jekyll builds the site
-   - Uploads artifact
-   - Deploys to GitHub Pages
+9. **Commit and Push**
+   - Commits all generated files to repository
+   - Pushes changes to remote branch
+   - GitHub Pages automatically builds and deploys from the branch
 
 ### Monitoring Workflow
 

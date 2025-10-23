@@ -14,11 +14,9 @@ on:
       - '.github/workflows/trade_pipeline.yml'
   workflow_dispatch:
 
-# Permissions for GitHub Pages deployment
+# Permissions for committing changes
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   process-trades:
@@ -140,35 +138,3 @@ jobs:
             index.directory/trades/
             index.directory/analytics.html
 
-  deploy-pages:
-    needs: process-trades
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-      
-      - name: Pull latest changes
-        run: |
-          git pull origin ${{ github.ref_name }}
-      
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-          config: ./index.directory/_config.yml
-      
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ./_site
-      
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
