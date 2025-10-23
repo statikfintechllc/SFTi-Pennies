@@ -205,7 +205,7 @@ class GitHubAuth {
       const body = {
         message: message,
         content: content,
-        branch: 'main'
+        branch: 'master'
       };
       
       if (sha) {
@@ -233,10 +233,10 @@ class GitHubAuth {
   /**
    * Create a new branch
    * @param {string} branchName - Name of the new branch
-   * @param {string} fromBranch - Base branch (default: 'main')
+   * @param {string} fromBranch - Base branch (default: 'master')
    * @returns {Promise<Object>}
    */
-  async createBranch(branchName, fromBranch = 'main') {
+  async createBranch(branchName, fromBranch = 'master') {
     if (!this.isAuthenticated()) {
       throw new Error('Not authenticated');
     }
