@@ -51,14 +51,22 @@ The workflow runs when:
    ↓
 9. Generate Charts
    ↓
-10. Update Homepage
+10. Generate Analytics
    ↓
-11. Optimize Images
+11. Generate Trade Detail Pages
    ↓
-12. Commit Changes
+12. Generate Week Summaries
    ↓
-13. Deploy to GitHub Pages
+13. Update Homepage
+   ↓
+14. Optimize Images
+   ↓
+15. Commit Changes
+   ↓
+16. Upload Artifacts
 ```
+
+**Note:** GitHub Pages automatically builds and deploys from the branch after changes are committed.
 
 #### Step Details
 
@@ -153,17 +161,24 @@ Installs optimization tools and processes images.
     git diff --quiet && git diff --staged --quiet || git commit -m "Auto: update journal data and charts"
     git push
 ```
-Commits generated files back to repository.
+Commits generated files back to repository. GitHub Pages automatically builds and deploys from the branch.
 
-**13. Deploy to Pages**
+**13. Upload Artifacts**
 ```yaml
-- name: Deploy to GitHub Pages
-  uses: peaceiris/actions-gh-pages@v3
+- name: Upload artifacts
+  uses: actions/upload-artifact@v4
   with:
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    publish_dir: .
+    name: trade-data
+    path: |
+      index.directory/trades-index.json
+      index.directory/books-index.json
+      index.directory/notes-index.json
+      index.directory/assets/charts/
+      index.directory/all-trades.html
+      index.directory/trades/
+      index.directory/analytics.html
 ```
-Deploys updated site to GitHub Pages.
+Uploads generated artifacts for workflow visibility and debugging.
 
 #### Execution Time
 - **Total Duration:** ~3-5 minutes
@@ -175,9 +190,9 @@ Deploys updated site to GitHub Pages.
 ```yaml
 permissions:
   contents: write      # For committing generated files
-  pages: write        # For deploying to GitHub Pages
-  id-token: write     # For authentication
 ```
+
+GitHub Pages builds automatically from the branch, so no additional permissions are needed.
 
 ## Workflow Configuration
 
@@ -189,7 +204,9 @@ Currently no custom environment variables required. The workflow uses:
 
 ### Secrets
 
-No custom secrets required. Uses built-in `GITHUB_TOKEN`.
+**For trade_pipeline.yml and import.yml**: No custom secrets required. Uses built-in `GITHUB_TOKEN`.
+
+**For site-submit.yml**: Requires a repository secret named `PAT_GITHUB`. This is a Personal Access Token with `repo` scope, needed for the `peter-evans/create-pull-request` action to create PRs that trigger other workflows. See [README-DEV.md](../docs/README-DEV.md#2-required-secrets) for setup instructions.
 
 ### Concurrency
 
@@ -286,19 +303,22 @@ bash .github/scripts/optimize_images.sh
 # Check image file integrity
 ```
 
-#### Deploy Fails
-**Symptom:** Error in GitHub Pages deployment
+#### GitHub Pages Issues
+**Symptom:** Site not updating after workflow completes
 
 **Causes:**
-- Pages not enabled
-- Incorrect permissions
-- Build artifacts too large
+- GitHub Pages not enabled in repository settings
+- Incorrect Pages source configuration
+- Jekyll build errors
 
 **Solution:**
-1. Enable GitHub Pages in repository settings
-2. Set correct source (Deploy from branch or GitHub Actions)
-3. Check workflow permissions
-4. Reduce asset sizes if needed
+1. Go to repository Settings → Pages
+2. Ensure Pages is enabled
+3. Set source to "Deploy from a branch"
+4. Select branch: main (or your default branch)
+5. Select folder: / (root)
+6. Check for Jekyll build errors in the Pages build logs
+7. Verify `_config.yml` is correctly configured in `index.directory/`
 
 ### Performance Issues
 

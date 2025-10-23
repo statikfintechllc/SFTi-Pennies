@@ -11,7 +11,7 @@ This document describes the complete trade submission workflow for the SFTi-Penn
 ```
 User fills form → JavaScript validates → GitHub API uploads → 
 Actions trigger → Python scripts parse → Generate JSON index → 
-Generate charts → Update site → Deploy to Pages
+Generate charts → Update site → Commit changes → GitHub Pages auto-deploys
 ```
 
 ### Directory Structure
@@ -270,11 +270,11 @@ Optimizes images using:
 - `optipng` for PNG files
 - `jpegoptim` for JPEG files
 
-#### 9. Commit & Deploy
+#### 9. Commit Changes
 
 - Commits all generated files with message: `Auto-update: Process trades and generate charts [skip ci]`
 - Pushes to repository
-- Deploys to GitHub Pages
+- GitHub Pages automatically builds and deploys from the branch
 
 ## Manual Operations
 
@@ -390,7 +390,9 @@ Average execution time: 2-5 minutes
 - Generate summaries: 10-30 seconds
 - Generate charts: 30-60 seconds
 - Image optimization: 1-2 minutes (depends on number of images)
-- Deploy to Pages: 30-60 seconds
+- Commit changes: 10-30 seconds
+
+Note: GitHub Pages builds and deploys automatically after changes are committed (typically 1-3 minutes).
 
 ### API Rate Limits
 

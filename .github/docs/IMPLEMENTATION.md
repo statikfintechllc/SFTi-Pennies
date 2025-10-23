@@ -193,8 +193,8 @@ SFTi-Pennies/
 5. **Step 4**: Generate equity curve and charts
 6. **Step 5**: Ensure homepage data is accessible
 7. **Step 6**: Optimize and move images
-8. **Step 7**: Deploy updated site to GitHub Pages
-9. **Result**: Site refreshes with new trade visible
+8. **Step 7**: Commit changes to repository
+9. **Result**: Site refreshes with new trade visible (GitHub Pages auto-deploys from branch)
 
 ## Security Features
 
