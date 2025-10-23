@@ -6,7 +6,7 @@
       "filename": "10_Patterns.pdf",
       "size": 7107001,
       "size_mb": 6.78,
-      "modified": "2025-10-23T01:18:56.352299",
+      "modified": "2025-10-23T16:30:46.437009",
       "cover": null
     },
     {
@@ -15,7 +15,7 @@
       "filename": "20_Strategies.pdf",
       "size": 1607802,
       "size_mb": 1.53,
-      "modified": "2025-10-23T01:18:56.357299",
+      "modified": "2025-10-23T16:30:46.443009",
       "cover": null
     },
     {
@@ -24,7 +24,7 @@
       "filename": "7_Figure_MindSet.pdf",
       "size": 2161020,
       "size_mb": 2.06,
-      "modified": "2025-10-23T01:18:56.362299",
+      "modified": "2025-10-23T16:30:46.448009",
       "cover": null
     },
     {
@@ -33,16 +33,7 @@
       "filename": "American_Hedge_Fund.pdf",
       "size": 5899107,
       "size_mb": 5.63,
-      "modified": "2025-10-23T01:18:56.375299",
-      "cover": null
-    },
-    {
-      "title": "Penny Corse",
-      "file": "index.directory/Informational.Bookz/Penny_Corse.pdf",
-      "filename": "Penny_Corse.pdf",
-      "size": 16973439,
-      "size_mb": 16.19,
-      "modified": "2025-10-23T01:18:56.447299",
+      "modified": "2025-10-23T16:30:46.467009",
       "cover": null
     },
     {
@@ -51,11 +42,11 @@
       "filename": "Protect_Profit.pdf",
       "size": 376802,
       "size_mb": 0.36,
-      "modified": "2025-10-23T01:18:56.449299",
+      "modified": "2025-10-23T16:30:46.469009",
       "cover": null
     }
   ],
-  "total_count": 6,
-  "generated_at": "2025-10-23T01:19:31.462283",
+  "total_count": 5,
+  "generated_at": "2025-10-23T16:31:23.798740",
   "version": "1.0"
 }
