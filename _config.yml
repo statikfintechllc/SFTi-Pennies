@@ -1,0 +1,48 @@
+# GitHub Pages Configuration for SFTi-Pennies Trading Journal
+# Root configuration to ensure proper site building
+
+# Site settings
+title: "SFTi-Pennies Trading Journal"
+description: "Professional penny stock trading journal with automated tracking and analysis"
+baseurl: ""
+url: "https://statikfintechllc.github.io/SFTi-Pennies"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Exclude from processing - files with colons cause Jekyll build errors
+exclude:
+  - README.md
+  - TODO.Feat.md
+  - DIRECTORY_STRUCTURE.md
+  - FIXES_SUMMARY.md
+  - .github/
+  - .gitignore
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/
+  - package.json
+  - package-lock.json
+  - LICENSE.md
+  - index.directory/Informational.Bookz/
+  - index.directory/SFTi.Notez/
+  - index.directory/SFTi.Tradez/
+  - index.directory/render/
+  - index.directory/src/
+  - "**/*:*"
+  - "**/**:**:****.*.md"
+
+# Include necessary files
+include:
+  - index.directory/_config.yml
+
+# Plugins
+plugins:
+  - jekyll-relative-links
+  - jekyll-seo-tag
+
+relative_links:
+  enabled: true
+  collections: false
