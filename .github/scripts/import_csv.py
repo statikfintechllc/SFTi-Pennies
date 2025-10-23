@@ -157,6 +157,29 @@ def create_trade_markdown(trade: Dict, output_dir: str) -> str:
     
     # Generate markdown content using existing template format
     try:
+        # Helper function to convert absolute paths to relative paths
+        def _convert_to_relative_path(absolute_path):
+            """Convert absolute path to relative path from markdown file location"""
+            # Remove leading repo name if present (e.g., /SFTi-Pennies/)
+            if absolute_path.startswith('/'):
+                # Extract the part after the repo name
+                parts = absolute_path.split('/')
+                # Find 'assets' in the path
+                try:
+                    assets_index = parts.index('assets')
+                    # Reconstruct path from assets onwards
+                    relative_parts = parts[assets_index:]
+                    return '../../' + '/'.join(relative_parts)
+                except ValueError:
+                    # If 'assets' not found, just use the path as-is with relative prefix
+                    return '../../' + absolute_path.lstrip('/')
+            else:
+                # Already relative, ensure it has the correct prefix
+                if absolute_path.startswith('assets/'):
+                    return '../../' + absolute_path
+                else:
+                    return absolute_path
+        
         # Load template
         template_path = '.github/templates/trade.md.template'
         with open(template_path, 'r', encoding='utf-8') as f:
@@ -167,7 +190,11 @@ def create_trade_markdown(trade: Dict, output_dir: str) -> str:
         if not screenshots_list or screenshots_list == ['']:
             screenshots_str = "No screenshots uploaded."
         else:
-            screenshots_str = "\n".join([f"![Screenshot]({s})" for s in screenshots_list])
+            # Convert paths to relative format and generate HTML img tags
+            screenshots_str = "\n\n".join([
+                f'<img width="2048" height="1679" alt="image" src="{_convert_to_relative_path(s)}"/>' 
+                for s in screenshots_list
+            ])
         
         # Build frontmatter
         frontmatter = f"""---
