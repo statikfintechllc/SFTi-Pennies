@@ -64,11 +64,13 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 
 ### 2. Required Secrets
 
-No secrets are required for the GitHub Actions workflow. The workflow uses the built-in `GITHUB_TOKEN` which has sufficient permissions to:
+No custom secrets are required for the GitHub Actions workflow. The workflow uses the built-in `GITHUB_TOKEN` which has sufficient permissions to:
 - Read repository contents
 - Write files to the repository
 
 GitHub Pages builds and deploys automatically from the branch.
+
+**Note**: If you need to add a custom Personal Access Token as a repository secret (for advanced use cases), name it `PAT_GITHUB` instead of `GITHUB_TOKEN` to avoid confusion with the built-in token.
 
 ### 3. Authentication Setup
 
