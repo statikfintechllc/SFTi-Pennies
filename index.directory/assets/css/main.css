@@ -293,14 +293,14 @@ code {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: var(--spacing-2xl) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-lg);
 }
 
 /* Hero Section */
 .hero {
   text-align: center;
-  padding: var(--spacing-2xl) 0;
-  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-lg) 0;
+  margin-bottom: var(--spacing-lg);
 }
 
 .hero h1 {
@@ -387,7 +387,7 @@ code {
 
 /* Trade Cards */
 .trades-section {
-  margin-bottom: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .section-header {
@@ -841,8 +841,8 @@ code {
 /* Footer */
 .footer {
   border-top: 1px solid var(--border-color);
-  padding: var(--spacing-xl) 0;
-  margin-top: var(--spacing-2xl);
+  padding: var(--spacing-lg) 0;
+  margin-top: var(--spacing-lg);
   text-align: center;
   color: var(--text-dim);
 }
