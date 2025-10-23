@@ -17,7 +17,7 @@ class PDFRenderer {
     }
     
     this.options = {
-      scale: options.scale || 1.5,
+      scale: options.scale || 0.9,
       enableZoom: options.enableZoom !== false,
       enableScroll: options.enableScroll !== false,
       ...options
