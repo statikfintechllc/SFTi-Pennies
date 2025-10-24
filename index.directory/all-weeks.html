@@ -478,7 +478,7 @@
         }
         
         // Add notes if available
-        if (trade.notes && trade.notes !== 'No notes recorded.') {
+        if (trade.notes && trade.notes.trim() !== '' && trade.notes.trim() !== 'No notes recorded.') {
           allTradesMarkdown += `### 📝 Notes\n\n`;
           allTradesMarkdown += `${trade.notes}\n\n`;
         }
