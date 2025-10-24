@@ -551,7 +551,18 @@
             // Adjust image path for all-weeks.html context
             // Screenshots in JSON are relative to trade markdown files (../../assets/...)
             // but we need them relative to all-weeks.html (./assets/...)
-            const adjustedPath = img.replace(/^\.\.\/\.\.\//g, './');
+            let adjustedPath = img.replace(/^\.\.\/\.\.\//g, './');
+            
+            // URL encode the path to handle special characters like colons in directory names
+            // Split by /, encode each part, then rejoin
+            const parts = adjustedPath.split('/');
+            adjustedPath = parts.map((part, i) => {
+              // Don't encode '.' or empty parts
+              if (part === '.' || part === '..' || part === '') return part;
+              // Encode each path segment to handle special chars like ':' in filenames
+              return encodeURIComponent(part);
+            }).join('/');
+            
             content += `<a href="${adjustedPath}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
               <img src="${adjustedPath}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
             </a>`;
