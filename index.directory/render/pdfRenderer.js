@@ -120,25 +120,38 @@ class PDFRenderer {
     try {
       const page = await this.pdfDoc.getPage(1);
       const viewport = page.getViewport({ scale: 1 });
-      const containerWidth = this.scrollContainer.clientWidth - 40; // Account for padding
       
-      // Calculate scale to fit width
-      const fitWidthScale = containerWidth / viewport.width;
-      
-      // For mobile devices (width < 768px), use fit-to-width
-      // For tablets (768-1024px), use slightly reduced scale
-      // For desktop, use the configured scale or fit-to-width, whichever is smaller
+      // Get screen dimensions
       const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      
+      // Calculate available width for PDF
+      // On mobile, modal is 95% of viewport width, minus padding
+      // On desktop, use actual container width
+      let availableWidth;
       
       if (screenWidth < 768) {
-        // Mobile: always fit to width
+        // Mobile: use viewport-based calculation for more accurate fit
+        // Modal is 95% width, container has 20px padding each side
+        availableWidth = (screenWidth * 0.95) - 40;
+      } else {
+        // Tablet/Desktop: use actual container width minus padding
+        availableWidth = this.scrollContainer.clientWidth - 40;
+      }
+      
+      // Calculate scale to fit width
+      const fitWidthScale = availableWidth / viewport.width;
+      
+      // Apply responsive scaling
+      if (screenWidth < 768) {
+        // Mobile: use fit-to-width directly (no reduction)
         this.currentScale = fitWidthScale;
       } else if (screenWidth < 1024) {
-        // Tablet: use fit-to-width or 1.0, whichever is smaller
-        this.currentScale = Math.min(fitWidthScale, 1.0);
+        // Tablet: use fit-to-width, cap at 1.2
+        this.currentScale = Math.min(fitWidthScale, 1.2);
       } else {
-        // Desktop: use configured scale or fit-to-width, whichever fits better
-        this.currentScale = Math.min(this.options.scale, fitWidthScale * 1.1);
+        // Desktop: use fit-to-width with small margin or configured scale
+        this.currentScale = Math.min(fitWidthScale * 0.95, this.options.scale);
       }
       
       // Update zoom level display
@@ -147,7 +160,7 @@ class PDFRenderer {
         zoomLevel.textContent = `${Math.round(this.currentScale * 100)}%`;
       }
       
-      console.log(`Initial scale calculated: ${this.currentScale} (screen width: ${screenWidth}px)`);
+      console.log(`Initial scale calculated: ${this.currentScale.toFixed(3)} (fit: ${fitWidthScale.toFixed(3)}, screen: ${screenWidth}px, available: ${availableWidth}px, PDF width: ${viewport.width}px)`);
     } catch (error) {
       console.error('Error calculating initial scale:', error);
       this.currentScale = this.options.scale;
