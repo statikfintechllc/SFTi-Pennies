@@ -5,6 +5,7 @@ Parses Webull transaction history CSV exports
 """
 
 import csv
+from datetime import datetime
 from io import StringIO
 from typing import List, Dict
 from .base_importer import BaseImporter

@@ -7,6 +7,7 @@ Note: TD Ameritrade merged with Schwab, so this handles both formats
 """
 
 import csv
+from datetime import datetime
 from io import StringIO
 from typing import List, Dict
 from .base_importer import BaseImporter
