@@ -9,6 +9,7 @@ import os
 import json
 import yaml
 import glob
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -74,7 +75,6 @@ def parse_trade_file(filepath):
             return None
         
         # Extract notes section from markdown body
-        import re
         notes = ''
         notes_match = re.search(r'## Notes\s*\n\n(.*?)(?=\n##|\Z)', body, re.DOTALL)
         if notes_match:
