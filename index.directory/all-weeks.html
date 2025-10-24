@@ -685,10 +685,14 @@
     // Fallback method: scan for known summaries
     async function loadSummariesFallback() {
       const summaryFiles = [];
+      const currentYear = new Date().getFullYear();
+      const currentWeek = Math.ceil((new Date() - new Date(new Date().getFullYear(), 0, 1)) / 604800000);
+      const currentMonth = new Date().getMonth() + 1;
       
-      // Try to find all weekly summaries (check a range)
-      for (let year = 2024; year <= 2026; year++) {
-        for (let week = 1; week <= 53; week++) {
+      // Try to find all weekly summaries (check current year and previous year only)
+      for (let year = currentYear - 1; year <= currentYear; year++) {
+        const maxWeek = year === currentYear ? currentWeek + 2 : 53;
+        for (let week = 1; week <= maxWeek; week++) {
           const weekStr = week.toString().padStart(2, '0');
           const filename = `weekly-${year}-W${weekStr}.md`;
           try {
@@ -702,9 +706,10 @@
         }
       }
       
-      // Try to find all monthly summaries
-      for (let year = 2024; year <= 2026; year++) {
-        for (let month = 1; month <= 12; month++) {
+      // Try to find all monthly summaries (check current year and previous year only)
+      for (let year = currentYear - 1; year <= currentYear; year++) {
+        const maxMonth = year === currentYear ? currentMonth : 12;
+        for (let month = 1; month <= maxMonth; month++) {
           const monthStr = month.toString().padStart(2, '0');
           const filename = `monthly-${year}-${monthStr}.md`;
           try {
@@ -718,8 +723,8 @@
         }
       }
       
-      // Try to find all yearly summaries
-      for (let year = 2024; year <= 2026; year++) {
+      // Try to find all yearly summaries (check current year and previous 2 years)
+      for (let year = currentYear - 2; year <= currentYear; year++) {
         const filename = `yearly-${year}.md`;
         try {
           const response = await fetch(`./summaries/${filename}`, { method: 'HEAD' });
