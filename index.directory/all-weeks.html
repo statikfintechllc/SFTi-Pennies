@@ -548,8 +548,12 @@
         if (trade.screenshots && trade.screenshots.length > 0) {
           content += '<div class="trade-images">';
           trade.screenshots.forEach((img, idx) => {
-            content += `<a href="${img}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
-              <img src="${img}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
+            // Adjust image path for all-weeks.html context
+            // Screenshots in JSON are relative to trade markdown files (../../assets/...)
+            // but we need them relative to all-weeks.html (./assets/...)
+            const adjustedPath = img.replace(/^\.\.\/\.\.\//g, './');
+            content += `<a href="${adjustedPath}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
+              <img src="${adjustedPath}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
             </a>`;
           });
           content += '</div>';
