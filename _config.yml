@@ -12,6 +12,7 @@ markdown: kramdown
 highlighter: rouge
 
 # Exclude from processing - files with colons cause Jekyll build errors
+# Note: We exclude SFTi.Tradez markdown files but keep assets accessible
 exclude:
   - README.md
   - TODO.Feat.md
@@ -28,10 +29,8 @@ exclude:
   - LICENSE.md
   - index.directory/SFTi.Tradez/
   - index.directory/src/
-  - "**/*:*"
-  - "**/**:**:****.*.md"
 
-# Include necessary files
+# Include necessary files - force Jekyll to include assets even with colons in path
 include:
   - index.directory/_config.yml
 
