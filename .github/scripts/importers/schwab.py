@@ -226,7 +226,7 @@ class SchwabImporter(BaseImporter):
         elif isinstance(position_size, float) and position_size != int(position_size):
             errors.append("Schwab does not support fractional shares for most stocks")
         
-        return len(errors) == 0, errors
+        return is_valid, errors
     
     def get_sample_mapping(self) -> Dict:
         """Get sample Schwab field mapping"""
