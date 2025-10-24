@@ -551,7 +551,7 @@
             // Adjust image path for all-weeks.html context
             // Screenshots in JSON are relative to trade markdown files (../../assets/...)
             // but all-weeks.html and assets are both in index.directory, so use relative path: assets/...
-            let adjustedPath = img.replace(/^\.\.\/\.\.\//g, '');
+            let adjustedPath = img.replace(/^\.\.\/\.\.\//, '');
             
             // URL encode the path to handle special characters like colons in directory names
             // Split by /, encode each part, then rejoin
