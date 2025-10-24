@@ -604,7 +604,7 @@
         
         // Extract title from filename
         let title = filename.replace('.md', '').replace(/-/g, ' ');
-        title = title.charAt(0).toUpperCase() + title.slice(1);
+        title = title.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         
         document.getElementById('modal-summary-title').textContent = title;
         

@@ -2,8 +2,25 @@
 
 This file contains all TODO items found throughout the repository, organized by category.
 
-**Last Updated:** 2025-10-23  
+**Last Updated:** 2025-10-24  
 **Total Items:** 43
+
+---
+
+## ✅ Recently Completed
+
+### Trade Enhancement Features (PR: Add clickable trade links)
+- ✅ **Clickable trade links in all-trades.html** - Trade rows now link to individual trade detail pages
+- ✅ **Fixed image paths** - Images display correctly with proper relative paths (`../assets/`)
+- ✅ **Notes extraction** - Trade notes extracted from markdown and displayed in HTML
+- ✅ **Summary cards system** - Weekly, monthly, and yearly summaries with modal popups
+- ✅ **Week modal JSON display** - Week modal shows trade data from trades-index.json
+- ✅ **Navigation updates** - Changed "All Weeks" to "All Summaries" across all pages
+- ✅ **Code quality improvements**:
+  - Moved `import re` to top of parse_trades.py (PEP 8 compliance)
+  - Improved notes validation logic (more robust, less coupled)
+  - Enhanced regex pattern for flexible whitespace handling
+  - Fixed title capitalization for summary modals
 
 ---
 

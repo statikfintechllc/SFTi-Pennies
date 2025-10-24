@@ -76,7 +76,7 @@ def parse_trade_file(filepath):
         
         # Extract notes section from markdown body
         notes = ''
-        notes_match = re.search(r'## Notes\s*\n\n(.*?)(?=\n##|\Z)', body, re.DOTALL)
+        notes_match = re.search(r'## Notes\s*\n+(.*?)(?=\n##|\Z)', body, re.DOTALL)
         if notes_match:
             notes = notes_match.group(1).strip()
         
