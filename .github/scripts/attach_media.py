@@ -59,16 +59,19 @@ def validate_image_references(trade, image_path):
         image_path (str): Path to image
         
     Returns:
-        tuple: (is_valid, error_message)
+        tuple: (is_valid: bool, message: str or None)
+            - is_valid: True if file is valid and accessible
+            - message: Error message if validation fails, warning message if valid but has issues, None if fully valid
     """
     if not os.path.exists(image_path):
         return False, f"Image file does not exist: {image_path}"
     
-    # Check file size (warn if > 5MB)
+    # Check file size (warn if > 5MB, but still valid)
+    warning_message = None
     try:
         file_size = os.path.getsize(image_path)
         if file_size > 5 * 1024 * 1024:  # 5MB
-            return True, f"Warning: Large image file ({file_size / (1024*1024):.1f}MB)"
+            warning_message = f"Warning: Large image file ({file_size / (1024*1024):.1f}MB)"
     except OSError as e:
         return False, f"Cannot read file size: {e}"
     
@@ -82,7 +85,7 @@ def validate_image_references(trade, image_path):
     if not os.access(image_path, os.R_OK):
         return False, f"File is not readable: {image_path}"
     
-    return True, None
+    return True, warning_message
 
 
 def update_trade_metadata(trade_file_path, image_paths):
