@@ -3,9 +3,14 @@
 Generate Trade Detail Pages Script
 Creates individual HTML pages for each trade with full details, charts, and media
 
-Output: index.directory/trades/{trade-id}.html
+Features:
+- Generates responsive HTML pages with trade metrics
+- Displays P&L, risk management, and trade details
+- Includes image galleries with GLightbox integration
+- Shows strategy and setup tags
+- Mobile-friendly design with dark theme
 
-TODO: Implement full trade page generation
+Output: index.directory/trades/{trade-id}.html
 """
 
 import json

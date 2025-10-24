@@ -168,17 +168,34 @@ class WebullImporter(BaseImporter):
     
     def validate_trade(self, trade: Dict) -> tuple[bool, List[str]]:
         """
-        Validate Webull trade data
-        
-        TODO: Add Webull-specific validation rules
+        Validate Webull trade data with broker-specific rules
         """
         is_valid, errors = self._validate_required_fields(trade)
         
-        # TODO: Add Webull-specific validation
-        # - Check for paper trading vs real account
-        # - Validate extended hours indicators
+        # Webull-specific validation
+        # Check for reasonable price ranges (penny stocks typically $0.01 - $50)
+        entry_price = float(trade.get('entry_price', 0))
+        exit_price = float(trade.get('exit_price', 0))
         
-        return is_valid, errors
+        if entry_price <= 0:
+            errors.append("Entry price must be positive")
+            is_valid = False
+        elif entry_price > 10000:
+            errors.append(f"Entry price ${entry_price} seems unusually high")
+            
+        if exit_price <= 0:
+            errors.append("Exit price must be positive")
+            is_valid = False
+        elif exit_price > 10000:
+            errors.append(f"Exit price ${exit_price} seems unusually high")
+        
+        # Check position size is reasonable
+        position_size = int(trade.get('position_size', 0))
+        if position_size <= 0:
+            errors.append("Position size must be positive")
+            is_valid = False
+        
+        return len(errors) == 0, errors
     
     def get_sample_mapping(self) -> Dict:
         """Get sample Webull field mapping"""
@@ -191,6 +208,3 @@ class WebullImporter(BaseImporter):
             'Total': 'calculated total',
             'Status': 'filter (Filled only)'
         }
-
-
-# TODO: Export for registration

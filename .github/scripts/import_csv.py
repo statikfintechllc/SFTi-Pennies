@@ -3,14 +3,12 @@
 Import CSV Script
 Entry point for importing broker CSV files into the trading journal
 
-This script:
-1. Detects the broker from CSV content
+This script provides a complete import workflow:
+1. Detects the broker from CSV content (or use --broker flag)
 2. Parses trades using the appropriate importer
-3. Validates trade data
+3. Validates trade data with broker-specific rules
 4. Creates/updates trade markdown files in index.directory/SFTi.Tradez/
-5. Updates trades-index.json
-
-TODO: Implement full import workflow
+5. Updates trades-index.json with new trades
 """
 
 import os

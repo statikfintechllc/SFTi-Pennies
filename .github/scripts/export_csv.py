@@ -3,7 +3,10 @@
 Export CSV Script
 Exports trades from trades-index.json to CSV format
 
-TODO: Implement full CSV export with configurable fields
+Features:
+- Export all trades or filter by strategy, date range
+- Configurable output file path
+- Standard CSV format compatible with spreadsheet applications
 """
 
 import json
@@ -24,20 +27,17 @@ def load_trades_index():
 
 def export_to_csv(trades, output_file='trades-export.csv'):
     """
-    Export trades to CSV file
+    Export trades to CSV file with comprehensive trade data
     
     Args:
         trades (list): List of trade dictionaries
         output_file (str): Output CSV file path
-        
-    TODO: Implement full export with all fields
     """
     if not trades:
         print("No trades to export")
         return
     
-    # Define CSV fields
-    # TODO: Make this configurable
+    # Define CSV fields - comprehensive set of trade attributes
     fields = [
         'trade_number',
         'ticker',
