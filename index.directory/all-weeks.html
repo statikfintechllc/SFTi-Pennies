@@ -398,14 +398,15 @@
     async function loadWeeks() {
       try {
         const response = await fetch('./trades-index.json');
-        const trades = await response.json();
+        const data = await response.json();
+        const trades = data.trades || [];
         
         // Group trades by week
         const weekMap = {};
         
         trades.forEach(trade => {
-          // Extract week from file path (e.g., "SFTi.Tradez/week.2025.01/...")
-          const weekMatch = trade.file?.match(/week\.(\d{4})\.(\d{2})/);
+          // Extract week from file path (e.g., "SFTi.Tradez/week.2025.43/...")
+          const weekMatch = trade.file_path?.match(/week\.(\d{4})\.(\d{2})/);
           if (weekMatch) {
             const weekKey = `${weekMatch[1]}.${weekMatch[2]}`;
             if (!weekMap[weekKey]) {
@@ -420,7 +421,7 @@
             }
             
             weekMap[weekKey].trades.push(trade);
-            const pnl = parseFloat(trade.pnl) || 0;
+            const pnl = parseFloat(trade.pnl_usd) || 0;
             weekMap[weekKey].totalPnL += pnl;
             if (pnl > 0) weekMap[weekKey].wins++;
             else if (pnl < 0) weekMap[weekKey].losses++;
@@ -519,20 +520,20 @@
       content += '<h3 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Trades</h3>';
       
       for (const trade of week.trades) {
-        const pnlClass = (trade.pnl || 0) >= 0 ? 'positive' : 'negative';
-        const pnlSign = (trade.pnl || 0) >= 0 ? '+' : '';
+        const pnlClass = (trade.pnl_usd || 0) >= 0 ? 'positive' : 'negative';
+        const pnlSign = (trade.pnl_usd || 0) >= 0 ? '+' : '';
         
         content += `
           <div class="trade-item">
             <div class="trade-header">
               <div class="trade-ticker">${trade.ticker || 'N/A'}</div>
-              <div class="trade-pnl ${pnlClass}">${pnlSign}$${(trade.pnl || 0).toFixed(2)}</div>
+              <div class="trade-pnl ${pnlClass}">${pnlSign}$${(trade.pnl_usd || 0).toFixed(2)}</div>
             </div>
             <div class="trade-details">
-              <div><strong>Date:</strong> ${trade.date || 'N/A'}</div>
+              <div><strong>Date:</strong> ${trade.entry_date || 'N/A'}</div>
               <div><strong>Entry:</strong> $${(trade.entry_price || 0).toFixed(2)}</div>
               <div><strong>Exit:</strong> $${(trade.exit_price || 0).toFixed(2)}</div>
-              <div><strong>Size:</strong> ${trade.shares || 0} shares</div>
+              <div><strong>Size:</strong> ${trade.position_size || 0} shares</div>
               <div><strong>Direction:</strong> ${trade.direction || 'LONG'}</div>
               <div><strong>R:R:</strong> ${trade.risk_reward_ratio || 'N/A'}</div>
             </div>
@@ -544,10 +545,10 @@
         }
         
         // Add images if available
-        if (trade.images && trade.images.length > 0) {
+        if (trade.screenshots && trade.screenshots.length > 0) {
           content += '<div class="trade-images">';
-          trade.images.forEach((img, idx) => {
-            content += `<a href="${img}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.date}">
+          trade.screenshots.forEach((img, idx) => {
+            content += `<a href="${img}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
               <img src="${img}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
             </a>`;
           });
