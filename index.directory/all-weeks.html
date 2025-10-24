@@ -261,6 +261,26 @@
         View your trading weeks with summaries, trades, and performance metrics
       </p>
       
+      <!-- Summaries Section -->
+      <div style="margin-bottom: 3rem;">
+        <h2 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 28px; height: 28px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          Summaries
+        </h2>
+        <div class="week-grid" id="summaries-container">
+          <!-- Summaries will be dynamically loaded here -->
+        </div>
+      </div>
+      
+      <!-- Weeks Section -->
+      <h2 style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 28px; height: 28px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        Trading Weeks
+      </h2>
       <div class="week-grid" id="weeks-container">
         <!-- Weeks will be dynamically loaded here -->
       </div>
@@ -275,6 +295,19 @@
         <button class="close-btn" onclick="closeWeekModal()">&times;</button>
       </div>
       <div class="week-modal-body" id="week-modal-body">
+        <!-- Content will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Summary Detail Modal -->
+  <div id="summary-modal" class="week-modal">
+    <div class="week-modal-content" style="width: 90%; max-width: 900px;">
+      <div class="week-modal-header">
+        <h2 id="modal-summary-title">Summary</h2>
+        <button class="close-btn" onclick="closeSummaryModal()">&times;</button>
+      </div>
+      <div class="week-modal-body markdown-body" id="summary-modal-body">
         <!-- Content will be loaded here -->
       </div>
     </div>
@@ -499,11 +532,107 @@
     document.addEventListener('keydown', function(e) {
       if (e.key === 'Escape') {
         closeWeekModal();
+        closeSummaryModal();
+      }
+    });
+    
+    // Load and display summaries
+    async function loadSummaries() {
+      try {
+        const summaryFiles = [
+          { file: 'weekly-2025-W43.md', title: 'Week 43, 2025', type: 'Weekly' },
+          { file: 'monthly-2025-10.md', title: 'October 2025', type: 'Monthly' },
+          { file: 'yearly-2025.md', title: 'Year 2025', type: 'Yearly' }
+        ];
+        
+        const container = document.getElementById('summaries-container');
+        const cards = [];
+        
+        for (const summary of summaryFiles) {
+          try {
+            const response = await fetch(`./summaries/${summary.file}`);
+            if (response.ok) {
+              cards.push({
+                file: summary.file,
+                title: summary.title,
+                type: summary.type
+              });
+            }
+          } catch (error) {
+            console.log(`Summary ${summary.file} not available`);
+          }
+        }
+        
+        if (cards.length === 0) {
+          container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary);">No summaries available yet</p>';
+          return;
+        }
+        
+        container.innerHTML = cards.map(card => `
+          <div class="week-card" onclick="showSummaryModal('${card.file}')">
+            <div class="week-header">
+              <div class="week-title">${card.title}</div>
+              <span style="padding: 0.25rem 0.75rem; background: var(--accent-blue); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${card.type}</span>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 0.75rem; font-size: 0.875rem;">
+              Click to view detailed ${card.type.toLowerCase()} summary and analysis
+            </p>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading summaries:', error);
+      }
+    }
+    
+    // Show summary modal
+    async function showSummaryModal(filename) {
+      try {
+        const response = await fetch(`./summaries/${filename}`);
+        if (!response.ok) {
+          throw new Error('Failed to load summary');
+        }
+        
+        const content = await response.text();
+        
+        // Extract title from filename
+        let title = filename.replace('.md', '').replace(/-/g, ' ');
+        title = title.charAt(0).toUpperCase() + title.slice(1);
+        
+        document.getElementById('modal-summary-title').textContent = title;
+        
+        const modalBody = document.getElementById('summary-modal-body');
+        modalBody.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Loading...</p>';
+        
+        if (!markdownRenderer) {
+          modalBody.innerHTML = '<p style="text-align: center; color: var(--accent-red); padding: 2rem;">Error: Renderer not ready. Please refresh the page.</p>';
+          return;
+        }
+        
+        modalBody.innerHTML = markdownRenderer.render(content);
+        markdownRenderer.fixImagePaths(modalBody);
+        
+        document.getElementById('summary-modal').classList.add('active');
+      } catch (error) {
+        console.error('Error showing summary:', error);
+        alert('Failed to load summary. Please try again.');
+      }
+    }
+    
+    // Close summary modal
+    function closeSummaryModal() {
+      document.getElementById('summary-modal').classList.remove('active');
+    }
+    
+    // Close summary modal on background click
+    document.getElementById('summary-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeSummaryModal();
       }
     });
     
     // Initialize
     loadWeeks();
+    loadSummaries();
   </script>
 </body>
 </html>
