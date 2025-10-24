@@ -66,7 +66,7 @@ def create_trade_list_html(trades):
             <td>{trade.get('direction', 'N/A')}</td>
             <td>${trade.get('entry_price', 0):.4f}</td>
             <td>${trade.get('exit_price', 0):.4f}</td>
-            <td>{trade.get('position_size', 0)}</td>
+            <td>{trade.get('position_size', 0):,}</td>
             <td class="{pnl_class}">{pnl_sign}${abs(pnl):.2f}</td>
             <td>{trade.get('entry_date', 'N/A')}</td>
             <td>{trade.get('strategy', 'N/A')}</td>
