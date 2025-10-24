@@ -559,8 +559,9 @@
             adjustedPath = parts.map((part, i) => {
               // Don't encode empty parts
               if (part === '') return part;
-              // Encode each path segment to handle special chars like ':' in filenames
-              return encodeURIComponent(part);
+              // Only encode if not already encoded (avoid double-encoding)
+              // A segment is considered encoded if it contains any %HH sequence
+              return /%[0-9A-Fa-f]{2}/.test(part) ? part : encodeURIComponent(part);
             }).join('/');
             
             content += `<a href="${adjustedPath}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
