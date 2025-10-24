@@ -4,7 +4,6 @@ name: Trade Pipeline
 on:
   push:
     paths:
-      - 'trades/**'
       - 'index.directory/SFTi.Tradez/**'
       - 'index.directory/assets/sfti.tradez.assets/**'
       - 'index.directory/Informational.Bookz/**'
@@ -134,6 +133,7 @@ jobs:
             index.directory/books-index.json
             index.directory/notes-index.json
             index.directory/assets/charts/
+            index.directory/summaries/
             index.directory/all-trades.html
             index.directory/trades/
             index.directory/analytics.html

@@ -40,10 +40,10 @@ python .github/scripts/parse_trades.py
   - Win rate and profit factor
   - Best and worst trades
   - Total trades and position sizes
-- Generates markdown summary files in `summaries/` directory
+- Generates markdown summary files in `index.directory/summaries/` directory
 
 **Input:** `trades-index.json`  
-**Output:** `summaries/weekly-*.md`, `summaries/monthly-*.md`, `summaries/yearly-*.md`  
+**Output:** `index.directory/summaries/weekly-*.md`, `index.directory/summaries/monthly-*.md`, `index.directory/summaries/yearly-*.md`  
 **Dependencies:** `pyyaml`
 
 **Example usage:**

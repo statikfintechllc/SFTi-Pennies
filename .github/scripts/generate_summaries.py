@@ -202,8 +202,8 @@ def main():
     
     print(f"Processing {len(trades)} trades...")
     
-    # Create summaries directory
-    os.makedirs('summaries', exist_ok=True)
+    # Create summaries directory in index.directory/
+    os.makedirs('index.directory/summaries', exist_ok=True)
     
     # Generate weekly summaries
     print("Generating weekly summaries...")
@@ -212,7 +212,7 @@ def main():
         stats = calculate_period_stats(week_trades)
         markdown = generate_summary_markdown(week_key, stats, 'week')
         
-        filename = f"summaries/weekly-{week_key}.md"
+        filename = f"index.directory/summaries/weekly-{week_key}.md"
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(markdown)
         print(f"  Created {filename}")
@@ -224,7 +224,7 @@ def main():
         stats = calculate_period_stats(month_trades)
         markdown = generate_summary_markdown(month_key, stats, 'month')
         
-        filename = f"summaries/monthly-{month_key}.md"
+        filename = f"index.directory/summaries/monthly-{month_key}.md"
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(markdown)
         print(f"  Created {filename}")
@@ -236,7 +236,7 @@ def main():
         stats = calculate_period_stats(year_trades)
         markdown = generate_summary_markdown(year_key, stats, 'year')
         
-        filename = f"summaries/yearly-{year_key}.md"
+        filename = f"index.directory/summaries/yearly-{year_key}.md"
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(markdown)
         print(f"  Created {filename}")

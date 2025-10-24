@@ -20,7 +20,16 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/glass-effects.css">
   
-  <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
+  <!-- PDF.js Library (Legacy Build for global window.pdfjsLib) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    // Configure PDF.js worker
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+  
+  <!-- Local Bundle (marked.js + highlight.js) -->
   <script src="assets/js/bundle.min.js"></script>
   
   <!-- Custom PDF Viewer Styles -->
