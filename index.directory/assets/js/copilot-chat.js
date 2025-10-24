@@ -502,8 +502,11 @@ Could you provide more details about what you'd like to know?
   }
   
   formatMessage(content) {
+    // First, escape HTML to prevent XSS
+    const escaped = this.escapeHtml(content);
+    
     // Convert markdown-style formatting to HTML
-    let formatted = content
+    let formatted = escaped
       // Convert **bold** to <strong>
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       // Convert `code` to <code>
