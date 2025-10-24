@@ -124,7 +124,17 @@ def main():
         # Filter trades from date (inclusive)
         try:
             from_date = datetime.strptime(args.filter_date_from, '%Y-%m-%d')
-            trades = [t for t in trades if datetime.strptime(t.get('entry_date', ''), '%Y-%m-%d') >= from_date]
+            filtered_trades = []
+            for t in trades:
+                entry_date = t.get('entry_date', '')
+                if entry_date:  # Skip trades with missing dates
+                    try:
+                        if datetime.strptime(entry_date, '%Y-%m-%d') >= from_date:
+                            filtered_trades.append(t)
+                    except ValueError:
+                        # Skip trades with invalid date format
+                        continue
+            trades = filtered_trades
             print(f"Filtered to {len(trades)} trade(s) from {args.filter_date_from}")
         except ValueError:
             print(f"Warning: Invalid date format for --filter-date-from (expected YYYY-MM-DD)")
@@ -133,7 +143,17 @@ def main():
         # Filter trades to date (inclusive)
         try:
             to_date = datetime.strptime(args.filter_date_to, '%Y-%m-%d')
-            trades = [t for t in trades if datetime.strptime(t.get('entry_date', ''), '%Y-%m-%d') <= to_date]
+            filtered_trades = []
+            for t in trades:
+                entry_date = t.get('entry_date', '')
+                if entry_date:  # Skip trades with missing dates
+                    try:
+                        if datetime.strptime(entry_date, '%Y-%m-%d') <= to_date:
+                            filtered_trades.append(t)
+                    except ValueError:
+                        # Skip trades with invalid date format
+                        continue
+            trades = filtered_trades
             print(f"Filtered to {len(trades)} trade(s) until {args.filter_date_to}")
         except ValueError:
             print(f"Warning: Invalid date format for --filter-date-to (expected YYYY-MM-DD)")
