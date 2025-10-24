@@ -27,7 +27,6 @@ exclude:
   - package-lock.json
   - LICENSE.md
   - index.directory/SFTi.Tradez/
-  - index.directory/render/
   - index.directory/src/
   - "**/*:*"
   - "**/**:**:****.*.md"
