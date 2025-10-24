@@ -5,6 +5,7 @@ Parses Robinhood account statement CSV exports
 """
 
 import csv
+from datetime import datetime
 from io import StringIO
 from typing import List, Dict
 from .base_importer import BaseImporter
@@ -162,15 +163,35 @@ class RobinhoodImporter(BaseImporter):
     
     def validate_trade(self, trade: Dict) -> tuple[bool, List[str]]:
         """
-        Validate Robinhood trade data
-        
-        TODO: Add Robinhood-specific validation rules
+        Validate Robinhood trade data with broker-specific rules
         """
         is_valid, errors = self._validate_required_fields(trade)
         
-        # TODO: Add Robinhood-specific validation
-        # - Check for fractional shares
-        # - Validate crypto vs stock
+        # Robinhood-specific validation
+        # Check for fractional shares (Robinhood supports fractional trading)
+        position_size = trade.get('position_size', 0)
+        if isinstance(position_size, float) and position_size < 1 and position_size > 0:
+            # Fractional shares are valid on Robinhood, just note it
+            pass
+        elif position_size <= 0:
+            errors.append("Position size must be positive")
+            is_valid = False
+        
+        # Check for reasonable price ranges
+        entry_price = float(trade.get('entry_price', 0))
+        exit_price = float(trade.get('exit_price', 0))
+        
+        if entry_price <= 0:
+            errors.append("Entry price must be positive")
+            is_valid = False
+        elif entry_price > 10000:
+            errors.append(f"Entry price ${entry_price} seems unusually high")
+            
+        if exit_price <= 0:
+            errors.append("Exit price must be positive")
+            is_valid = False
+        elif exit_price > 10000:
+            errors.append(f"Exit price ${exit_price} seems unusually high")
         
         return is_valid, errors
     
@@ -184,6 +205,3 @@ class RobinhoodImporter(BaseImporter):
             'Price': 'entry_price / exit_price',
             'Amount': 'calculated total (negative for buys)'
         }
-
-
-# TODO: Export for registration

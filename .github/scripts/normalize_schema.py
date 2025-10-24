@@ -4,9 +4,11 @@ Normalize Schema Script
 Handles schema migrations and versioning for trade data
 
 This script ensures backward compatibility when the trade data schema changes.
-It can migrate old trade formats to new formats.
-
-TODO: Implement full schema migration logic
+Features:
+- Migrate old trade formats to new formats
+- Validate trades against schema versions
+- Supports schema versions 1.0 and 1.1
+- Dry-run mode for safe testing
 """
 
 import json
@@ -108,7 +110,8 @@ def migrate_schema(index_data, target_version=CURRENT_SCHEMA_VERSION):
         if current_version == "1.0" and target_version == "1.1":
             trade = migrate_1_0_to_1_1(trade)
         
-        # TODO: Add more migration paths as needed
+        # Future migration paths can be added here as schema evolves
+        # Example:
         # elif current_version == "1.1" and target_version == "1.2":
         #     trade = migrate_1_1_to_1_2(trade)
         
@@ -132,8 +135,6 @@ def validate_schema(trade, version=CURRENT_SCHEMA_VERSION):
         
     Returns:
         tuple: (is_valid, errors)
-        
-    TODO: Implement comprehensive validation
     """
     errors = []
     

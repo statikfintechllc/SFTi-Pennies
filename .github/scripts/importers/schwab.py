@@ -7,6 +7,7 @@ Note: TD Ameritrade merged with Schwab, so this handles both formats
 """
 
 import csv
+from datetime import datetime
 from io import StringIO
 from typing import List, Dict
 from .base_importer import BaseImporter
@@ -196,13 +197,34 @@ class SchwabImporter(BaseImporter):
     
     def validate_trade(self, trade: Dict) -> tuple[bool, List[str]]:
         """
-        Validate Schwab/TDA trade data
-        
-        TODO: Add Schwab-specific validation rules
+        Validate Schwab/TDA trade data with broker-specific rules
         """
         is_valid, errors = self._validate_required_fields(trade)
         
-        # TODO: Add Schwab-specific validation
+        # Schwab-specific validation
+        # Check for reasonable price ranges
+        entry_price = float(trade.get('entry_price', 0))
+        exit_price = float(trade.get('exit_price', 0))
+        
+        if entry_price <= 0:
+            errors.append("Entry price must be positive")
+            is_valid = False
+        elif entry_price > 10000:
+            errors.append(f"Entry price ${entry_price} seems unusually high")
+            
+        if exit_price <= 0:
+            errors.append("Exit price must be positive")
+            is_valid = False
+        elif exit_price > 10000:
+            errors.append(f"Exit price ${exit_price} seems unusually high")
+        
+        # Check position size is reasonable and whole number (Schwab doesn't support fractional shares for penny stocks)
+        position_size = trade.get('position_size', 0)
+        if position_size <= 0:
+            errors.append("Position size must be positive")
+            is_valid = False
+        elif isinstance(position_size, float) and position_size != int(position_size):
+            errors.append("Schwab does not support fractional shares for most stocks")
         
         return is_valid, errors
     
@@ -217,6 +239,3 @@ class SchwabImporter(BaseImporter):
             'Fees & Comm': 'commission',
             'Amount': 'calculated total'
         }
-
-
-# TODO: Export for registration

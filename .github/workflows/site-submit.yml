@@ -52,9 +52,9 @@ jobs:
       
       - name: Stage pending changes
         run: |
-          # TODO: Implement logic to bundle pending trade submissions
-          # This could read from a staging area or temp folder
-          # For now, just stage any changes
+          # Bundle any pending trade submissions from staging area
+          # Currently stages any changes in pending-submissions/ directory
+          # Future enhancement: Could integrate with web interface for direct submissions
           
           if [ -d "pending-submissions" ]; then
             echo "Found pending submissions"

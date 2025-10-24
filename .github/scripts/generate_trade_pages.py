@@ -3,9 +3,14 @@
 Generate Trade Detail Pages Script
 Creates individual HTML pages for each trade with full details, charts, and media
 
-Output: index.directory/trades/{trade-id}.html
+Features:
+- Generates responsive HTML pages with trade metrics
+- Displays P&L, risk management, and trade details
+- Includes image galleries with GLightbox integration
+- Shows strategy and setup tags
+- Mobile-friendly design with dark theme
 
-TODO: Implement full trade page generation
+Output: index.directory/trades/{trade-id}.html
 """
 
 import json
@@ -363,6 +368,11 @@ def generate_trade_html(trade):
   
   <footer class="footer">
     <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    <p>
+      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
+      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
+    </p>
   </footer>
   
   <!-- GLightbox JS -->

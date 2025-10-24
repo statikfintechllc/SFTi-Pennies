@@ -3,7 +3,10 @@
 Export CSV Script
 Exports trades from trades-index.json to CSV format
 
-TODO: Implement full CSV export with configurable fields
+Features:
+- Export all trades or filter by strategy, date range
+- Configurable output file path
+- Standard CSV format compatible with spreadsheet applications
 """
 
 import json
@@ -24,20 +27,17 @@ def load_trades_index():
 
 def export_to_csv(trades, output_file='trades-export.csv'):
     """
-    Export trades to CSV file
+    Export trades to CSV file with comprehensive trade data
     
     Args:
         trades (list): List of trade dictionaries
         output_file (str): Output CSV file path
-        
-    TODO: Implement full export with all fields
     """
     if not trades:
         print("No trades to export")
         return
     
-    # Define CSV fields
-    # TODO: Make this configurable
+    # Define CSV fields - comprehensive set of trade attributes
     fields = [
         'trade_number',
         'ticker',
@@ -115,18 +115,48 @@ def main():
     trades = index_data.get('trades', [])
     print(f"Loaded {len(trades)} trade(s) from index")
     
-    # TODO: Apply filters
+    # Apply filters
     if args.filter_strategy:
         trades = [t for t in trades if t.get('strategy', '').lower() == args.filter_strategy.lower()]
         print(f"Filtered to {len(trades)} trade(s) with strategy '{args.filter_strategy}'")
     
     if args.filter_date_from:
-        # TODO: Implement date filtering
-        print(f"TODO: Filter from date {args.filter_date_from}")
+        # Filter trades from date (inclusive)
+        try:
+            from_date = datetime.strptime(args.filter_date_from, '%Y-%m-%d')
+            filtered_trades = []
+            for t in trades:
+                entry_date = t.get('entry_date', '')
+                if entry_date:  # Skip trades with missing dates
+                    try:
+                        if datetime.strptime(entry_date, '%Y-%m-%d') >= from_date:
+                            filtered_trades.append(t)
+                    except ValueError:
+                        # Skip trades with invalid date format
+                        continue
+            trades = filtered_trades
+            print(f"Filtered to {len(trades)} trade(s) from {args.filter_date_from}")
+        except ValueError:
+            print(f"Warning: Invalid date format for --filter-date-from (expected YYYY-MM-DD)")
     
     if args.filter_date_to:
-        # TODO: Implement date filtering
-        print(f"TODO: Filter to date {args.filter_date_to}")
+        # Filter trades to date (inclusive)
+        try:
+            to_date = datetime.strptime(args.filter_date_to, '%Y-%m-%d')
+            filtered_trades = []
+            for t in trades:
+                entry_date = t.get('entry_date', '')
+                if entry_date:  # Skip trades with missing dates
+                    try:
+                        if datetime.strptime(entry_date, '%Y-%m-%d') <= to_date:
+                            filtered_trades.append(t)
+                    except ValueError:
+                        # Skip trades with invalid date format
+                        continue
+            trades = filtered_trades
+            print(f"Filtered to {len(trades)} trade(s) until {args.filter_date_to}")
+        except ValueError:
+            print(f"Warning: Invalid date format for --filter-date-to (expected YYYY-MM-DD)")
     
     # Export
     if trades:
