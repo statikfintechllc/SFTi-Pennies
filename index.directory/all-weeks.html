@@ -112,6 +112,81 @@
       color: var(--accent-red);
     }
     
+    /* Dropdown Styles */
+    .dropdown-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: center;
+      align-items: stretch;
+    }
+    
+    .dropdown-group {
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .dropdown-group:hover {
+      border-color: var(--accent-green);
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1);
+    }
+    
+    .dropdown-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    
+    .dropdown-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .dropdown-select:hover {
+      border-color: var(--accent-green);
+    }
+    
+    .dropdown-select:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+    }
+    
+    .dropdown-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .dropdown-container {
+        flex-direction: column;
+      }
+      
+      .dropdown-group {
+        max-width: 100%;
+      }
+    }
+    
     /* Modal Styles */
     .week-modal {
       display: none;
@@ -269,8 +344,36 @@
           </svg>
           Summaries
         </h2>
-        <div class="week-grid" id="summaries-container">
-          <!-- Summaries will be dynamically loaded here -->
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.875rem;">
+          Select a period type and choose from available summaries to view detailed analysis
+        </p>
+        <div class="dropdown-container">
+          <div class="dropdown-group">
+            <label class="dropdown-label" for="weekly-select">
+              📅 Weekly Summaries
+            </label>
+            <select id="weekly-select" class="dropdown-select">
+              <option value="">Select a week...</option>
+            </select>
+          </div>
+          
+          <div class="dropdown-group">
+            <label class="dropdown-label" for="monthly-select">
+              📆 Monthly Summaries
+            </label>
+            <select id="monthly-select" class="dropdown-select">
+              <option value="">Select a month...</option>
+            </select>
+          </div>
+          
+          <div class="dropdown-group">
+            <label class="dropdown-label" for="yearly-select">
+              📊 Yearly Summaries
+            </label>
+            <select id="yearly-select" class="dropdown-select">
+              <option value="">Select a year...</option>
+            </select>
+          </div>
         </div>
       </div>
       
@@ -552,48 +655,200 @@
     // Load and display summaries
     async function loadSummaries() {
       try {
-        const summaryFiles = [
-          { file: 'weekly-2025-W43.md', title: 'Week 43, 2025', type: 'Weekly' },
-          { file: 'monthly-2025-10.md', title: 'October 2025', type: 'Monthly' },
-          { file: 'yearly-2025.md', title: 'Year 2025', type: 'Yearly' }
-        ];
-        
-        const container = document.getElementById('summaries-container');
-        const cards = [];
-        
-        for (const summary of summaryFiles) {
-          try {
-            const response = await fetch(`./summaries/${summary.file}`);
-            if (response.ok) {
-              cards.push({
-                file: summary.file,
-                title: summary.title,
-                type: summary.type
-              });
-            }
-          } catch (error) {
-            console.log(`Summary ${summary.file} not available`);
-          }
-        }
-        
-        if (cards.length === 0) {
-          container.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary);">No summaries available yet</p>';
+        // Fetch the list of summary files
+        const response = await fetch('./summaries/');
+        if (!response.ok) {
+          console.log('Cannot list summaries directory, using fallback method');
+          await loadSummariesFallback();
           return;
         }
         
-        container.innerHTML = cards.map(card => `
-          <div class="week-card" onclick="showSummaryModal('${card.file}')">
-            <div class="week-header">
-              <div class="week-title">${card.title}</div>
-              <span style="padding: 0.25rem 0.75rem; background: var(--accent-blue); color: white; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">${card.type}</span>
-            </div>
-            <p style="color: var(--text-secondary); margin-top: 0.75rem; font-size: 0.875rem;">
-              Click to view detailed ${card.type.toLowerCase()} summary and analysis
-            </p>
-          </div>
-        `).join('');
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        const links = Array.from(doc.querySelectorAll('a'))
+          .map(a => a.getAttribute('href'))
+          .filter(href => href && href.endsWith('.md'));
+        
+        if (links.length === 0) {
+          await loadSummariesFallback();
+          return;
+        }
+        
+        populateDropdowns(links);
       } catch (error) {
         console.error('Error loading summaries:', error);
+        await loadSummariesFallback();
+      }
+    }
+    
+    // Fallback method: scan for known summaries
+    async function loadSummariesFallback() {
+      const summaryFiles = [];
+      
+      // Try to find all weekly summaries (check a range)
+      for (let year = 2024; year <= 2026; year++) {
+        for (let week = 1; week <= 53; week++) {
+          const weekStr = week.toString().padStart(2, '0');
+          const filename = `weekly-${year}-W${weekStr}.md`;
+          try {
+            const response = await fetch(`./summaries/${filename}`, { method: 'HEAD' });
+            if (response.ok) {
+              summaryFiles.push(filename);
+            }
+          } catch (e) {
+            // File doesn't exist, continue
+          }
+        }
+      }
+      
+      // Try to find all monthly summaries
+      for (let year = 2024; year <= 2026; year++) {
+        for (let month = 1; month <= 12; month++) {
+          const monthStr = month.toString().padStart(2, '0');
+          const filename = `monthly-${year}-${monthStr}.md`;
+          try {
+            const response = await fetch(`./summaries/${filename}`, { method: 'HEAD' });
+            if (response.ok) {
+              summaryFiles.push(filename);
+            }
+          } catch (e) {
+            // File doesn't exist, continue
+          }
+        }
+      }
+      
+      // Try to find all yearly summaries
+      for (let year = 2024; year <= 2026; year++) {
+        const filename = `yearly-${year}.md`;
+        try {
+          const response = await fetch(`./summaries/${filename}`, { method: 'HEAD' });
+          if (response.ok) {
+            summaryFiles.push(filename);
+          }
+        } catch (e) {
+          // File doesn't exist, continue
+        }
+      }
+      
+      if (summaryFiles.length === 0) {
+        console.log('No summaries found');
+        return;
+      }
+      
+      populateDropdowns(summaryFiles);
+    }
+    
+    // Populate dropdowns with summary files
+    function populateDropdowns(files) {
+      const weeklySelect = document.getElementById('weekly-select');
+      const monthlySelect = document.getElementById('monthly-select');
+      const yearlySelect = document.getElementById('yearly-select');
+      
+      const weeklySummaries = [];
+      const monthlySummaries = [];
+      const yearlySummaries = [];
+      
+      files.forEach(filename => {
+        if (filename.startsWith('weekly-')) {
+          // Parse: weekly-2025-W43.md
+          const match = filename.match(/weekly-(\d{4})-W(\d{2})\.md/);
+          if (match) {
+            weeklySummaries.push({
+              filename: filename,
+              year: match[1],
+              week: match[2],
+              label: `Week ${parseInt(match[2])}, ${match[1]}`
+            });
+          }
+        } else if (filename.startsWith('monthly-')) {
+          // Parse: monthly-2025-10.md
+          const match = filename.match(/monthly-(\d{4})-(\d{2})\.md/);
+          if (match) {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                               'July', 'August', 'September', 'October', 'November', 'December'];
+            const monthIndex = parseInt(match[2]) - 1;
+            monthlySummaries.push({
+              filename: filename,
+              year: match[1],
+              month: match[2],
+              label: `${monthNames[monthIndex]} ${match[1]}`
+            });
+          }
+        } else if (filename.startsWith('yearly-')) {
+          // Parse: yearly-2025.md
+          const match = filename.match(/yearly-(\d{4})\.md/);
+          if (match) {
+            yearlySummaries.push({
+              filename: filename,
+              year: match[1],
+              label: `Year ${match[1]}`
+            });
+          }
+        }
+      });
+      
+      // Sort summaries (most recent first)
+      weeklySummaries.sort((a, b) => {
+        if (a.year !== b.year) return b.year - a.year;
+        return b.week - a.week;
+      });
+      
+      monthlySummaries.sort((a, b) => {
+        if (a.year !== b.year) return b.year - a.year;
+        return b.month - a.month;
+      });
+      
+      yearlySummaries.sort((a, b) => b.year - a.year);
+      
+      // Populate weekly dropdown
+      weeklySummaries.forEach(summary => {
+        const option = document.createElement('option');
+        option.value = summary.filename;
+        option.textContent = summary.label;
+        weeklySelect.appendChild(option);
+      });
+      
+      // Populate monthly dropdown
+      monthlySummaries.forEach(summary => {
+        const option = document.createElement('option');
+        option.value = summary.filename;
+        option.textContent = summary.label;
+        monthlySelect.appendChild(option);
+      });
+      
+      // Populate yearly dropdown
+      yearlySummaries.forEach(summary => {
+        const option = document.createElement('option');
+        option.value = summary.filename;
+        option.textContent = summary.label;
+        yearlySelect.appendChild(option);
+      });
+      
+      // Add event listeners
+      weeklySelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+          showSummaryModal(e.target.value);
+        }
+      });
+      
+      monthlySelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+          showSummaryModal(e.target.value);
+        }
+      });
+      
+      yearlySelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+          showSummaryModal(e.target.value);
+        }
+      });
+      
+      // Show message if no summaries found
+      if (weeklySummaries.length === 0 && monthlySummaries.length === 0 && yearlySummaries.length === 0) {
+        weeklySelect.innerHTML += '<option disabled>No weekly summaries available</option>';
+        monthlySelect.innerHTML += '<option disabled>No monthly summaries available</option>';
+        yearlySelect.innerHTML += '<option disabled>No yearly summaries available</option>';
       }
     }
     
@@ -634,6 +889,10 @@
     // Close summary modal
     function closeSummaryModal() {
       document.getElementById('summary-modal').classList.remove('active');
+      // Reset dropdown selections
+      document.getElementById('weekly-select').value = '';
+      document.getElementById('monthly-select').value = '';
+      document.getElementById('yearly-select').value = '';
     }
     
     // Close summary modal on background click
