@@ -91,6 +91,9 @@ class PDFRenderer {
       
       console.log('PDF loaded successfully. Pages:', this.pdfDoc.numPages);
       
+      // Calculate responsive initial scale
+      await this.calculateInitialScale();
+      
       await this.renderAllPages();
       
       this.isRendering = false;
@@ -105,6 +108,49 @@ class PDFRenderer {
         </div>
       `;
       throw error;
+    }
+  }
+
+  /**
+   * Calculate initial scale based on viewport width for responsive display
+   */
+  async calculateInitialScale() {
+    if (!this.pdfDoc) return;
+    
+    try {
+      const page = await this.pdfDoc.getPage(1);
+      const viewport = page.getViewport({ scale: 1 });
+      const containerWidth = this.scrollContainer.clientWidth - 40; // Account for padding
+      
+      // Calculate scale to fit width
+      const fitWidthScale = containerWidth / viewport.width;
+      
+      // For mobile devices (width < 768px), use fit-to-width
+      // For tablets (768-1024px), use slightly reduced scale
+      // For desktop, use the configured scale or fit-to-width, whichever is smaller
+      const screenWidth = window.innerWidth;
+      
+      if (screenWidth < 768) {
+        // Mobile: always fit to width
+        this.currentScale = fitWidthScale;
+      } else if (screenWidth < 1024) {
+        // Tablet: use fit-to-width or 1.0, whichever is smaller
+        this.currentScale = Math.min(fitWidthScale, 1.0);
+      } else {
+        // Desktop: use configured scale or fit-to-width, whichever fits better
+        this.currentScale = Math.min(this.options.scale, fitWidthScale * 1.1);
+      }
+      
+      // Update zoom level display
+      const zoomLevel = this.container.querySelector('.pdf-zoom-level');
+      if (zoomLevel) {
+        zoomLevel.textContent = `${Math.round(this.currentScale * 100)}%`;
+      }
+      
+      console.log(`Initial scale calculated: ${this.currentScale} (screen width: ${screenWidth}px)`);
+    } catch (error) {
+      console.error('Error calculating initial scale:', error);
+      this.currentScale = this.options.scale;
     }
   }
 
@@ -140,16 +186,27 @@ class PDFRenderer {
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       
-      // Calculate scale
+      // Calculate scale with device pixel ratio for high-DPI displays
+      const devicePixelRatio = window.devicePixelRatio || 1;
+      const outputScale = devicePixelRatio > 1 ? devicePixelRatio : 2;
       const viewport = page.getViewport({ scale: this.currentScale });
       
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+      // Set canvas size at higher resolution for crisp rendering
+      canvas.width = Math.floor(viewport.width * outputScale);
+      canvas.height = Math.floor(viewport.height * outputScale);
+      
+      // Scale canvas display size to match viewport
+      canvas.style.width = Math.floor(viewport.width) + 'px';
+      canvas.style.height = Math.floor(viewport.height) + 'px';
+      
+      // Apply transform to scale the rendering context
+      const transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
       
       // Render page to canvas
       const renderContext = {
         canvasContext: context,
-        viewport: viewport
+        viewport: viewport,
+        transform: transform
       };
       
       await page.render(renderContext).promise;
