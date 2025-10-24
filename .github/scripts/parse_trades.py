@@ -9,6 +9,7 @@ import os
 import json
 import yaml
 import glob
+import re
 from pathlib import Path
 from datetime import datetime
 
@@ -73,10 +74,17 @@ def parse_trade_file(filepath):
             print(f"Warning: Missing required fields in {filepath}: {missing_fields}")
             return None
         
+        # Extract notes section from markdown body
+        notes = ''
+        notes_match = re.search(r'## Notes\s*\n+(.*?)(?=\n##|\Z)', body, re.DOTALL)
+        if notes_match:
+            notes = notes_match.group(1).strip()
+        
         # Add computed fields
         trade_data = {
             'file_path': filepath,
             'body': body[:200] + '...' if len(body) > 200 else body,  # Preview
+            'notes': notes if notes else 'No notes recorded.',
             **frontmatter
         }
         

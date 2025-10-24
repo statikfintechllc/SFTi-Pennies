@@ -3,6 +3,7 @@
     {
       "file_path": "index.directory/SFTi.Tradez/week.2025.43/10:23:2025.1.md",
       "body": "# Trade #1 - SGBX\n\n## Trade Details\n\n- **Ticker**: SGBX\n- **Direction**: LONG\n- **Entry**: $3.43 on 2025-10-23 at 17:24\n- **Exit**: $3.17 on 2025-10-23 at 18:17\n- **Position Size**: 15 shares\n- **Stra...",
+      "notes": "The trade was an unsuccessful attempt to execute the Step #5 Dip Buy. The stock had previously peaked above $4.20 and was in a strong Cliff Dive Step #4. The entry at $3.43, 05:24:07, was below the session VWAP of $3.77, identifying the correct area of value for a bounce attempt. However, the anticipated buying pressure failed to appear, and the price continued to bleed lower. The trader correctly utilized the stop-limit order, exiting at $3.17, 06:17:23, for a controlled loss of -$4.98. This outcome, while a loss, is a successful display of risk management, as it prevented a small loss from escalating into a larger one as the stock continued to decline toward $2.87.",
       "trade_number": 1,
       "ticker": "SGBX",
       "entry_date": "2025-10-23",
@@ -58,6 +59,6 @@
     "max_drawdown": 0,
     "profit_factor": 0.0
   },
-  "generated_at": "2025-10-24T03:04:38.076721",
+  "generated_at": "2025-10-24T15:50:27.750402",
   "version": "1.0"
 }

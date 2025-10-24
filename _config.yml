@@ -26,10 +26,8 @@ exclude:
   - package.json
   - package-lock.json
   - LICENSE.md
-  - index.directory/SFTi.Tradez/
   - index.directory/src/
-  - "**/*:*"
-  - "**/**:**:****.*.md"
+  - index.directory/SFTi.Tradez/
 
 # Include necessary files
 include:
@@ -39,6 +37,13 @@ include:
 plugins:
   - jekyll-relative-links
   - jekyll-seo-tag
+
+# Don't process markdown files in SFTi.Tradez
+defaults:
+  - scope:
+      path: "index.directory/SFTi.Tradez"
+    values:
+      sitemap: false
 
 relative_links:
   enabled: true
