@@ -193,7 +193,7 @@ class RobinhoodImporter(BaseImporter):
         elif exit_price > 10000:
             errors.append(f"Exit price ${exit_price} seems unusually high")
         
-        return len(errors) == 0, errors
+        return is_valid, errors
     
     def get_sample_mapping(self) -> Dict:
         """Get sample Robinhood field mapping"""
