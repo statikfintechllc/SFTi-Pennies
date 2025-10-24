@@ -20,12 +20,18 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/glass-effects.css">
   
-  <!-- Marked.js for markdown rendering -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.0/marked.min.js"></script>
+  <!-- Local Bundle (marked.js + highlight.js) -->
+  <script src="assets/js/bundle.min.js"></script>
+  
+  <!-- Custom Markdown Styles -->
+  <link rel="stylesheet" href="styles/markdown.css">
   
   <!-- GLightbox for image galleries -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
   <script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
+  
+  <!-- Modular Renderers -->
+  <script src="render/markdownRenderer.js"></script>
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="../manifest.json">
@@ -180,108 +186,6 @@
       overflow-x: hidden;
       min-height: 0;
       flex: 1;
-      padding: 1.5rem;
-    }
-    
-    .trade-item {
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-    }
-    
-    .trade-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-    
-    .trade-ticker {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--accent-green);
-      font-family: var(--font-mono);
-    }
-    
-    .trade-pnl {
-      font-size: 1.1rem;
-      font-weight: 700;
-      font-family: var(--font-mono);
-    }
-    
-    .trade-details {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.5rem;
-      margin-bottom: 0.75rem;
-      font-size: 0.875rem;
-    }
-    
-    .trade-images {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-      gap: 0.5rem;
-      margin-top: 0.75rem;
-    }
-    
-    .trade-image-thumb {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      transition: all 0.2s ease;
-    }
-    
-    .trade-image-thumb:hover {
-      border-color: var(--accent-green);
-      transform: scale(1.05);
-    }
-    
-    .markdown-content {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border-color);
-    }
-    
-    .markdown-content h1, .markdown-content h2, .markdown-content h3 {
-      color: var(--accent-green);
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .markdown-content p {
-      line-height: 1.6;
-      margin-bottom: 0.75rem;
-    }
-    
-    .markdown-content ul, .markdown-content ol {
-      margin-left: 1.5rem;
-      margin-bottom: 0.75rem;
-    }
-    
-    .markdown-content code {
-      background: var(--bg-primary);
-      padding: 0.125rem 0.25rem;
-      border-radius: 3px;
-      font-family: var(--font-mono);
-      font-size: 0.875em;
-    }
-    
-    .markdown-content pre {
-      background: var(--bg-primary);
-      padding: 1rem;
-      border-radius: 4px;
-      overflow-x: auto;
-      margin-bottom: 1rem;
-    }
-    
-    .markdown-content pre code {
-      background: transparent;
-      padding: 0;
     }
   </style>
 </head>
@@ -385,14 +289,14 @@
   <script src="assets/js/app.js"></script>
   
   <script>
-    // Configure marked for proper rendering
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    });
-    
     let allWeeks = [];
     let lightbox;
+    let markdownRenderer;
+    
+    // Initialize MarkdownRenderer
+    document.addEventListener('DOMContentLoaded', () => {
+      markdownRenderer = new MarkdownRenderer();
+    });
     
     // Load weeks data
     async function loadWeeks() {
@@ -493,7 +397,7 @@
       document.getElementById('modal-week-title').textContent = `Week ${week.week}, ${week.year}`;
       
       const modalBody = document.getElementById('week-modal-body');
-      modalBody.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Loading...</p>';
+      modalBody.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Loading...</p>';
       
       // Load master.trade.md if it exists
       const masterFile = `./SFTi.Tradez/week.${weekKey}/master.trade.md`;
@@ -508,79 +412,70 @@
         console.log('No master.trade.md found for this week');
       }
       
-      // Render trades
-      let content = '';
+      // Build content for all trades
+      let allTradesMarkdown = '';
       
-      // Render master content if available
+      // Add master content if available
       if (masterContent) {
-        content += `<div class="markdown-content">${marked.parse(masterContent)}</div>`;
+        allTradesMarkdown += masterContent + '\n\n---\n\n';
       }
       
-      // Render individual trades
-      content += '<h3 style="color: var(--accent-green); margin-top: 2rem; margin-bottom: 1rem;">Trades</h3>';
+      // Add header for trades section
+      allTradesMarkdown += '## Trades\n\n';
       
+      // Load and append each trade's markdown content
       for (const trade of week.trades) {
-        const pnlClass = (trade.pnl_usd || 0) >= 0 ? 'positive' : 'negative';
-        const pnlSign = (trade.pnl_usd || 0) >= 0 ? '+' : '';
-        
-        content += `
-          <div class="trade-item">
-            <div class="trade-header">
-              <div class="trade-ticker">${trade.ticker || 'N/A'}</div>
-              <div class="trade-pnl ${pnlClass}">${pnlSign}$${(trade.pnl_usd || 0).toFixed(2)}</div>
-            </div>
-            <div class="trade-details">
-              <div><strong>Date:</strong> ${trade.entry_date || 'N/A'}</div>
-              <div><strong>Entry:</strong> $${(trade.entry_price || 0).toFixed(2)}</div>
-              <div><strong>Exit:</strong> $${(trade.exit_price || 0).toFixed(2)}</div>
-              <div><strong>Size:</strong> ${trade.position_size || 0} shares</div>
-              <div><strong>Direction:</strong> ${trade.direction || 'LONG'}</div>
-              <div><strong>R:R:</strong> ${trade.risk_reward_ratio || 'N/A'}</div>
-            </div>
-        `;
-        
-        // Add tags if available
-        if (trade.strategy_tags && trade.strategy_tags.length > 0) {
-          content += `<div style="margin-top: 0.5rem;"><strong>Strategy:</strong> ${trade.strategy_tags.join(', ')}</div>`;
+        try {
+          // Clean the file path
+          let tradePath = trade.file_path.replace(/^\/+/, '');
+          if (tradePath.startsWith('index.directory/')) {
+            tradePath = tradePath.substring('index.directory/'.length);
+          }
+          
+          const tradeUrl = './' + tradePath;
+          const response = await fetch(tradeUrl);
+          
+          if (response.ok) {
+            const tradeMarkdown = await response.text();
+            allTradesMarkdown += tradeMarkdown + '\n\n---\n\n';
+          }
+        } catch (error) {
+          console.error('Error loading trade:', trade.ticker, error);
+          // Fallback to basic info if markdown file can't be loaded
+          const pnlClass = (trade.pnl_usd || 0) >= 0 ? 'positive' : 'negative';
+          const pnlSign = (trade.pnl_usd || 0) >= 0 ? '+' : '';
+          
+          allTradesMarkdown += `### ${trade.ticker || 'N/A'}\n\n`;
+          allTradesMarkdown += `- **P&L**: ${pnlSign}$${(trade.pnl_usd || 0).toFixed(2)}\n`;
+          allTradesMarkdown += `- **Date**: ${trade.entry_date || 'N/A'}\n`;
+          allTradesMarkdown += `- **Entry**: $${(trade.entry_price || 0).toFixed(2)}\n`;
+          allTradesMarkdown += `- **Exit**: $${(trade.exit_price || 0).toFixed(2)}\n`;
+          allTradesMarkdown += `- **Size**: ${trade.position_size || 0} shares\n`;
+          allTradesMarkdown += `- **Direction**: ${trade.direction || 'LONG'}\n\n---\n\n`;
         }
-        
-        // Add images if available
-        if (trade.screenshots && trade.screenshots.length > 0) {
-          content += '<div class="trade-images">';
-          trade.screenshots.forEach((img, idx) => {
-            // Adjust image path for all-weeks.html context
-            // Screenshots in JSON are relative to trade markdown files (../../assets/...)
-            // but all-weeks.html and assets are both in index.directory, so use relative path: assets/...
-            let adjustedPath = img.replace(/^\.\.\/\.\.\//, '');
-            
-            // URL encode the path to handle special characters like colons in directory names
-            // Split by /, encode each part, then rejoin
-            const parts = adjustedPath.split('/');
-            adjustedPath = parts.map((part, i) => {
-              // Don't encode empty parts
-              if (part === '') return part;
-              // Only encode if not already encoded (avoid double-encoding)
-              // A segment is considered encoded if it contains any %HH sequence
-              return /%[0-9A-Fa-f]{2}/.test(part) ? part : encodeURIComponent(part);
-            }).join('/');
-            
-            content += `<a href="${adjustedPath}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
-              <img src="${adjustedPath}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
-            </a>`;
-          });
-          content += '</div>';
-        }
-        
-        content += '</div>';
       }
       
-      modalBody.innerHTML = content;
+      // Render all markdown content at once using MarkdownRenderer
+      modalBody.className = 'week-modal-body markdown-body';
       
-      // Initialize GLightbox for images
-      if (lightbox) lightbox.destroy();
-      lightbox = GLightbox({
-        selector: '.glightbox'
-      });
+      if (!markdownRenderer) {
+        console.error('MarkdownRenderer not initialized yet');
+        modalBody.innerHTML = '<p style="text-align: center; color: var(--accent-red); padding: 2rem;">Error: Renderer not ready. Please refresh the page.</p>';
+        return;
+      }
+      
+      modalBody.innerHTML = markdownRenderer.render(allTradesMarkdown);
+      
+      // Fix image paths
+      markdownRenderer.fixImagePaths(modalBody);
+      
+      // Initialize GLightbox for images (if available)
+      if (typeof GLightbox !== 'undefined') {
+        if (lightbox) lightbox.destroy();
+        lightbox = GLightbox({
+          selector: '.glightbox'
+        });
+      }
       
       document.getElementById('week-modal').classList.add('active');
     }
@@ -588,7 +483,9 @@
     // Close modal
     function closeWeekModal() {
       document.getElementById('week-modal').classList.remove('active');
-      if (lightbox) lightbox.destroy();
+      if (typeof GLightbox !== 'undefined' && lightbox) {
+        lightbox.destroy();
+      }
     }
     
     // Close modal on background click
