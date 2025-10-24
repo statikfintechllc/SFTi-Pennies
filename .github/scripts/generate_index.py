@@ -59,10 +59,15 @@ def create_trade_list_html(trades):
         pnl_class = 'positive' if pnl >= 0 else 'negative'
         pnl_sign = '+' if pnl >= 0 else ''
         
+        # Generate trade page link
+        trade_number = trade.get('trade_number', 0)
+        ticker = trade.get('ticker', 'UNKNOWN')
+        trade_link = f"trades/trade-{trade_number:03d}-{ticker}.html"
+        
         rows.append(f"""
-        <tr>
-            <td>#{trade.get('trade_number', 'N/A')}</td>
-            <td><strong>{trade.get('ticker', 'N/A')}</strong></td>
+        <tr style="cursor: pointer;" onclick="window.location.href='{trade_link}'">
+            <td><a href="{trade_link}" style="color: inherit; text-decoration: none;">#{trade.get('trade_number', 'N/A')}</a></td>
+            <td><a href="{trade_link}" style="color: inherit; text-decoration: none;"><strong>{trade.get('ticker', 'N/A')}</strong></a></td>
             <td>{trade.get('direction', 'N/A')}</td>
             <td>${trade.get('entry_price', 0):.4f}</td>
             <td>${trade.get('exit_price', 0):.4f}</td>
@@ -125,6 +130,12 @@ def create_trade_list_html(trades):
         }}
         tr:hover {{
             background-color: var(--bg-tertiary);
+            cursor: pointer;
+        }}
+        tr a {{
+            display: block;
+            width: 100%;
+            height: 100%;
         }}
         .positive {{
             color: var(--accent-green);

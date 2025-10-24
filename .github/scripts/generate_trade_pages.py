@@ -96,9 +96,12 @@ def generate_trade_html(trade):
         gallery_items = []
         for idx, img in enumerate(images):
             if img and img != 'None' and img.strip():
+                # Adjust path: images come as ../../assets/... from markdown files
+                # From trades/ directory, we need ../assets/...
+                img_path = img.replace('../../assets/', '../assets/')
                 gallery_items.append(f'''
-                <a href="../{img}" class="glightbox" data-gallery="trade-{trade_number}">
-                    <img src="../{img}" alt="Trade screenshot {idx+1}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color); transition: all 0.3s;">
+                <a href="{img_path}" class="glightbox" data-gallery="trade-{trade_number}">
+                    <img src="{img_path}" alt="Trade screenshot {idx+1}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color); transition: all 0.3s;">
                 </a>
                 ''')
         
