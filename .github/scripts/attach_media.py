@@ -3,13 +3,12 @@
 Attach Media Script
 Validates and reconciles media file references in trade metadata
 
-This script:
+This script provides media management functionality:
 1. Scans index.directory/assets/trade-images/ for images
 2. Validates that trade metadata references are correct
 3. Updates trade markdown frontmatter with image paths
 4. Reports orphaned images (not linked to any trade)
-
-TODO: Implement full media reconciliation logic
+5. Validates image files (existence, format, size)
 """
 
 import os
@@ -60,17 +59,30 @@ def validate_image_references(trade, image_path):
         image_path (str): Path to image
         
     Returns:
-        bool: True if valid, False otherwise
+        tuple: (is_valid, error_message)
     """
     if not os.path.exists(image_path):
-        return False
+        return False, f"Image file does not exist: {image_path}"
     
-    # TODO: Add more validation
-    # - Check file size
-    # - Verify image format
-    # - Check permissions
+    # Check file size (warn if > 5MB)
+    try:
+        file_size = os.path.getsize(image_path)
+        if file_size > 5 * 1024 * 1024:  # 5MB
+            return True, f"Warning: Large image file ({file_size / (1024*1024):.1f}MB)"
+    except OSError as e:
+        return False, f"Cannot read file size: {e}"
     
-    return True
+    # Verify image format by extension
+    valid_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+    _, ext = os.path.splitext(image_path.lower())
+    if ext not in valid_extensions:
+        return False, f"Unsupported image format: {ext}"
+    
+    # Check read permissions
+    if not os.access(image_path, os.R_OK):
+        return False, f"File is not readable: {image_path}"
+    
+    return True, None
 
 
 def update_trade_metadata(trade_file_path, image_paths):
