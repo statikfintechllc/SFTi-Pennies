@@ -432,60 +432,68 @@
       const modalBody = document.getElementById('week-modal-body');
       modalBody.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Loading...</p>';
       
-      // Load master.trade.md if it exists
-      const masterFile = `./SFTi.Tradez/week.${weekKey}/master.trade.md`;
-      let masterContent = '';
-      
-      try {
-        const response = await fetch(masterFile);
-        if (response.ok) {
-          masterContent = await response.text();
-        }
-      } catch (error) {
-        console.log('No master.trade.md found for this week');
-      }
-      
-      // Build content for all trades
+      // Build content for all trades using data from trades-index.json
+      // Since markdown files may not be accessible via Jekyll, we use the JSON data
       let allTradesMarkdown = '';
       
-      // Add master content if available
-      if (masterContent) {
-        allTradesMarkdown += masterContent + '\n\n---\n\n';
-      }
+      // Add week header
+      allTradesMarkdown += `# Week ${week.week}, ${week.year}\n\n`;
+      allTradesMarkdown += `**Total P&L:** ${week.totalPnL >= 0 ? '+' : ''}$${week.totalPnL.toFixed(2)}\n\n`;
+      allTradesMarkdown += `**Trades:** ${week.trades.length} | **Wins:** ${week.wins} | **Losses:** ${week.losses}\n\n`;
+      allTradesMarkdown += `---\n\n`;
       
-      // Add header for trades section
-      allTradesMarkdown += '## Trades\n\n';
-      
-      // Load and append each trade's markdown content
+      // Add each trade's details from JSON data
       for (const trade of week.trades) {
-        try {
-          // Clean the file path
-          let tradePath = trade.file_path.replace(/^\/+/, '');
-          if (tradePath.startsWith('index.directory/')) {
-            tradePath = tradePath.substring('index.directory/'.length);
+        const pnlSign = (trade.pnl_usd || 0) >= 0 ? '+' : '';
+        const pnlColor = (trade.pnl_usd || 0) >= 0 ? '🟢' : '🔴';
+        
+        allTradesMarkdown += `## ${pnlColor} Trade #${trade.trade_number} - ${trade.ticker || 'N/A'}\n\n`;
+        allTradesMarkdown += `### 📊 Trade Details\n\n`;
+        allTradesMarkdown += `- **Direction:** ${trade.direction || 'LONG'}\n`;
+        allTradesMarkdown += `- **Entry:** $${(trade.entry_price || 0).toFixed(4)} on ${trade.entry_date || 'N/A'}\n`;
+        allTradesMarkdown += `- **Exit:** $${(trade.exit_price || 0).toFixed(4)} on ${trade.exit_date || 'N/A'}\n`;
+        allTradesMarkdown += `- **Position Size:** ${trade.position_size || 0} shares\n`;
+        allTradesMarkdown += `- **Strategy:** ${trade.strategy || 'N/A'}\n`;
+        allTradesMarkdown += `- **Broker:** ${trade.broker || 'N/A'}\n\n`;
+        
+        allTradesMarkdown += `### 💰 Results\n\n`;
+        allTradesMarkdown += `- **P&L (USD):** ${pnlSign}$${Math.abs(trade.pnl_usd || 0).toFixed(2)}\n`;
+        allTradesMarkdown += `- **P&L (%):** ${pnlSign}${Math.abs(trade.pnl_percent || 0).toFixed(2)}%\n\n`;
+        
+        allTradesMarkdown += `### 🎯 Risk Management\n\n`;
+        allTradesMarkdown += `- **Stop Loss:** $${(trade.stop_loss || 0).toFixed(2)}\n`;
+        allTradesMarkdown += `- **Target Price:** $${(trade.target_price || 0).toFixed(2)}\n`;
+        allTradesMarkdown += `- **Risk:Reward:** 1:${(trade.risk_reward_ratio || 0).toFixed(2)}\n\n`;
+        
+        // Add tags if available
+        if (trade.strategy_tags && trade.strategy_tags.length > 0) {
+          allTradesMarkdown += `### 🏷️ Tags\n\n`;
+          allTradesMarkdown += `**Strategy:** ${trade.strategy_tags.join(', ')}\n\n`;
+          if (trade.setup_tags && trade.setup_tags.length > 0) {
+            allTradesMarkdown += `**Setup:** ${trade.setup_tags.join(', ')}\n\n`;
           }
-          
-          const tradeUrl = './' + tradePath;
-          const response = await fetch(tradeUrl);
-          
-          if (response.ok) {
-            const tradeMarkdown = await response.text();
-            allTradesMarkdown += tradeMarkdown + '\n\n---\n\n';
+          if (trade.session_tags && trade.session_tags.length > 0) {
+            allTradesMarkdown += `**Session:** ${trade.session_tags.join(', ')}\n\n`;
           }
-        } catch (error) {
-          console.error('Error loading trade:', trade.ticker, error);
-          // Fallback to basic info if markdown file can't be loaded
-          const pnlClass = (trade.pnl_usd || 0) >= 0 ? 'positive' : 'negative';
-          const pnlSign = (trade.pnl_usd || 0) >= 0 ? '+' : '';
-          
-          allTradesMarkdown += `### ${trade.ticker || 'N/A'}\n\n`;
-          allTradesMarkdown += `- **P&L**: ${pnlSign}$${(trade.pnl_usd || 0).toFixed(2)}\n`;
-          allTradesMarkdown += `- **Date**: ${trade.entry_date || 'N/A'}\n`;
-          allTradesMarkdown += `- **Entry**: $${(trade.entry_price || 0).toFixed(2)}\n`;
-          allTradesMarkdown += `- **Exit**: $${(trade.exit_price || 0).toFixed(2)}\n`;
-          allTradesMarkdown += `- **Size**: ${trade.position_size || 0} shares\n`;
-          allTradesMarkdown += `- **Direction**: ${trade.direction || 'LONG'}\n\n---\n\n`;
         }
+        
+        // Add notes if available
+        if (trade.notes && trade.notes !== 'No notes recorded.') {
+          allTradesMarkdown += `### 📝 Notes\n\n`;
+          allTradesMarkdown += `${trade.notes}\n\n`;
+        }
+        
+        // Add screenshots if available
+        if (trade.screenshots && trade.screenshots.length > 0) {
+          allTradesMarkdown += `### 📸 Screenshots\n\n`;
+          for (const screenshot of trade.screenshots) {
+            // Adjust path from ../../assets/ to ../assets/ (relative to all-weeks.html)
+            const imgPath = screenshot.replace('../../assets/', '../assets/');
+            allTradesMarkdown += `![Trade Screenshot](${imgPath})\n\n`;
+          }
+        }
+        
+        allTradesMarkdown += `---\n\n`;
       }
       
       // Render all markdown content at once using MarkdownRenderer
