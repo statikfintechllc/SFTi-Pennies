@@ -20,10 +20,10 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/glass-effects.css">
   
-  <!-- Local Bundle (marked.js + PDF.js + highlight.js) -->
+  <!-- Local Bundle (marked.js + highlight.js) -->
   <script src="assets/js/bundle.min.js"></script>
   
-  <!-- Custom Markdown & PDF Styles -->
+  <!-- Custom Markdown Styles -->
   <link rel="stylesheet" href="styles/markdown.css">
   
   <!-- GLightbox for image galleries -->
@@ -457,6 +457,13 @@
       
       // Render all markdown content at once using MarkdownRenderer
       modalBody.className = 'week-modal-body markdown-body';
+      
+      if (!markdownRenderer) {
+        console.error('MarkdownRenderer not initialized yet');
+        modalBody.innerHTML = '<p style="text-align: center; color: var(--accent-red); padding: 2rem;">Error: Renderer not ready. Please refresh the page.</p>';
+        return;
+      }
+      
       modalBody.innerHTML = markdownRenderer.render(allTradesMarkdown);
       
       // Fix image paths
