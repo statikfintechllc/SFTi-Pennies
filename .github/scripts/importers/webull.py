@@ -195,7 +195,7 @@ class WebullImporter(BaseImporter):
             errors.append("Position size must be positive")
             is_valid = False
         
-        return len(errors) == 0, errors
+        return is_valid, errors
     
     def get_sample_mapping(self) -> Dict:
         """Get sample Webull field mapping"""
