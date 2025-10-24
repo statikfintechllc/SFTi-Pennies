@@ -60,8 +60,8 @@ def validate_image_references(trade, image_path):
         
     Returns:
         tuple: (is_valid: bool, message: str or None)
-            - is_valid: True if file is valid and accessible
-            - message: Error message if validation fails, warning message if valid but has issues, None if fully valid
+            - is_valid: False for validation errors, True for valid files (including those with warnings)
+            - message: Error message when is_valid=False, warning message when is_valid=True but file has issues, None when is_valid=True and no issues
     """
     if not os.path.exists(image_path):
         return False, f"Image file does not exist: {image_path}"
