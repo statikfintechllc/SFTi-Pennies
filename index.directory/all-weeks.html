@@ -548,8 +548,24 @@
         if (trade.screenshots && trade.screenshots.length > 0) {
           content += '<div class="trade-images">';
           trade.screenshots.forEach((img, idx) => {
-            content += `<a href="${img}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
-              <img src="${img}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
+            // Adjust image path for all-weeks.html context
+            // Screenshots in JSON are relative to trade markdown files (../../assets/...)
+            // but all-weeks.html and assets are both in index.directory, so use relative path: assets/...
+            let adjustedPath = img.replace(/^\.\.\/\.\.\//, '');
+            
+            // URL encode the path to handle special characters like colons in directory names
+            // Split by /, encode each part, then rejoin
+            const parts = adjustedPath.split('/');
+            adjustedPath = parts.map((part, i) => {
+              // Don't encode empty parts
+              if (part === '') return part;
+              // Only encode if not already encoded (avoid double-encoding)
+              // A segment is considered encoded if it contains any %HH sequence
+              return /%[0-9A-Fa-f]{2}/.test(part) ? part : encodeURIComponent(part);
+            }).join('/');
+            
+            content += `<a href="${adjustedPath}" class="glightbox" data-gallery="trade-${trade.ticker}-${trade.entry_date}">
+              <img src="${adjustedPath}" alt="Trade screenshot ${idx + 1}" class="trade-image-thumb" />
             </a>`;
           });
           content += '</div>';
