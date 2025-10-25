@@ -114,10 +114,16 @@ class CopilotChat {
   }
   
   init() {
-    this.createCopilotButton();
-    this.createChatInterface();
-    this.attachEventListeners();
-    this.setupMobileKeyboardHandler();
+    // Only create FAB button if not on copilot.html page
+    const isCopilotPage = window.location.pathname.includes('copilot.html');
+    
+    if (!isCopilotPage) {
+      this.createCopilotButton();
+    } else {
+      // On copilot.html, initialize the chat interface directly
+      this.createChatInterface();
+      this.attachEventListeners();
+    }
   }
   
   createCopilotButton() {
