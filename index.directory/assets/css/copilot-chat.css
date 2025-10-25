@@ -828,9 +828,8 @@
   }
   
   .copilot-model-dropdown {
-    left: 0;
-    right: auto;
-    transform: none;
+    /* Keep centered positioning on mobile/tablet */
+    min-width: 260px;
   }
   
   .copilot-chat-messages {
@@ -860,14 +859,12 @@
   
   .copilot-model-button {
     min-width: auto;
-    padding: 0.5rem;
-  }
-  
-  .copilot-model-button span {
-    display: none;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
   }
   
   .copilot-model-button svg {
-    margin: 0;
+    width: 12px;
+    height: 12px;
   }
 }
