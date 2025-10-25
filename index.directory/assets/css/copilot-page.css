@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 0;
   opacity: 1;
   pointer-events: auto;
 }
@@ -27,16 +27,16 @@
 .copilot-chat-container {
   width: 100%;
   max-width: 900px;
-  height: 85vh;
-  max-height: 700px;
+  height: 100vh;
+  max-height: 100vh;
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 0.96) 0%,
     rgba(10, 14, 39, 0.98) 100%);
   backdrop-filter: blur(var(--glass-blur-heavy)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(180%);
-  border: 1px solid var(--glass-border-medium);
-  border-radius: var(--glass-radius-lg);
-  box-shadow: var(--glass-shadow-xl);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   transform: scale(1) translateY(0);
@@ -725,9 +725,12 @@
   
   .copilot-chat-container {
     max-width: 100%;
-    /* Use full height naturally */
-    height: 100%;
+    width: 100%;
+    /* Use full viewport height with safe areas */
+    height: 100vh;
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
     border-radius: 0;
+    border: none;
     margin: 0;
     /* Use relative positioning so it stays within backdrop */
     position: relative;
@@ -737,6 +740,7 @@
   
   .copilot-chat-header {
     padding: 1rem;
+    padding-top: max(1rem, env(safe-area-inset-top));
     gap: 0.75rem;
     flex-shrink: 0;
     /* Keep header fixed at top on mobile */
@@ -745,6 +749,11 @@
     left: 0;
     right: 0;
     z-index: 10;
+    background: linear-gradient(135deg,
+      rgba(168, 85, 247, 0.15) 0%,
+      rgba(124, 58, 237, 0.08) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
   
   .copilot-header-left,
