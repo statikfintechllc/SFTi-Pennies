@@ -152,6 +152,8 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
   opacity: 0;
   overflow: hidden;
+  /* Prevent unwanted mobile gestures */
+  touch-action: pan-y pinch-zoom;
 }
 
 .copilot-modal-backdrop.active .copilot-chat-container {
@@ -726,6 +728,9 @@
   min-height: 52px;
   max-height: 150px;
   transition: all 0.3s ease;
+  /* Prevent zoom on mobile */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .copilot-chat-input:focus {

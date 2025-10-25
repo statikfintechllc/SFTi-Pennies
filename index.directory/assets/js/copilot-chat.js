@@ -268,6 +268,16 @@ class CopilotChat {
         input.style.height = 'auto';
         input.style.height = Math.min(input.scrollHeight, 150) + 'px';
       });
+      
+      // Handle focus on mobile - scroll input into view
+      input.addEventListener('focus', () => {
+        // Small delay to ensure keyboard is shown
+        setTimeout(() => {
+          if (input.scrollIntoView) {
+            input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        }, 300);
+      });
     }
     
     // Model selector
