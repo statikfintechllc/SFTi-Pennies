@@ -12,6 +12,14 @@
  */
 
 class PDFRenderer {
+  // Configuration constants for memory management and performance
+  static MAX_PIXEL_RATIO = 2;          // Maximum device pixel ratio for rendering (prevents excessive memory use)
+  static MIN_VIEWPORT_WIDTH = 200;     // Minimum viewport width in pixels (ensures readable text)
+  static INTERSECTION_MARGIN = '200px'; // Preload buffer zone for intersection observer
+  static UNRENDER_DELAY_MS = 1000;     // Delay before unrendering off-screen pages (ms)
+  static MIN_SCALE = 0.1;              // Minimum zoom scale (10%)
+  static MAX_SCALE = 5.0;              // Maximum zoom scale (500%)
+  
   constructor(containerId, options = {}) {
     this.container = document.getElementById(containerId);
     this.pdfjsLib = window.pdfjsLib;
@@ -238,13 +246,13 @@ class PDFRenderer {
       }
       
       // Edge case: Ensure minimum available width
-      availableWidth = Math.max(availableWidth, 200); // Minimum 200px
+      availableWidth = Math.max(availableWidth, PDFRenderer.MIN_VIEWPORT_WIDTH);
       
       // Calculate scale to fit width
       const fitWidthScale = availableWidth / viewport.width;
       
-      // Edge case: Clamp scale to reasonable bounds (0.1 to 5.0)
-      const clampedScale = Math.max(0.1, Math.min(5.0, fitWidthScale));
+      // Edge case: Clamp scale to reasonable bounds
+      const clampedScale = Math.max(PDFRenderer.MIN_SCALE, Math.min(PDFRenderer.MAX_SCALE, fitWidthScale));
       
       // Apply responsive scaling
       if (screenWidth < 768) {
@@ -318,7 +326,7 @@ class PDFRenderer {
     // Create observer with buffer zone (render before page is fully visible)
     const options = {
       root: this.scrollContainer,
-      rootMargin: '200px', // Start rendering 200px before page enters viewport
+      rootMargin: PDFRenderer.INTERSECTION_MARGIN, // Preload buffer zone
       threshold: 0.01 // Trigger as soon as 1% is visible
     };
     
@@ -500,7 +508,7 @@ class PDFRenderer {
         if (pageData && !pageData.isVisible && pageData.isRendered) {
           this.unrenderPage(pageNum);
         }
-      }, 1000); // Wait 1 second before unrendering
+      }, PDFRenderer.UNRENDER_DELAY_MS); // Delay before cleanup
     }
   }
 
@@ -563,7 +571,7 @@ class PDFRenderer {
       // Calculate scale with device pixel ratio for high-DPI displays
       // Use moderate scaling to balance quality and memory usage
       const devicePixelRatio = window.devicePixelRatio || 1;
-      const outputScale = Math.min(devicePixelRatio, 2); // Cap at 2x for memory efficiency
+      const outputScale = Math.min(devicePixelRatio, PDFRenderer.MAX_PIXEL_RATIO);
       const viewport = page.getViewport({ scale: this.currentScale });
       
       // Set canvas size at higher resolution for crisp rendering

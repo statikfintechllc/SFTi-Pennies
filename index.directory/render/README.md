@@ -201,12 +201,12 @@ const config = {
 #### Performance Metrics
 
 **Before Lazy Loading (v1.0.0):**
-- Memory: ~150MB for 10MB PDF
+- Memory: ~150MB peak (all pages rendered with browser overhead) for 10MB PDF
 - Initial Load: 8-12 seconds
 - Auto-refresh: Occurred with PDFs >4KB
 
 **After Lazy Loading (v2.0.0):**
-- Memory: ~30MB for 10MB PDF (5 pages)
+- Memory: ~30MB peak (5 pages rendered with browser overhead) for 10MB PDF
 - Initial Load: 2-3 seconds (first page)
 - Auto-refresh: ✅ Resolved
 - Supports: PDFs up to 500KB+ without issues
