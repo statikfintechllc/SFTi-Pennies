@@ -329,11 +329,9 @@ class CopilotChat {
         
         const container = document.querySelector('.copilot-chat-container');
         if (container) {
-          // Adjust container height to match visual viewport
-          // Use max to ensure we don't shrink too much
-          const newHeight = Math.max(visualViewport.height, 300);
-          container.style.height = `${newHeight}px`;
-          container.style.maxHeight = `${newHeight}px`;
+          // Let iOS handle the height - just use visualViewport height directly
+          container.style.height = `${visualViewport.height}px`;
+          container.style.maxHeight = `${visualViewport.height}px`;
         }
       };
       
