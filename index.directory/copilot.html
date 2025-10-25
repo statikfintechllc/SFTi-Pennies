@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>Copilot Chat - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  <link rel="stylesheet" href="assets/css/copilot-chat.css">
+  
+  <style>
+    /* Standalone chat page styles */
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    #standalone-chat-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    /* Override modal styles for standalone page */
+    .copilot-chat-modal {
+      position: static !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: none !important;
+      border-radius: 0 !important;
+      border: none !important;
+      backdrop-filter: none !important;
+      background: transparent !important;
+    }
+    
+    .copilot-chat-container {
+      position: static !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-height: none !important;
+      border-radius: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    /* Fixed header */
+    .copilot-chat-header {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 100 !important;
+      flex-shrink: 0 !important;
+    }
+    
+    /* Messages area with proper padding */
+    .copilot-messages {
+      flex: 1 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding-top: calc(60px + 1rem) !important; /* Header height + spacing */
+      padding-bottom: calc(80px + 1rem) !important; /* Input area height + spacing */
+      -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Fixed input area at bottom */
+    .copilot-input-area {
+      position: fixed !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      flex-shrink: 0 !important;
+      z-index: 90 !important;
+    }
+    
+    /* Mobile specific */
+    @media (max-width: 768px) {
+      .copilot-input-area input {
+        font-size: 16px !important; /* Prevent iOS zoom */
+      }
+    }
+    
+    /* Back button */
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(-2px);
+    }
+    
+    .back-button:active {
+      transform: translateX(0) scale(0.95);
+    }
+    
+    .back-button svg {
+      width: 20px;
+      height: 20px;
+      fill: rgba(255, 255, 255, 0.9);
+    }
+  </style>
+</head>
+<body>
+  <div id="standalone-chat-container">
+    <!-- Chat interface will be injected here -->
+    <div class="copilot-chat-modal" style="display: block;">
+      <div class="copilot-chat-container">
+        <!-- Header -->
+        <div class="copilot-chat-header">
+          <button class="back-button" onclick="window.history.back()" aria-label="Go back">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="header-content">
+            <h2 class="chat-title">
+              <svg class="copilot-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
+              </svg>
+              Copilot Chat
+            </h2>
+            <select class="model-selector" id="model-selector">
+              <option value="gpt-4o" selected>GPT-4o</option>
+              <option value="gpt-5">GPT-5</option>
+              <option value="claude-sonnet-4.5">Claude Sonnet 4.5</option>
+            </select>
+          </div>
+          <button class="new-chat-btn" id="new-chat-btn" aria-label="New chat">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="copilot-messages" id="copilot-messages">
+          <div class="welcome-message">
+            <div class="welcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Welcome to Copilot Chat</h3>
+            <p>Ask me anything about your trading journal, analysis, or strategies.</p>
+          </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="copilot-input-area">
+          <form class="input-form" id="copilot-form">
+            <input 
+              type="text" 
+              id="copilot-input" 
+              class="copilot-input" 
+              placeholder="Ask Copilot anything about trading..."
+              autocomplete="off"
+            />
+            <button type="submit" class="send-btn" aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Copilot Chat JS -->
+  <script src="assets/js/copilot-chat.js"></script>
+  <script>
+    // Initialize chat in standalone mode
+    document.addEventListener('DOMContentLoaded', () => {
+      const copilotChat = new CopilotChat();
+      copilotChat.isOpen = true; // Mark as already open since we're on the page
+      
+      // Override close method to go back instead
+      copilotChat.closeChat = function() {
+        window.history.back();
+      };
+      
+      // Focus input on load (delayed to avoid keyboard issues)
+      setTimeout(() => {
+        const input = document.getElementById('copilot-input');
+        if (input) {
+          input.focus();
+        }
+      }, 500);
+    });
+  </script>
+</body>
+</html>

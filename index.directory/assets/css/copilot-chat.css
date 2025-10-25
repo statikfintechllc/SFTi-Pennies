@@ -27,6 +27,7 @@
   z-index: 9998;
   transform: translateZ(0);
   overflow: visible;
+  text-decoration: none; /* Remove link underline */
 }
 
 .copilot-fab::before {

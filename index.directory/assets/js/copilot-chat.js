@@ -121,10 +121,11 @@ class CopilotChat {
   }
   
   createCopilotButton() {
-    // Create floating Copilot button (bottom right corner)
-    const copilotButton = document.createElement('button');
+    // Create floating Copilot button (bottom right corner) as a link to separate page
+    const copilotButton = document.createElement('a');
     copilotButton.className = 'copilot-fab';
     copilotButton.id = 'copilot-trigger';
+    copilotButton.href = 'index.directory/copilot.html';
     copilotButton.setAttribute('aria-label', 'Open GitHub Copilot');
     copilotButton.innerHTML = `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
