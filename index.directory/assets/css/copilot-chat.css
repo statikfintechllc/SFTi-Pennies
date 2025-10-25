@@ -704,6 +704,7 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border-top: 1px solid var(--glass-border-medium);
+  position: relative;
 }
 
 .copilot-chat-input-wrapper {
@@ -782,6 +783,11 @@
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
   
   .copilot-modal-backdrop {
@@ -845,6 +851,17 @@
   
   .copilot-chat-input-area {
     padding: 1rem;
+    /* Ensure input area stays at bottom on mobile */
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+  }
+  
+  .copilot-chat-input {
+    /* Prevent iOS zoom on input focus by using 16px+ font size */
+    font-size: 16px;
   }
   
   .copilot-send-button {

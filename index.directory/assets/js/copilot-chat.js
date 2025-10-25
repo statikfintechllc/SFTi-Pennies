@@ -117,6 +117,7 @@ class CopilotChat {
     this.createCopilotButton();
     this.createChatInterface();
     this.attachEventListeners();
+    this.setupMobileKeyboardHandling();
   }
   
   createCopilotButton() {
@@ -315,12 +316,79 @@ class CopilotChat {
     }
   }
   
+  setupMobileKeyboardHandling() {
+    // Handle mobile keyboard appearance using Visual Viewport API
+    if ('visualViewport' in window) {
+      const viewport = window.visualViewport;
+      
+      const handleViewportResize = () => {
+        if (!this.isOpen) return;
+        
+        const chatContainer = document.querySelector('.copilot-chat-container');
+        if (!chatContainer) return;
+        
+        // Use stored initial height or current height
+        const initialHeight = this.initialViewportHeight || viewport.height;
+        
+        // Calculate the keyboard height
+        const keyboardHeight = initialHeight - viewport.height;
+        
+        // Adjust container to account for keyboard
+        if (keyboardHeight > 0) {
+          // Keyboard is visible
+          chatContainer.style.height = `${viewport.height}px`;
+          chatContainer.style.transform = 'translateY(0)';
+        } else {
+          // Keyboard is hidden
+          chatContainer.style.height = '100vh';
+          chatContainer.style.transform = '';
+        }
+      };
+      
+      viewport.addEventListener('resize', handleViewportResize);
+      viewport.addEventListener('scroll', handleViewportResize);
+      
+      // Store cleanup function
+      this.cleanupViewportListener = () => {
+        viewport.removeEventListener('resize', handleViewportResize);
+        viewport.removeEventListener('scroll', handleViewportResize);
+      };
+    }
+    
+    // Fallback for browsers without Visual Viewport API
+    // Detect keyboard appearance by monitoring window resize
+    const handleWindowResize = () => {
+      if (!this.isOpen) return;
+      
+      const chatContainer = document.querySelector('.copilot-chat-container');
+      if (chatContainer && window.innerHeight < window.screen.height * 0.7) {
+        // Likely keyboard is open
+        chatContainer.style.height = `${window.innerHeight}px`;
+      } else {
+        chatContainer.style.height = '100vh';
+      }
+    };
+    
+    // Only use fallback if Visual Viewport API is not available
+    if (!('visualViewport' in window)) {
+      window.addEventListener('resize', handleWindowResize);
+      this.cleanupResizeListener = () => {
+        window.removeEventListener('resize', handleWindowResize);
+      };
+    }
+  }
+  
   openChat() {
     const modal = document.getElementById('copilot-modal');
     if (modal) {
       this.isOpen = true;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      
+      // Store initial viewport height for mobile keyboard handling
+      if ('visualViewport' in window) {
+        this.initialViewportHeight = window.visualViewport.height;
+      }
       
       // Focus input
       setTimeout(() => {
@@ -336,6 +404,13 @@ class CopilotChat {
       this.isOpen = false;
       modal.classList.remove('active');
       document.body.style.overflow = '';
+      
+      // Reset container styles
+      const chatContainer = document.querySelector('.copilot-chat-container');
+      if (chatContainer) {
+        chatContainer.style.height = '';
+        chatContainer.style.transform = '';
+      }
     }
   }
   
