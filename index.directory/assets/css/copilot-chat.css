@@ -797,10 +797,9 @@
   
   .copilot-chat-container {
     max-width: 100%;
+    /* Start with full viewport height - JS will adjust dynamically */
     height: 100vh;
-    height: 100dvh;
     max-height: 100vh;
-    max-height: 100dvh;
     border-radius: 0;
     margin: 0;
     /* Fixed positioning to keep container in place */

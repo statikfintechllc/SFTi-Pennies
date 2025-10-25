@@ -324,18 +324,21 @@ class CopilotChat {
     if ('visualViewport' in window) {
       const visualViewport = window.visualViewport;
       
-      const resizeHandler = () => {
+      this.resizeHandler = () => {
         if (!this.isOpen) return;
         
         const container = document.querySelector('.copilot-chat-container');
         if (container) {
           // Adjust container height to match visual viewport
-          container.style.height = `${visualViewport.height}px`;
+          // Use max to ensure we don't shrink too much
+          const newHeight = Math.max(visualViewport.height, 300);
+          container.style.height = `${newHeight}px`;
+          container.style.maxHeight = `${newHeight}px`;
         }
       };
       
-      visualViewport.addEventListener('resize', resizeHandler);
-      visualViewport.addEventListener('scroll', resizeHandler);
+      visualViewport.addEventListener('resize', this.resizeHandler);
+      visualViewport.addEventListener('scroll', this.resizeHandler);
     }
   }
   
@@ -345,6 +348,15 @@ class CopilotChat {
       this.isOpen = true;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      
+      // Set initial height on mobile
+      if (window.innerWidth <= 768 && 'visualViewport' in window) {
+        const container = document.querySelector('.copilot-chat-container');
+        if (container) {
+          container.style.height = `${window.visualViewport.height}px`;
+          container.style.maxHeight = `${window.visualViewport.height}px`;
+        }
+      }
       
       // Focus input
       setTimeout(() => {
@@ -360,6 +372,13 @@ class CopilotChat {
       this.isOpen = false;
       modal.classList.remove('active');
       document.body.style.overflow = '';
+      
+      // Reset container styles when closing
+      const container = document.querySelector('.copilot-chat-container');
+      if (container && window.innerWidth <= 768) {
+        container.style.height = '';
+        container.style.maxHeight = '';
+      }
     }
   }
   
