@@ -325,7 +325,15 @@ class CopilotChat {
     if (modal) {
       this.isOpen = true;
       modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      
+      // On mobile, prevent ANY scrolling of the page
+      if (window.innerWidth <= 768) {
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
       
       // Focus input
       setTimeout(() => {
@@ -340,6 +348,10 @@ class CopilotChat {
     if (modal) {
       this.isOpen = false;
       modal.classList.remove('active');
+      
+      // Reset body styles
+      document.body.style.position = '';
+      document.body.style.width = '';
       document.body.style.overflow = '';
     }
   }
