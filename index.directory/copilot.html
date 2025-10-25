@@ -2,223 +2,159 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFTi-Pennies</title>
   
-  <title>Copilot Chat - SFTi-Pennies</title>
+  <link rel="icon" type="image/png" sizes="192x192" href="index.directory/assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="index.directory/assets/icons/icon-192.png">
   
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Custom Styles -->
-  <link rel="stylesheet" href="assets/css/main.css">
-  <link rel="stylesheet" href="assets/css/glass-effects.css">
-  <link rel="stylesheet" href="assets/css/copilot-chat.css">
-  
-  <style>
-    /* Standalone chat page styles */
-    body, html {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      font-family: 'Inter', sans-serif;
-    }
-    
-    #standalone-chat-container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    
-    /* Override modal styles for standalone page */
-    .copilot-chat-modal {
-      position: static !important;
-      width: 100% !important;
-      height: 100% !important;
-      max-width: none !important;
-      border-radius: 0 !important;
-      border: none !important;
-      backdrop-filter: none !important;
-      background: transparent !important;
-    }
-    
-    .copilot-chat-container {
-      position: static !important;
-      width: 100% !important;
-      height: 100% !important;
-      max-height: none !important;
-      border-radius: 0 !important;
-      display: flex !important;
-      flex-direction: column !important;
-    }
-    
-    /* Fixed header */
-    .copilot-chat-header {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 100 !important;
-      flex-shrink: 0 !important;
-    }
-    
-    /* Messages area with proper padding */
-    .copilot-messages {
-      flex: 1 !important;
-      overflow-y: auto !important;
-      overflow-x: hidden !important;
-      padding-top: calc(60px + 1rem) !important; /* Header height + spacing */
-      padding-bottom: calc(80px + 1rem) !important; /* Input area height + spacing */
-      -webkit-overflow-scrolling: touch !important;
-    }
-    
-    /* Fixed input area at bottom */
-    .copilot-input-area {
-      position: fixed !important;
-      bottom: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      flex-shrink: 0 !important;
-      z-index: 90 !important;
-    }
-    
-    /* Mobile specific */
-    @media (max-width: 768px) {
-      .copilot-input-area input {
-        font-size: 16px !important; /* Prevent iOS zoom */
-      }
-    }
-    
-    /* Back button */
-    .back-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .back-button:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: translateX(-2px);
-    }
-    
-    .back-button:active {
-      transform: translateX(0) scale(0.95);
-    }
-    
-    .back-button svg {
-      width: 20px;
-      height: 20px;
-      fill: rgba(255, 255, 255, 0.9);
-    }
-  </style>
-</head>
+  </head>
 <body>
-  <div id="standalone-chat-container">
-    <!-- Chat interface will be injected here -->
-    <div class="copilot-chat-modal" style="display: block;">
-      <div class="copilot-chat-container">
-        <!-- Header -->
-        <div class="copilot-chat-header">
-          <button class="back-button" onclick="window.history.back()" aria-label="Go back">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div class="header-content">
-            <h2 class="chat-title">
-              <svg class="copilot-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
-              </svg>
-              Copilot Chat
-            </h2>
-            <select class="model-selector" id="model-selector">
-              <option value="gpt-4o" selected>GPT-4o</option>
-              <option value="gpt-5">GPT-5</option>
-              <option value="claude-sonnet-4.5">Claude Sonnet 4.5</option>
-            </select>
-          </div>
-          <button class="new-chat-btn" id="new-chat-btn" aria-label="New chat">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </button>
-        </div>
 
-        <!-- Messages Area -->
-        <div class="copilot-messages" id="copilot-messages">
-          <div class="welcome-message">
-            <div class="welcome-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
+  <canvas id="bg-canvas"></canvas>
+  
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <img src="index.directory/assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="index.directory/books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="index.directory/notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="index.directory/all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="index.directory/all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="index.directory/analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="index.directory/import.html" class="nav-link">Import CSV</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Mentors</a>
+          <ul class="nav-submenu">
+            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
+            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item nav-buttons-group">
+          <a href="index.directory/add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="copilot-modal-backdrop" id="copilot-modal">
+    <div class="copilot-chat-container">
+      <div class="copilot-chat-header">
+        <div class="copilot-header-left">
+          <div class="copilot-header-title">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            </svg>
+            <span>Copilot</span>
+          </div>
+        </div>
+        
+        <div class="copilot-model-selector">
+          <button class="copilot-model-button" id="model-selector-button">
+            <span id="current-model-name">GPT-4o</span>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+          <div class="copilot-model-dropdown" id="model-dropdown">
+            ${this.renderModelsWithCategories()}
+          </div>
+        </div>
+        
+        <div class="copilot-header-right">
+          <button class="copilot-history-button" id="history-button">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>History</span>
+          </button>
+          
+          <div class="copilot-history-dropdown" id="history-dropdown">
+            <div id="history-list">
+              <div class="copilot-history-empty">No chat history yet</div>
             </div>
-            <h3>Welcome to Copilot Chat</h3>
-            <p>Ask me anything about your trading journal, analysis, or strategies.</p>
           </div>
+          
+          <button class="copilot-close-button" id="copilot-close">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
         </div>
-
-        <!-- Input Area -->
-        <div class="copilot-input-area">
-          <form class="input-form" id="copilot-form">
-            <input 
-              type="text" 
-              id="copilot-input" 
-              class="copilot-input" 
-              placeholder="Ask Copilot anything about trading..."
-              autocomplete="off"
-            />
-            <button type="submit" class="send-btn" aria-label="Send message">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </form>
+      </div>
+      
+      <div class="copilot-chat-messages" id="chat-messages">
+        <div class="copilot-welcome">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <h3>Welcome to GitHub Copilot</h3>
+          <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
+        </div>
+      </div>
+      
+      <div class="copilot-chat-input-area">
+        <div class="copilot-chat-input-wrapper">
+          <textarea 
+            class="copilot-chat-input" 
+            id="chat-input" 
+            placeholder="Ask Copilot anything about trading..." 
+            rows="1"
+          ></textarea>
+          <button class="copilot-send-button" id="send-button">
+            <span>Send</span>
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Load Copilot Chat JS -->
-  <script src="assets/js/copilot-chat.js"></script>
-  <script>
-    // Initialize chat in standalone mode
-    document.addEventListener('DOMContentLoaded', () => {
-      const copilotChat = new CopilotChat();
-      copilotChat.isOpen = true; // Mark as already open since we're on the page
-      
-      // Override close method to go back instead
-      copilotChat.closeChat = function() {
-        window.history.back();
-      };
-      
-      // Focus input on load (delayed to avoid keyboard issues)
-      setTimeout(() => {
-        const input = document.getElementById('copilot-input');
-        if (input) {
-          input.focus();
-        }
-      }, 500);
-    });
-  </script>
+  
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    <p>
+      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
+      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
+    </p>
+  </footer>
+  
+  <script src="index.directory/assets/js/background.js"></script>
+  <script src="index.directory/assets/js/auth.js"></script>
+  <script src="index.directory/assets/js/copilot-chat.js"></script>
+  <script src="index.directory/assets/js/app.js"></script>
+  
 </body>
 </html>
