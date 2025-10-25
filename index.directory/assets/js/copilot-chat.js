@@ -331,12 +331,11 @@ class CopilotChat {
         if (container) {
           // Let iOS handle the height - just use visualViewport height directly
           container.style.height = `${visualViewport.height}px`;
-          container.style.maxHeight = `${visualViewport.height}px`;
         }
       };
       
+      // Only listen to resize, not scroll (scroll causes issues)
       visualViewport.addEventListener('resize', this.resizeHandler);
-      visualViewport.addEventListener('scroll', this.resizeHandler);
     }
   }
   
@@ -352,7 +351,6 @@ class CopilotChat {
         const container = document.querySelector('.copilot-chat-container');
         if (container) {
           container.style.height = `${window.visualViewport.height}px`;
-          container.style.maxHeight = `${window.visualViewport.height}px`;
         }
       }
       
@@ -375,7 +373,6 @@ class CopilotChat {
       const container = document.querySelector('.copilot-chat-container');
       if (container && window.innerWidth <= 768) {
         container.style.height = '';
-        container.style.maxHeight = '';
       }
     }
   }
