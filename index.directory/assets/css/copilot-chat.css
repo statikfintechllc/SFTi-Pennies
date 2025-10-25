@@ -152,8 +152,6 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
   opacity: 0;
   overflow: hidden;
-  /* Prevent unwanted mobile gestures */
-  touch-action: pan-y pinch-zoom;
 }
 
 .copilot-modal-backdrop.active .copilot-chat-container {
@@ -172,6 +170,7 @@
     rgba(124, 58, 237, 0.08) 100%);
   border-bottom: 1px solid var(--glass-border-medium);
   position: relative;
+  flex-shrink: 0;
 }
 
 .copilot-chat-header::before {
@@ -455,6 +454,7 @@
 /* ===== Chat Messages Area ===== */
 .copilot-chat-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 1.5rem;
   display: flex;
@@ -706,7 +706,7 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border-top: 1px solid var(--glass-border-medium);
-  position: relative;
+  flex-shrink: 0;
 }
 
 .copilot-chat-input-wrapper {
@@ -722,15 +722,12 @@
   border-radius: var(--glass-radius-sm);
   padding: 0.875rem 1rem;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 16px;
   font-family: var(--font-sans);
   resize: none;
   min-height: 52px;
   max-height: 150px;
   transition: all 0.3s ease;
-  /* Prevent zoom on mobile */
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 
 .copilot-chat-input:focus {
@@ -786,13 +783,10 @@
   .copilot-chat-container {
     max-width: 100%;
     height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height for mobile browsers */
     max-height: 100vh;
+    max-height: 100dvh;
     border-radius: 0;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
   }
   
   .copilot-modal-backdrop {
@@ -802,6 +796,7 @@
   .copilot-chat-header {
     padding: 1rem;
     gap: 0.75rem;
+    flex-shrink: 0;
   }
   
   .copilot-header-left,
@@ -846,6 +841,8 @@
   .copilot-chat-messages {
     padding: 1rem;
     gap: 1rem;
+    flex: 1;
+    min-height: 0;
   }
   
   .copilot-message-avatar {
@@ -856,17 +853,8 @@
   
   .copilot-chat-input-area {
     padding: 1rem;
-    /* Ensure input area stays at bottom on mobile */
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-  }
-  
-  .copilot-chat-input {
-    /* Prevent iOS zoom on input focus by using 16px+ font size */
-    font-size: 16px;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    flex-shrink: 0;
   }
   
   .copilot-send-button {
