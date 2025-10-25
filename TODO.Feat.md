@@ -3,7 +3,7 @@
 This file contains all TODO items found throughout the repository, organized by category.
 
 **Last Updated:** 2025-10-25  
-**Total Items:** 59 (43 existing + 8 GitHub Copilot integrations + 8 AI features planned)
+**Total Items:** 60 (43 existing + 8 GitHub Copilot integrations + 8 AI features + 1 IBKR live trading system)
 
 ---
 
@@ -126,18 +126,38 @@ This file contains all TODO items found throughout the repository, organized by 
 
 ### 🔴 High Priority (Core Functionality)
 
-1. **CSV Import/Export** (`.github/scripts/import_csv.py`, `.github/scripts/export_csv.py`)
+1. **IBKR (Interactive Brokers) Live Trading Integration** 🚀 **NEW**
+   - **Full-featured trading system integrated into SFTi-Pennies**
+   - **Location**: `index.directory/SFTi.Trading/`
+   - **Features**:
+     - **Live Trading**: Execute trades through IBKR API
+     - **Market Data**: Real-time quotes, charts, and news feeds
+     - **Charting System**: TradingView-style charts with multiple timeframes
+     - **Scanner**: Fully customizable stock scanner with IBKR criteria
+     - **AI Integration**: Copilot hooks for trade analysis and automation
+     - **Glass Button Access**: SVG logo button in bottom-right corner of all pages
+     - **Web Authentication**: GitHub Pages-compatible OAuth with session tokens
+     - **Dark Theme**: IBKR-style UI with glass/frosted design
+   - **Technical Requirements**:
+     - IBKR Web API integration
+     - Session token management (similar to GitHub auth)
+     - Lazy loading and caching for market data
+     - Security: Proper signing and callbacks for GitHub Pages
+   - **Estimated Effort**: 8-12 weeks (Major Feature)
+   - **Priority**: High (Transforms repository into full trading platform)
+
+2. **CSV Import/Export** (`.github/scripts/import_csv.py`, `.github/scripts/export_csv.py`)
    - Essential for data portability
    - Users need to import/export trade data
    - 9 TODO items total
 
-2. **Broker-Specific Importers** (`.github/scripts/importers/`)
+3. **Broker-Specific Importers** (`.github/scripts/importers/`)
    - **Webull Parser**: 6 TODO items
    - **Robinhood Parser**: 6 TODO items  
    - **Schwab Parser**: 3 TODO items
    - Critical for automated trade import
 
-3. **Trade Page Generation** (`.github/scripts/generate_trade_pages.py`)
+4. **Trade Page Generation** (`.github/scripts/generate_trade_pages.py`)
    - Automate individual trade detail pages
    - Improve user experience
 
@@ -488,6 +508,300 @@ Optional backend server for advanced features:
 
 ---
 
+## 🏦 IBKR Live Trading Integration (Major Feature)
+
+### Overview
+
+Transform SFTi-Pennies into a complete trading platform with Interactive Brokers (IBKR) integration, providing live trading, market data, charting, and scanning capabilities directly within the journal interface.
+
+### Architecture
+
+**Primary Directory Structure:**
+```
+index.directory/SFTi.Trading/
+├── index.html                  # Main trading dashboard
+├── components/
+│   ├── glass-button.html      # SVG logo button (bottom-right, all pages)
+│   ├── trading-modal.html     # Main trading interface modal
+│   ├── chart-viewer.html      # TradingView-style charting component
+│   ├── scanner.html           # Stock scanner interface
+│   ├── order-panel.html       # Trade execution panel
+│   └── ai-assistant.html      # AI Plan & Scan tab
+├── assets/
+│   ├── css/
+│   │   ├── ibkr-dark-theme.css      # IBKR-inspired dark theme
+│   │   ├── glass-effects.css        # Frosted glass/glassmorphism
+│   │   └── trading-components.css   # Trading UI components
+│   ├── js/
+│   │   ├── ibkr-client.js          # IBKR API integration
+│   │   ├── auth-handler.js         # Web OAuth + session management
+│   │   ├── market-data.js          # Real-time market data handler
+│   │   ├── chart-engine.js         # Chart rendering (TradingView library)
+│   │   ├── scanner-engine.js       # Scanner logic & criteria
+│   │   ├── order-manager.js        # Order placement & management
+│   │   └── cache-manager.js        # Lazy loading & tmp caching
+│   └── icons/
+│       └── sfti-pennies-logo.svg   # Glass button logo
+└── api/
+    ├── ibkr-proxy.js              # Proxy for IBKR API calls (if needed)
+    └── session-manager.js         # Session token management
+```
+
+### Features
+
+#### 1. **Glass Button Navigation**
+- **Location**: Bottom-right corner of all HTML pages
+- **Design**: Floating button with SFTi-Pennies SVG logo
+- **Behavior**: 
+  - Opens trading modal overlay
+  - Smooth slide-in animation
+  - Maintains state across page navigation
+- **Implementation**:
+  ```html
+  <!-- Add to all HTML pages -->
+  <div class="sfti-glass-button" onclick="openTradingModal()">
+    <svg><!-- SFTi-Pennies logo --></svg>
+  </div>
+  ```
+
+#### 2. **Trading Dashboard**
+- **Tabs**:
+  - **Trade**: Live order entry and execution
+  - **Charts**: Multi-timeframe charting with technical indicators
+  - **Scanner**: Customizable stock scanner
+  - **AI Plan & Scan**: AI-powered trade planning and market scanning
+  - **Portfolio**: Live positions and P&L
+  - **News**: Real-time market news feed
+
+#### 3. **Charting System**
+- **Timeframes**: 1m, 2m, 5m, 10m, 30m, 1h, 4h, 1D, 1W, 1M, 1Y, 5Y, Max
+- **Features**:
+  - TradingView-style interface
+  - Scrollable historical data
+  - Technical indicators (50+ indicators)
+  - Drawing tools (trendlines, support/resistance)
+  - Multiple chart types (candlestick, bar, line, Heikin Ashi)
+  - Manual ticker search and watchlist
+- **Implementation**: TradingView Lightweight Charts library
+
+#### 4. **Stock Scanner**
+- **IBKR Scanner Criteria**:
+  - Price range, volume, market cap
+  - Technical indicators (RSI, MACD, etc.)
+  - Fundamental data (P/E, EPS, etc.)
+  - Options criteria (implied volatility, open interest)
+  - News and social sentiment
+- **Customization**:
+  - Save custom scans
+  - Schedule automated scans
+  - Real-time results with alerts
+- **Integration**: Full access to IBKR scanner API
+
+#### 5. **AI Plan & Scan Tab**
+- **GitHub Copilot Integration**:
+  - AI-powered trade planning
+  - Pattern recognition on charts
+  - Risk/reward analysis
+  - Market condition assessment
+  - Trade idea generation
+- **Hooks**:
+  - Access to all IBKR data feeds
+  - News feed analysis
+  - Scanner results analysis
+  - Portfolio optimization suggestions
+- **Copilot Commands**:
+  - "Analyze this chart pattern"
+  - "Find similar setups in scanner results"
+  - "Suggest position size for this trade"
+  - "Compare this stock to sector peers"
+
+#### 6. **Authentication & Security**
+- **Web OAuth Flow**:
+  ```javascript
+  // Similar to GitHub authentication
+  async function loginToIBKR() {
+    const authUrl = 'https://oauth.interactivebrokers.com/authorize';
+    const redirectUri = 'https://statikfintechllc.github.io/SFTi-Pennies/callback';
+    // OAuth flow with proper signing
+  }
+  ```
+- **Session Management**:
+  - Store session tokens securely (localStorage with encryption)
+  - Auto-refresh tokens before expiration
+  - Logout and clear session on close
+- **GitHub Pages Compatibility**:
+  - Static site authentication using OAuth callback
+  - No backend server required (client-side flow)
+  - Proper CORS handling
+
+#### 7. **Market Data & Caching**
+- **Real-Time Data**:
+  - Live quotes (bid/ask, last, volume)
+  - Level II market depth
+  - Time & sales
+  - Options chains
+- **Caching Strategy**:
+  ```javascript
+  // Lazy loading with tmp cache
+  class MarketDataCache {
+    constructor() {
+      this.cache = new Map();
+      this.maxAge = 5000; // 5 seconds for quotes
+      this.historicalMaxAge = 3600000; // 1 hour for historical
+    }
+    
+    async getQuote(symbol) {
+      // Check cache first, fetch if stale
+    }
+  }
+  ```
+- **Optimization**:
+  - Batch quote requests (up to 100 symbols)
+  - WebSocket for real-time updates
+  - Throttling to avoid API rate limits
+
+### Design System
+
+#### Theme: IBKR Dark with Glass Effects
+```css
+/* Core color palette */
+:root {
+  --ibkr-dark-bg: #0A0E1A;
+  --ibkr-card-bg: rgba(20, 25, 40, 0.8);
+  --ibkr-border: rgba(255, 255, 255, 0.1);
+  --ibkr-accent: #00C853;
+  --ibkr-red: #FF3D00;
+  --ibkr-blue: #2196F3;
+  
+  /* Glass effects */
+  --glass-bg: rgba(20, 25, 40, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+/* Glass button */
+.sfti-glass-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 200, 83, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.sfti-glass-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 48px rgba(0, 200, 83, 0.5);
+}
+```
+
+### Implementation Roadmap
+
+#### Phase 1: Foundation (Weeks 1-3)
+1. **Directory Structure**: Create `index.directory/SFTi.Trading/`
+2. **Glass Button**: Implement floating button on all pages
+3. **Modal Framework**: Build trading modal with tab navigation
+4. **IBKR Auth**: Implement OAuth flow and session management
+5. **Basic UI**: Create dark theme with glass effects
+
+#### Phase 2: Market Data (Weeks 4-5)
+1. **IBKR API Integration**: Connect to IBKR Web API
+2. **Quote Engine**: Real-time quote display
+3. **Data Caching**: Implement lazy loading and caching
+4. **Symbol Search**: Ticker lookup and autocomplete
+
+#### Phase 3: Charting (Weeks 6-7)
+1. **Chart Component**: Integrate TradingView Lightweight Charts
+2. **Timeframe Selection**: Implement all timeframes (1m to Max)
+3. **Historical Data**: Load and cache historical bars
+4. **Indicators**: Add technical indicators
+5. **Watchlist**: Manual ticker addition and management
+
+#### Phase 4: Trading (Weeks 8-9)
+1. **Order Panel**: Build order entry interface
+2. **Order Placement**: Connect to IBKR order API
+3. **Position Tracking**: Display live positions
+4. **P&L Display**: Real-time profit/loss calculations
+
+#### Phase 5: Scanner (Week 10)
+1. **Scanner UI**: Build customizable scanner interface
+2. **IBKR Criteria**: Implement all scanner criteria
+3. **Results Display**: Real-time scanner results
+4. **Save Scans**: Persist custom scanner configurations
+
+#### Phase 6: AI Integration (Weeks 11-12)
+1. **AI Plan & Scan Tab**: Create AI assistant interface
+2. **Copilot Hooks**: Integrate with GitHub Copilot
+3. **Data Access**: Connect AI to IBKR data feeds
+4. **Trade Analysis**: Implement AI-powered analysis
+5. **Testing & Refinement**: Comprehensive testing
+
+### Technical Requirements
+
+**Dependencies:**
+```json
+{
+  "tradingview-lightweight-charts": "^4.0.0",
+  "socket.io-client": "^4.5.0",
+  "crypto-js": "^4.1.0"
+}
+```
+
+**IBKR API Requirements:**
+- IBKR Client Portal Web API access
+- Paper trading account for testing
+- OAuth credentials (client ID, secret)
+- WebSocket support for real-time data
+
+**Browser Requirements:**
+- Modern browser with ES6+ support
+- WebSocket support
+- LocalStorage for caching
+- CSS backdrop-filter support (for glass effects)
+
+### Security Considerations
+
+1. **No Credentials in Code**: All auth through OAuth
+2. **Encrypted Storage**: Encrypt tokens before localStorage
+3. **Session Expiration**: Auto-logout after inactivity
+4. **API Key Rotation**: Support for key rotation
+5. **Rate Limiting**: Client-side throttling to avoid bans
+6. **CORS Compliance**: Proper CORS headers for GitHub Pages
+
+### Testing Strategy
+
+1. **Paper Trading**: Use IBKR paper account for all testing
+2. **Unit Tests**: Test each component independently
+3. **Integration Tests**: Test IBKR API connections
+4. **UI Tests**: Visual regression testing
+5. **Performance Tests**: Load testing with multiple symbols
+6. **Security Audit**: Review auth and data handling
+
+### Documentation Requirements
+
+1. **User Guide**: How to connect IBKR account
+2. **API Documentation**: Document all IBKR integrations
+3. **Developer Guide**: Contributing to trading features
+4. **Troubleshooting**: Common issues and solutions
+5. **Video Tutorials**: Screen recordings of features
+
+### Success Metrics
+
+- **Performance**: < 100ms quote updates
+- **Reliability**: 99.9% uptime for data feeds
+- **Usability**: < 5 minute setup time for new users
+- **Security**: Zero credential leaks
+- **Adoption**: 80%+ of users try live trading features
+
+---
+
 ## 📊 Statistics
 
 | Category | Count |
@@ -497,8 +811,9 @@ Optional backend server for advanced features:
 | Workflows | 1 |
 | GitHub Copilot Integration Points | 8 |
 | AI Integration Features (Planned) | 8 |
+| IBKR Live Trading System | 1 (Major Feature) |
 | Other | 3 |
-| **TOTAL** | **59** |
+| **TOTAL** | **60** |
 
 ---
 
