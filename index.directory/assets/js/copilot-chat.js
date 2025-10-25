@@ -120,8 +120,7 @@ class CopilotChat {
     if (!isCopilotPage) {
       this.createCopilotButton();
     } else {
-      // On copilot.html, initialize the chat interface directly
-      this.createChatInterface();
+      // On copilot.html, just attach event listeners - the HTML already has the interface
       this.attachEventListeners();
     }
   }
@@ -141,95 +140,6 @@ class CopilotChat {
     
     // Append to body instead of navbar
     document.body.appendChild(copilotButton);
-  }
-  
-  createChatInterface() {
-    const modalHTML = `
-      <div class="copilot-modal-backdrop" id="copilot-modal">
-        <div class="copilot-chat-container">
-          <!-- Header -->
-          <div class="copilot-chat-header">
-            <div class="copilot-header-left">
-              <div class="copilot-header-title">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                <span>Copilot</span>
-              </div>
-            </div>
-            
-            <!-- Model Selector (centered) -->
-            <div class="copilot-model-selector">
-              <button class="copilot-model-button" id="model-selector-button">
-                <span id="current-model-name">GPT-4o</span>
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                </svg>
-              </button>
-              <div class="copilot-model-dropdown" id="model-dropdown">
-                ${this.renderModelsWithCategories()}
-              </div>
-            </div>
-            
-            <div class="copilot-header-right">
-              <!-- History Button -->
-              <button class="copilot-history-button" id="history-button">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>History</span>
-              </button>
-              
-              <!-- History Dropdown -->
-              <div class="copilot-history-dropdown" id="history-dropdown">
-                <div id="history-list">
-                  <div class="copilot-history-empty">No chat history yet</div>
-                </div>
-              </div>
-              
-              <!-- New Chat Button -->
-              <button class="copilot-new-chat-button" id="copilot-new-chat">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>New Chat</span>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Messages Area -->
-          <div class="copilot-chat-messages" id="chat-messages">
-            <div class="copilot-welcome">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-              <h3>Welcome to GitHub Copilot</h3>
-              <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
-            </div>
-          </div>
-          
-          <!-- Input Area -->
-          <div class="copilot-chat-input-area">
-            <div class="copilot-chat-input-wrapper">
-              <textarea 
-                class="copilot-chat-input" 
-                id="chat-input" 
-                placeholder="Ask Copilot anything about trading..." 
-                rows="1"
-              ></textarea>
-              <button class="copilot-send-button" id="send-button">
-                <span>Send</span>
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
   }
   
   attachEventListeners() {
