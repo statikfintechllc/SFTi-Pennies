@@ -32,70 +32,22 @@
 
   <canvas id="bg-canvas"></canvas>
   
-  <nav class="navbar">
+  <!-- Unified Navigation & Copilot Header Bar -->
+  <nav class="navbar copilot-unified-header">
     <div class="nav-container">
+      <!-- Left: Navigation Brand -->
       <a href="../index.html" class="nav-brand">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
         SFTi-Pennies
       </a>
       
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <div class="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </button>
-      
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="../index.html" class="nav-link">Home</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="books.html" class="nav-link">Books</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="notes.html" class="nav-link">Notes</a>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Trades</a>
-          <ul class="nav-submenu">
-            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
-            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="import.html" class="nav-link">Import CSV</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Mentors</a>
-          <ul class="nav-submenu">
-            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
-            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item nav-buttons-group">
-          <a href="index.directory/add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <div class="copilot-modal-backdrop" id="copilot-modal">
-    <div class="copilot-chat-container">
-      <div class="copilot-chat-header">
-        <div class="copilot-header-left">
-          <div class="copilot-header-title">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-            <span>Copilot</span>
-          </div>
+      <!-- Center: Copilot Title & Model Selector -->
+      <div class="copilot-header-center">
+        <div class="copilot-header-title">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Copilot</span>
         </div>
         
         <div class="copilot-model-selector">
@@ -106,32 +58,38 @@
             </svg>
           </button>
           <div class="copilot-model-dropdown" id="model-dropdown">
-            ${this.renderModelsWithCategories()}
+            <!-- Models will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right: History & New Chat -->
+      <div class="copilot-header-right">
+        <button class="copilot-history-button" id="history-button">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>History</span>
+        </button>
+        
+        <div class="copilot-history-dropdown" id="history-dropdown">
+          <div id="history-list">
+            <div class="copilot-history-empty">No chat history yet</div>
           </div>
         </div>
         
-        <div class="copilot-header-right">
-          <button class="copilot-history-button" id="history-button">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span>History</span>
-          </button>
-          
-          <div class="copilot-history-dropdown" id="history-dropdown">
-            <div id="history-list">
-              <div class="copilot-history-empty">No chat history yet</div>
-            </div>
-          </div>
-          
-          <button class="copilot-new-chat-button" id="copilot-new-chat">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            <span>New Chat</span>
-          </button>
-        </div>
+        <button class="copilot-new-chat-button" id="copilot-new-chat">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>New Chat</span>
+        </button>
       </div>
+    </div>
+  </nav>
+
+  <div class="copilot-modal-backdrop" id="copilot-modal">
+    <div class="copilot-chat-container">
       
       <div class="copilot-chat-messages" id="chat-messages">
         <div class="copilot-welcome">
