@@ -819,11 +819,20 @@
 }
 
 @media (max-width: 480px) {
-  .copilot-model-selector {
+  .copilot-history-button span {
     display: none;
   }
   
-  .copilot-history-button span {
+  .copilot-model-button {
+    min-width: auto;
+    padding: 0.5rem;
+  }
+  
+  .copilot-model-button span {
     display: none;
+  }
+  
+  .copilot-model-button svg {
+    margin: 0;
   }
 }
