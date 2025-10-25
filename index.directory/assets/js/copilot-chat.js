@@ -11,17 +11,12 @@ class CopilotChat {
     this.chatHistory = this.loadChatHistory();
     this.currentChatId = null;
     
-    // Available GitHub Copilot models
+    // Available GitHub Copilot models (matching GitHub Mobile app)
     this.models = [
       {
         id: 'gpt-4o',
         name: 'GPT-4o',
-        description: 'Most capable model, best for complex analysis'
-      },
-      {
-        id: 'gpt-4o-mini',
-        name: 'GPT-4o Mini',
-        description: 'Fast and efficient for quick questions'
+        description: 'Most capable model for complex tasks'
       },
       {
         id: 'claude-3.5-sonnet',
@@ -30,13 +25,18 @@ class CopilotChat {
       },
       {
         id: 'o1-preview',
-        name: 'O1 Preview',
+        name: 'o1-preview',
         description: 'Advanced reasoning for complex problems'
       },
       {
         id: 'o1-mini',
-        name: 'O1 Mini',
+        name: 'o1-mini',
         description: 'Quick reasoning for simpler tasks'
+      },
+      {
+        id: 'gpt-4o-mini',
+        name: 'GPT-4o mini',
+        description: 'Fast and efficient for quick questions'
       }
     ];
     
@@ -78,27 +78,27 @@ class CopilotChat {
                 </svg>
                 <span>GitHub Copilot</span>
               </div>
-              
-              <!-- Model Selector -->
-              <div class="copilot-model-selector">
-                <button class="copilot-model-button" id="model-selector-button">
-                  <span id="current-model-name">GPT-4o</span>
-                  <svg viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
-                <div class="copilot-model-dropdown" id="model-dropdown">
-                  ${this.models.map(model => `
-                    <div class="copilot-model-option ${model.id === this.currentModel ? 'active' : ''}" data-model="${model.id}">
-                      <div class="copilot-model-name">${model.name}</div>
-                      <div class="copilot-model-desc">${model.description}</div>
-                    </div>
-                  `).join('')}
-                </div>
+            </div>
+            
+            <!-- Model Selector (centered) -->
+            <div class="copilot-model-selector">
+              <button class="copilot-model-button" id="model-selector-button">
+                <span id="current-model-name">GPT-4o</span>
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+              <div class="copilot-model-dropdown" id="model-dropdown">
+                ${this.models.map(model => `
+                  <div class="copilot-model-option ${model.id === this.currentModel ? 'active' : ''}" data-model="${model.id}">
+                    <div class="copilot-model-name">${model.name}</div>
+                    <div class="copilot-model-desc">${model.description}</div>
+                  </div>
+                `).join('')}
               </div>
             </div>
             
-            <div class="copilot-header-left">
+            <div class="copilot-header-right">
               <!-- History Button -->
               <button class="copilot-history-button" id="history-button">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

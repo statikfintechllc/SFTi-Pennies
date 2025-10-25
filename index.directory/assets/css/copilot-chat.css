@@ -189,6 +189,14 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex: 0 0 auto;
+}
+
+.copilot-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
 }
 
 .copilot-header-title {
@@ -210,6 +218,9 @@
 /* ===== Model Selector ===== */
 .copilot-model-selector {
   position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .copilot-model-button {
@@ -240,8 +251,9 @@
 .copilot-model-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
-  left: 0;
-  min-width: 200px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 0.95) 0%,
     rgba(10, 14, 39, 0.98) 100%);
@@ -763,14 +775,12 @@
   
   .copilot-chat-header {
     padding: 1rem;
-    flex-wrap: wrap;
     gap: 0.75rem;
   }
   
-  .copilot-header-left {
-    flex: 1;
-    min-width: 0;
-    gap: 0.75rem;
+  .copilot-header-left,
+  .copilot-header-right {
+    gap: 0.5rem;
   }
   
   .copilot-header-title {
@@ -780,6 +790,10 @@
   .copilot-header-title svg {
     width: 20px;
     height: 20px;
+  }
+  
+  .copilot-model-selector {
+    flex: 0 1 auto;
   }
   
   .copilot-model-button,
@@ -796,6 +810,12 @@
   .copilot-history-dropdown {
     width: 280px;
     right: 1rem;
+  }
+  
+  .copilot-model-dropdown {
+    left: 0;
+    right: auto;
+    transform: none;
   }
   
   .copilot-chat-messages {
