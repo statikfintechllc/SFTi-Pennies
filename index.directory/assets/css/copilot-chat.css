@@ -763,16 +763,34 @@
   
   .copilot-chat-header {
     padding: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .copilot-header-left {
+    flex: 1;
+    min-width: 0;
+    gap: 0.75rem;
   }
   
   .copilot-header-title {
     font-size: 1rem;
   }
   
+  .copilot-header-title svg {
+    width: 20px;
+    height: 20px;
+  }
+  
   .copilot-model-button,
   .copilot-history-button {
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
+  }
+  
+  .copilot-model-button svg {
+    width: 14px;
+    height: 14px;
   }
   
   .copilot-history-dropdown {
