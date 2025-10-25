@@ -135,7 +135,7 @@ This file contains all TODO items found throughout the repository, organized by 
      - **Charting System**: TradingView-style charts with multiple timeframes
      - **Scanner**: Fully customizable stock scanner with IBKR criteria
      - **AI Integration**: Copilot hooks for trade analysis and automation
-     - **Glass Button Access**: SVG logo button in bottom-right corner of all pages
+     - **Glass Button Access**: SVG logo button in bottom-left corner of all pages
      - **Web Authentication**: GitHub Pages-compatible OAuth with session tokens
      - **Dark Theme**: IBKR-style UI with glass/frosted design
    - **Technical Requirements**:
@@ -521,7 +521,7 @@ Transform SFTi-Pennies into a complete trading platform with Interactive Brokers
 index.directory/SFTi.Trading/
 ├── index.html                  # Main trading dashboard
 ├── components/
-│   ├── glass-button.html      # SVG logo button (bottom-right, all pages)
+│   ├── glass-button.html      # SVG logo button (bottom-left, all pages)
 │   ├── trading-modal.html     # Main trading interface modal
 │   ├── chart-viewer.html      # TradingView-style charting component
 │   ├── scanner.html           # Stock scanner interface
@@ -550,7 +550,7 @@ index.directory/SFTi.Trading/
 ### Features
 
 #### 1. **Glass Button Navigation**
-- **Location**: Bottom-right corner of all HTML pages
+- **Location**: Bottom-left corner of all HTML pages
 - **Design**: Floating button with SFTi-Pennies SVG logo
 - **Behavior**: 
   - Opens trading modal overlay
@@ -683,7 +683,7 @@ index.directory/SFTi.Trading/
 .sfti-glass-button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   width: 60px;
   height: 60px;
   background: var(--glass-bg);
