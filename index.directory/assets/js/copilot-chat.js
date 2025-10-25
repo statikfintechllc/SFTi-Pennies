@@ -3,6 +3,9 @@
  * Provides AI-powered assistance for trading journal and analysis
  */
 
+// Constants for mobile keyboard handling
+const KEYBOARD_DETECTION_THRESHOLD = 0.7; // Threshold ratio to detect keyboard visibility
+
 class CopilotChat {
   constructor() {
     this.isOpen = false;
@@ -273,9 +276,7 @@ class CopilotChat {
       input.addEventListener('focus', () => {
         // Small delay to ensure keyboard is shown
         setTimeout(() => {
-          if (input.scrollIntoView) {
-            input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
+          input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 300);
       });
     }
@@ -371,7 +372,7 @@ class CopilotChat {
       if (!this.isOpen) return;
       
       const chatContainer = document.querySelector('.copilot-chat-container');
-      if (chatContainer && window.innerHeight < window.screen.height * 0.7) {
+      if (chatContainer && window.innerHeight < window.screen.height * KEYBOARD_DETECTION_THRESHOLD) {
         // Likely keyboard is open
         chatContainer.style.height = `${window.innerHeight}px`;
       } else {
