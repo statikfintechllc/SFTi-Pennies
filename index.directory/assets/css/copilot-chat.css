@@ -27,6 +27,7 @@
   z-index: 9998;
   transform: translateZ(0);
   overflow: visible;
+  text-decoration: none; /* Remove link underline */
 }
 
 .copilot-fab::before {
@@ -170,6 +171,7 @@
     rgba(124, 58, 237, 0.08) 100%);
   border-bottom: 1px solid var(--glass-border-medium);
   position: relative;
+  flex-shrink: 0;
 }
 
 .copilot-chat-header::before {
@@ -453,6 +455,7 @@
 /* ===== Chat Messages Area ===== */
 .copilot-chat-messages {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding: 1.5rem;
   display: flex;
@@ -704,6 +707,7 @@
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border-top: 1px solid var(--glass-border-medium);
+  flex-shrink: 0;
 }
 
 .copilot-chat-input-wrapper {
@@ -719,7 +723,7 @@
   border-radius: var(--glass-radius-sm);
   padding: 0.875rem 1rem;
   color: var(--text-primary);
-  font-size: 0.9375rem;
+  font-size: 16px;
   font-family: var(--font-sans);
   resize: none;
   min-height: 52px;
@@ -777,20 +781,47 @@
 
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
-  .copilot-chat-container {
-    max-width: 100%;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
+  /* Fix iOS Safari keyboard behavior */
+  .copilot-modal-backdrop {
+    /* Remove centering on mobile to allow natural keyboard behavior */
+    padding: 0;
+    align-items: stretch;
+    /* Keep viewport fixed - don't let it scroll */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
   }
   
-  .copilot-modal-backdrop {
-    padding: 0;
+  .copilot-modal-backdrop.active {
+    overflow: hidden;
+  }
+  
+  .copilot-chat-container {
+    max-width: 100%;
+    /* Use full height naturally */
+    height: 100%;
+    border-radius: 0;
+    margin: 0;
+    /* Use relative positioning so it stays within backdrop */
+    position: relative;
+    display: flex;
+    flex-direction: column;
   }
   
   .copilot-chat-header {
     padding: 1rem;
     gap: 0.75rem;
+    flex-shrink: 0;
+    /* Keep header fixed at top on mobile */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
   }
   
   .copilot-header-left,
@@ -834,7 +865,13 @@
   
   .copilot-chat-messages {
     padding: 1rem;
+    /* Add padding for fixed header */
+    padding-top: calc(60px + 1rem);
     gap: 1rem;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .copilot-message-avatar {
@@ -845,6 +882,12 @@
   
   .copilot-chat-input-area {
     padding: 1rem;
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--glass-border-medium);
+    /* Ensure input area stays at bottom when keyboard opens */
+    position: relative;
   }
   
   .copilot-send-button {

@@ -114,16 +114,24 @@ class CopilotChat {
   }
   
   init() {
-    this.createCopilotButton();
-    this.createChatInterface();
-    this.attachEventListeners();
+    // Only create FAB button if not on copilot.html page
+    const isCopilotPage = window.location.pathname.includes('copilot.html');
+    
+    if (!isCopilotPage) {
+      this.createCopilotButton();
+    } else {
+      // On copilot.html, initialize the chat interface directly
+      this.createChatInterface();
+      this.attachEventListeners();
+    }
   }
   
   createCopilotButton() {
-    // Create floating Copilot button (bottom right corner)
-    const copilotButton = document.createElement('button');
+    // Create floating Copilot button (bottom right corner) as a link to separate page
+    const copilotButton = document.createElement('a');
     copilotButton.className = 'copilot-fab';
     copilotButton.id = 'copilot-trigger';
+    copilotButton.href = 'index.directory/copilot.html';
     copilotButton.setAttribute('aria-label', 'Open GitHub Copilot');
     copilotButton.innerHTML = `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -315,12 +323,33 @@ class CopilotChat {
     }
   }
   
+  setupMobileKeyboardHandler() {
+    // Not needed - let CSS and browser handle it naturally
+  }
+  
   openChat() {
     const modal = document.getElementById('copilot-modal');
     if (modal) {
       this.isOpen = true;
       modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
+      
+      // On mobile, prevent ANY scrolling of the page
+      if (window.innerWidth <= 768) {
+        // Lock both html and body to prevent any page scrolling
+        document.documentElement.style.position = 'fixed';
+        document.documentElement.style.width = '100%';
+        document.documentElement.style.height = '100%';
+        document.documentElement.style.overflow = 'hidden';
+        
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        document.body.style.top = '0';
+        document.body.style.left = '0';
+      } else {
+        document.body.style.overflow = 'hidden';
+      }
       
       // Focus input
       setTimeout(() => {
@@ -335,7 +364,19 @@ class CopilotChat {
     if (modal) {
       this.isOpen = false;
       modal.classList.remove('active');
+      
+      // Reset both html and body styles
+      document.documentElement.style.position = '';
+      document.documentElement.style.width = '';
+      document.documentElement.style.height = '';
+      document.documentElement.style.overflow = '';
+      
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
       document.body.style.overflow = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
     }
   }
   
