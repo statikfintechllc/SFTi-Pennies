@@ -165,7 +165,12 @@
     
     let pdfRenderer = null;
     
-    // Open PDF in modal
+    /**
+     * Open PDF in modal with lazy loading for better performance
+     * Handles large PDFs (up to 500KB) without auto-refresh issues
+     * @param {string} filepath - Path to PDF file
+     * @param {string} title - PDF title to display
+     */
     async function openPDF(filepath, title) {
       const modal = document.getElementById('pdf-modal');
       const titleEl = document.getElementById('pdf-title');
@@ -184,9 +189,10 @@
 
       try {
         console.log('=== ATTEMPTING TO LOAD PDF ===');
+        console.log('Title:', title);
         console.log('Original filepath:', filepath);
         
-        // Strip index.directory/ prefix
+        // Strip index.directory/ prefix to get correct path
         let cleanPath = filepath.replace(/^\/+/, '');
         if (cleanPath.startsWith('index.directory/')) {
           cleanPath = cleanPath.substring('index.directory/'.length);
@@ -196,16 +202,28 @@
         const fullUrl = './' + cleanPath;
         console.log('Loading PDF from:', fullUrl);
         
-        // Initialize PDFRenderer if not exists
-        if (!pdfRenderer) {
-          console.log('Initializing PDFRenderer...');
-          pdfRenderer = new PDFRenderer('pdf-viewer-root', {
-            scale: 0.9,
-            enableZoom: true,
-            enableScroll: true
-          });
+        // Clean up previous renderer if exists
+        if (pdfRenderer) {
+          console.log('Cleaning up previous PDF renderer...');
+          pdfRenderer.destroy();
+          pdfRenderer = null;
         }
         
+        // Initialize PDFRenderer with lazy loading enabled
+        console.log('Initializing PDFRenderer with lazy loading...');
+        pdfRenderer = new PDFRenderer('pdf-viewer-root', {
+          scale: 0.9,
+          enableZoom: true,
+          enableScroll: true,
+          // Enable lazy loading for large PDFs (default: true)
+          lazyLoad: true,
+          // Number of pages to render above/below viewport
+          renderBuffer: 2,
+          // Maximum concurrent rendered pages (prevents memory issues)
+          maxRenderedPages: 5
+        });
+        
+        // Load PDF with progressive loading
         try {
           await pdfRenderer.loadPDF(fullUrl);
         } catch (e) {
@@ -213,7 +231,7 @@
         }
 
         console.log('=== PDF LOADED SUCCESSFULLY ===');
-        console.log('PDF rendered with scrollable viewer');
+        console.log('PDF rendered with lazy loading and memory management');
         
       } catch (error) {
         console.error('=== PDF LOAD FAILED ===');
@@ -225,9 +243,14 @@
         if (container) {
           container.innerHTML = `
             <div style="padding:2rem; color:var(--accent-red); text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
-              <p style="font-weight:bold; margin-bottom:1rem; font-size:1.2em;">Error loading PDF</p>
-              <p style="font-size:0.9em; font-family:monospace; background: var(--bg-secondary); padding: 1rem; border-radius: 4px; max-width: 600px;">${error.message}</p>
-              <p style="margin-top:1rem; font-size:0.85em;">Check browser console (F12) for detailed logs</p>
+              <p style="font-weight:bold; margin-bottom:1rem; font-size:1.2em;">⚠️ Error loading PDF</p>
+              <p style="font-size:0.9em; font-family:monospace; background: var(--bg-secondary); padding: 1rem; border-radius: 4px; max-width: 600px; word-break: break-word;">${error.message}</p>
+              <p style="margin-top:1rem; font-size:0.85em; color: var(--text-dim);">
+                Tip: Check browser console (F12) for detailed logs
+              </p>
+              <button onclick="closePDF()" class="btn btn-secondary" style="margin-top: 1rem;">
+                Close
+              </button>
             </div>
           `;
         }
@@ -290,16 +313,45 @@
       `;
     }
     
-    // Close PDF modal
+    /**
+     * Close PDF modal and properly clean up resources
+     * Prevents memory leaks by destroying the PDF renderer
+     */
     function closePDF() {
-      document.getElementById('pdf-modal').style.display = 'none';
+      const modal = document.getElementById('pdf-modal');
+      modal.style.display = 'none';
+      
+      // Properly destroy the PDF renderer to free memory
       if (pdfRenderer) {
+        console.log('Closing PDF and cleaning up resources...');
         pdfRenderer.destroy();
+        pdfRenderer = null;
+        console.log('PDF renderer destroyed successfully');
       }
     }
     
     // PDF modal close handler
     document.getElementById('close-pdf').addEventListener('click', closePDF);
+    
+    // Close modal on backdrop click (clicking outside the content)
+    document.getElementById('pdf-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'pdf-modal') {
+        closePDF();
+      }
+    });
+    
+    // Close modal on Escape key (only when modal is visible)
+    function handleEscapeKey(e) {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('pdf-modal');
+        if (modal && modal.style.display !== 'none') {
+          closePDF();
+        }
+      }
+    }
+    
+    // Add event listener on DOMContentLoaded
+    document.addEventListener('keydown', handleEscapeKey);
     
     // Load and display books
     document.addEventListener('DOMContentLoaded', () => {
