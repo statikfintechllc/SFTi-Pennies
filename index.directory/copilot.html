@@ -2,21 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SFTi-Pennies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Professional penny stock trading journal with automated tracking and analysis">
+  <meta name="theme-color" content="#00ff88">
   
-  <link rel="icon" type="image/png" sizes="192x192" href="index.directory/assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="index.directory/assets/icons/icon-192.png">
+  <title>SFTi-Pennies Copilot Chat</title>
   
-  </head>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  <link rel="stylesheet" href="assets/css/copilot-chat.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+</head>
 <body>
 
   <canvas id="bg-canvas"></canvas>
   
   <nav class="navbar">
     <div class="nav-container">
-      <a href="index.html" class="nav-brand">
-        <img src="index.directory/assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+      <a href="../index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
         SFTi-Pennies
       </a>
       
@@ -30,24 +49,24 @@
       
       <ul class="nav-menu">
         <li class="nav-item">
-          <a href="index.html" class="nav-link">Home</a>
+          <a href="../index.html" class="nav-link">Home</a>
         </li>
         
         <li class="nav-item">
-          <a href="index.directory/books.html" class="nav-link">Books</a>
+          <a href="books.html" class="nav-link">Books</a>
         </li>
         
         <li class="nav-item">
-          <a href="index.directory/notes.html" class="nav-link">Notes</a>
+          <a href="notes.html" class="nav-link">Notes</a>
         </li>
         
         <li class="nav-item has-submenu">
           <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
-            <li><a href="index.directory/all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="index.directory/all-weeks.html" class="nav-link">All Summaries</a></li>
-            <li><a href="index.directory/analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="index.directory/import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
           </ul>
         </li>
         
@@ -151,10 +170,17 @@
     </p>
   </footer>
   
-  <script src="index.directory/assets/js/background.js"></script>
-  <script src="index.directory/assets/js/auth.js"></script>
-  <script src="index.directory/assets/js/copilot-chat.js"></script>
-  <script src="index.directory/assets/js/app.js"></script>
+  <!-- Background Animation -->
+  <script src="assets/js/background.js"></script>
+  
+  <!-- Firebase Auth -->
+  <script src="assets/js/auth.js"></script>
+  
+  <!-- Copilot Chat -->
+  <script src="assets/js/copilot-chat.js"></script>
+  
+  <!-- Main App -->
+  <script src="assets/js/app.js"></script>
   
 </body>
 </html>
