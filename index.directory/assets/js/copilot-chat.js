@@ -13,34 +13,104 @@ class CopilotChat {
     
     // Available GitHub Copilot models (matching GitHub Mobile app)
     this.models = [
+      // Fast & Efficient
+      {
+        id: 'gpt-5-mini',
+        name: 'GPT-5-mini',
+        description: 'Fast & Efficient',
+        category: 'fast'
+      },
+      {
+        id: 'grok-code-fast-1',
+        name: 'Grok Code Fast 1',
+        description: 'Fast & Efficient',
+        category: 'fast'
+      },
+      // Versatile and Highly Intelligent
+      {
+        id: 'gpt-4.1',
+        name: 'GPT-4.1',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
+      },
+      {
+        id: 'gpt-5',
+        name: 'GPT-5',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
+      },
       {
         id: 'gpt-4o',
         name: 'GPT-4o',
-        description: 'Most capable model for complex tasks'
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
       },
       {
-        id: 'claude-3.5-sonnet',
-        name: 'Claude 3.5 Sonnet',
-        description: 'Excellent for detailed explanations'
+        id: 'claude-sonnet-3.5',
+        name: 'Claude Sonnet 3.5',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
       },
       {
-        id: 'o1-preview',
-        name: 'o1-preview',
-        description: 'Advanced reasoning for complex problems'
+        id: 'claude-sonnet-4',
+        name: 'Claude Sonnet 4',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
       },
       {
-        id: 'o1-mini',
-        name: 'o1-mini',
-        description: 'Quick reasoning for simpler tasks'
+        id: 'claude-sonnet-4.5',
+        name: 'Claude Sonnet 4.5',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
       },
       {
-        id: 'gpt-4o-mini',
-        name: 'GPT-4o mini',
-        description: 'Fast and efficient for quick questions'
+        id: 'claude-haiku-4.5',
+        name: 'Claude Haiku 4.5',
+        description: 'Versatile and Highly Intelligent',
+        category: 'versatile'
+      },
+      // Most Powerful at Complex Tasks
+      {
+        id: 'claude-opus-4.1',
+        name: 'Claude Opus 4.1',
+        description: 'Most Powerful at Complex Tasks',
+        category: 'powerful'
+      },
+      {
+        id: 'gemini-2.5-pro',
+        name: 'Gemini 2.5 Pro',
+        description: 'Most Powerful at Complex Tasks',
+        category: 'powerful'
       }
     ];
     
     this.init();
+  }
+  
+  renderModelsWithCategories() {
+    const categories = {
+      'fast': 'Fast & Efficient',
+      'versatile': 'Versatile and Highly Intelligent',
+      'powerful': 'Most Powerful at Complex Tasks'
+    };
+    
+    let html = '';
+    let currentCategory = '';
+    
+    this.models.forEach(model => {
+      if (model.category !== currentCategory) {
+        currentCategory = model.category;
+        html += `<div class="copilot-model-category">${categories[currentCategory]}</div>`;
+      }
+      html += `
+        <div class="copilot-model-option ${model.id === this.currentModel ? 'active' : ''}" data-model="${model.id}">
+          <div class="copilot-model-name">${model.name}</div>
+          <div class="copilot-model-desc">${model.description}</div>
+        </div>
+      `;
+    });
+    
+    return html;
   }
   
   init() {
@@ -89,12 +159,7 @@ class CopilotChat {
                 </svg>
               </button>
               <div class="copilot-model-dropdown" id="model-dropdown">
-                ${this.models.map(model => `
-                  <div class="copilot-model-option ${model.id === this.currentModel ? 'active' : ''}" data-model="${model.id}">
-                    <div class="copilot-model-name">${model.name}</div>
-                    <div class="copilot-model-desc">${model.description}</div>
-                  </div>
-                `).join('')}
+                ${this.renderModelsWithCategories()}
               </div>
             </div>
             
