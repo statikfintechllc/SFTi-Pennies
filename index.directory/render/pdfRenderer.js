@@ -95,6 +95,20 @@ class PDFRenderer {
    * @returns {Promise<PDFDocumentProxy>}
    */
   async loadPDF(url) {
+    // Edge case: Validate URL parameter
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      const error = new Error('Invalid PDF URL: URL must be a non-empty string');
+      console.error('=== PDF Load Failed ===');
+      console.error('Error:', error);
+      this.scrollContainer.innerHTML = `
+        <div class="pdf-error">
+          <p>Error loading PDF</p>
+          <p class="pdf-error-details">${error.message}</p>
+        </div>
+      `;
+      throw error;
+    }
+    
     if (this.isRendering) {
       console.warn('PDF is already being rendered');
       return;
@@ -126,6 +140,11 @@ class PDFRenderer {
       };
       
       this.pdfDoc = await loadingTask.promise;
+      
+      // Edge case: Validate PDF document
+      if (!this.pdfDoc || !this.pdfDoc.numPages || this.pdfDoc.numPages === 0) {
+        throw new Error('Invalid PDF: Document has no pages');
+      }
       
       console.log('PDF loaded successfully!');
       console.log('- Pages:', this.pdfDoc.numPages);
@@ -177,6 +196,7 @@ class PDFRenderer {
 
   /**
    * Calculate initial scale based on viewport width for responsive display
+   * Handles edge cases for extreme screen sizes and invalid dimensions
    */
   async calculateInitialScale() {
     if (!this.pdfDoc) return;
@@ -185,9 +205,23 @@ class PDFRenderer {
       const page = await this.pdfDoc.getPage(1);
       const viewport = page.getViewport({ scale: 1 });
       
+      // Edge case: Validate viewport dimensions
+      if (!viewport || !viewport.width || viewport.width <= 0) {
+        console.warn('Invalid viewport dimensions, using default scale');
+        this.currentScale = this.options.scale;
+        return;
+      }
+      
       // Get screen dimensions
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
+      
+      // Edge case: Validate screen dimensions
+      if (!screenWidth || screenWidth <= 0 || !screenHeight || screenHeight <= 0) {
+        console.warn('Invalid screen dimensions, using default scale');
+        this.currentScale = this.options.scale;
+        return;
+      }
       
       // Calculate available width for PDF
       // On mobile, modal is 95% of viewport width, minus padding
@@ -203,13 +237,19 @@ class PDFRenderer {
         availableWidth = this.scrollContainer.clientWidth - 40;
       }
       
+      // Edge case: Ensure minimum available width
+      availableWidth = Math.max(availableWidth, 200); // Minimum 200px
+      
       // Calculate scale to fit width
       const fitWidthScale = availableWidth / viewport.width;
+      
+      // Edge case: Clamp scale to reasonable bounds (0.1 to 5.0)
+      const clampedScale = Math.max(0.1, Math.min(5.0, fitWidthScale));
       
       // Apply responsive scaling
       if (screenWidth < 768) {
         // Mobile: use fit-to-width directly (no reduction)
-        this.currentScale = fitWidthScale;
+        this.currentScale = clampedScale;
       } else if (screenWidth < 1024) {
         // Tablet: use fit-to-width, cap at 1.2
         this.currentScale = Math.min(fitWidthScale, 1.2);
@@ -284,10 +324,11 @@ class PDFRenderer {
     
     this.intersectionObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        const pageNum = parseInt(entry.target.dataset.pageNumber);
+        const pageNum = parseInt(entry.target.dataset.pageNumber, 10);
         const pageData = this.pages.find(p => p.number === pageNum);
         
-        if (!pageData) return;
+        // Edge case: Invalid page number or page data not found
+        if (!pageData || isNaN(pageNum)) return;
         
         if (entry.isIntersecting) {
           // Page is visible or near viewport
