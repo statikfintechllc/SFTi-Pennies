@@ -785,22 +785,30 @@
     /* Remove centering on mobile to allow natural keyboard behavior */
     padding: 0;
     align-items: stretch;
+    /* Keep viewport fixed - don't let it scroll */
+    position: fixed;
+    top: 0;
+    bottom: 0;
   }
   
   .copilot-modal-backdrop.active {
-    position: fixed;
     overflow: hidden;
   }
   
   .copilot-chat-container {
     max-width: 100%;
-    /* Use 100vh for mobile - let keyboard push content up naturally */
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
     border-radius: 0;
     margin: 0;
-    /* Ensure container is positioned */
-    position: relative;
+    /* Fixed positioning to keep container in place */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
   
   .copilot-chat-header {
@@ -850,7 +858,6 @@
   
   .copilot-chat-messages {
     padding: 1rem;
-    padding-bottom: calc(80px + 1rem); /* Account for fixed input bar */
     gap: 1rem;
     flex: 1;
     min-height: 0;
@@ -865,17 +872,13 @@
   }
   
   .copilot-chat-input-area {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
     padding: 1rem;
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.02);
     border-top: 1px solid var(--glass-border-medium);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    z-index: 100;
+    /* Ensure input area stays at bottom when keyboard opens */
+    position: relative;
   }
   
   .copilot-send-button {

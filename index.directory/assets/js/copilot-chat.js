@@ -117,6 +117,7 @@ class CopilotChat {
     this.createCopilotButton();
     this.createChatInterface();
     this.attachEventListeners();
+    this.setupMobileKeyboardHandler();
   }
   
   createCopilotButton() {
@@ -312,6 +313,29 @@ class CopilotChat {
           historyDropdown.classList.remove('active');
         }
       });
+    }
+  }
+  
+  setupMobileKeyboardHandler() {
+    // Only run on mobile devices
+    if (window.innerWidth > 768) return;
+    
+    // Use visualViewport API to adjust container height when keyboard appears
+    if ('visualViewport' in window) {
+      const visualViewport = window.visualViewport;
+      
+      const resizeHandler = () => {
+        if (!this.isOpen) return;
+        
+        const container = document.querySelector('.copilot-chat-container');
+        if (container) {
+          // Adjust container height to match visual viewport
+          container.style.height = `${visualViewport.height}px`;
+        }
+      };
+      
+      visualViewport.addEventListener('resize', resizeHandler);
+      visualViewport.addEventListener('scroll', resizeHandler);
     }
   }
   
