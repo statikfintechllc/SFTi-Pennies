@@ -99,6 +99,7 @@ def create_trade_list_html(trades):
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/glass-effects.css">
+    <link rel="stylesheet" href="assets/css/copilot-chat.css">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
@@ -238,6 +239,7 @@ def create_trade_list_html(trades):
     
     <script src="assets/js/background.js"></script>
     <script src="assets/js/auth.js"></script>
+    <script src="assets/js/copilot-chat.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>
