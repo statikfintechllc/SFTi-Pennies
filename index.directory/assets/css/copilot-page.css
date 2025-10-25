@@ -333,26 +333,30 @@
   font-size: 0.875rem;
 }
 
-/* ===== Close Button with Glass Effect ===== */
-.copilot-close-button {
-  padding: 0.5rem;
+/* ===== New Chat Button with Glass Effect ===== */
+.copilot-new-chat-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--glass-border-subtle);
   border-radius: var(--glass-radius-sm);
   color: var(--text-secondary);
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.copilot-close-button:hover {
-  background: rgba(255, 71, 87, 0.2);
-  border-color: rgba(255, 71, 87, 0.4);
-  color: var(--accent-red);
+.copilot-new-chat-button:hover {
+  background: rgba(168, 85, 247, 0.15);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: rgb(168, 85, 247);
 }
 
-.copilot-close-button svg {
-  width: 20px;
-  height: 20px;
+.copilot-new-chat-button svg {
+  width: 18px;
+  height: 18px;
   stroke: currentColor;
 }
 
