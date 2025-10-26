@@ -25,6 +25,14 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 ### Trading Methodology
 
 - **[GSTRWT.md](./GSTRWT.md)** - Grind.Scan.Trace.Research.Watch.Trade - The daily workflow system for identifying and executing trades. Complete scanner setup, watchlist building, and trade execution checklist.
+- My complete trading plan with specific indicator combinations and strategy setups.
+  - **Related Assets:** [Trade Plan Diagram](../.github/assets/sfti.notez.assets/gstrwt.assets/README.md)
+  - **Strategy Combinations:**
+    - Strategy 1: VWAP + MACD + EMA 25 + SMA 70/200 + BOLL
+    - Strategy 2: EMA 25 + SMA 70/200 + BOLL + MACD + SO
+    - Strategy 3: EMA/SMA 70 + BOLL + MACD + SO
+  - **Target Setups:** Dip n Rip, VWAP Hold/Bounce, Coiling breakouts
+  - **Best For:** Real-time trade execution
   - **Key Components:** 
     - Scanner parameters (Float <5M, Volume criteria, Price ranges)
     - Watchlist building process
@@ -53,15 +61,6 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
     - Entry timing on pullbacks
     - Quick profit-taking strategies
   - **Best For:** Premarket and opening range breakout trades
-
-- **[Trade.Plan.md](./Trade.Plan.md)** - Complete trading plan with specific indicator combinations and strategy setups.
-  - **Related Assets:** [Trade Plan Diagram](../.github/assets/sfti.notez.assets/trade.plan.assets/README.md)
-  - **Strategy Combinations:**
-    - Strategy 1: VWAP + MACD + EMA 25 + SMA 70/200 + BOLL
-    - Strategy 2: EMA 25 + SMA 70/200 + BOLL + MACD + SO
-    - Strategy 3: EMA/SMA 70 + BOLL + MACD + SO
-  - **Target Setups:** Dip n Rip, VWAP Hold/Bounce, Coiling breakouts
-  - **Best For:** Real-time trade execution
 
 ## 📊 Quick Reference Guide
 
