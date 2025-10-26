@@ -130,24 +130,6 @@
   <div class="copilot-modal-backdrop" id="copilot-modal">
     <div class="copilot-chat-container">
       
-      <!-- Input bar at top -->
-      <div class="copilot-chat-input-area">
-        <div class="copilot-chat-input-wrapper">
-          <textarea 
-            class="copilot-chat-input" 
-            id="chat-input" 
-            placeholder="Ask Copilot anything about trading..." 
-            rows="1"
-          ></textarea>
-          <button class="copilot-send-button" id="send-button">
-            <span>Send</span>
-            <svg viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
       <div class="copilot-chat-messages" id="chat-messages">
         <div class="copilot-welcome">
           <h3>Welcome to GitHub Copilot</h3>
@@ -155,6 +137,24 @@
         </div>
       </div>
       
+    </div>
+  </div>
+  
+  <!-- Input bar as sibling element - moves independently with iOS keyboard -->
+  <div class="copilot-chat-input-area">
+    <div class="copilot-chat-input-wrapper">
+      <textarea 
+        class="copilot-chat-input" 
+        id="chat-input" 
+        placeholder="Ask Copilot anything about trading..." 
+        rows="1"
+      ></textarea>
+      <button class="copilot-send-button" id="send-button">
+        <span>Send</span>
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+        </svg>
+      </button>
     </div>
   </div>
   
