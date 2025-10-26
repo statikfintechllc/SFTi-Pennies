@@ -265,7 +265,6 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: 100px; /* Space for input bar that slides up independently */
 }
 
 /* Glass reflection effect on top */
@@ -573,7 +572,6 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
-  padding-top: 80px; /* Space for fixed header */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -821,25 +819,15 @@ body {
   }
 }
 
-/* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
-/* Input is positioned OUTSIDE the chat container as a sibling element */
-/* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
+/* ===== Input Area at Top ===== */
 .copilot-chat-input-area {
   position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   width: 100%;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .copilot-chat-input-wrapper {
@@ -956,13 +944,11 @@ body {
   /* Messages area adjusted for mobile */
   .copilot-chat-messages {
     padding: 1rem;
-    padding-top: 70px; /* Space for fixed header on mobile */
     gap: 1rem;
   }
   
   .copilot-chat-input-area {
     padding: 0.875rem 1rem;
-    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
   }
   
   /* Critical: Prevent iOS zoom on input focus */
