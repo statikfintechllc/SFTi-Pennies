@@ -162,6 +162,32 @@ class CopilotChat {
   }
   
   attachEventListeners() {
+    // Menu toggle
+    const menuToggle = document.getElementById('copilot-menu-toggle');
+    const navSidebar = document.getElementById('copilot-nav-sidebar');
+    const navOverlay = document.getElementById('copilot-nav-overlay');
+    const navClose = document.getElementById('copilot-nav-close');
+    
+    if (menuToggle && navSidebar && navOverlay) {
+      menuToggle.addEventListener('click', () => {
+        navSidebar.classList.add('active');
+        navOverlay.classList.add('active');
+        menuToggle.classList.add('active');
+      });
+      
+      const closeNav = () => {
+        navSidebar.classList.remove('active');
+        navOverlay.classList.remove('active');
+        menuToggle.classList.remove('active');
+      };
+      
+      if (navClose) {
+        navClose.addEventListener('click', closeNav);
+      }
+      
+      navOverlay.addEventListener('click', closeNav);
+    }
+    
     // Trigger button
     const triggerButton = document.getElementById('copilot-trigger');
     if (triggerButton) {

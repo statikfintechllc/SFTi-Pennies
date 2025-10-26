@@ -43,6 +43,171 @@
   gap: 1rem;
 }
 
+/* Hamburger menu button - always visible on copilot page */
+.navbar.copilot-unified-header .nav-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  flex-shrink: 0;
+}
+
+.navbar.copilot-unified-header .hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+}
+
+.navbar.copilot-unified-header .hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--accent-green);
+  transition: all 0.3s ease;
+}
+
+.navbar.copilot-unified-header .nav-toggle.active .hamburger span:nth-child(1) {
+  transform: rotate(45deg) translateY(8px);
+}
+
+.navbar.copilot-unified-header .nav-toggle.active .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar.copilot-unified-header .nav-toggle.active .hamburger span:nth-child(3) {
+  transform: rotate(-45deg) translateY(-8px);
+}
+
+/* ===== Navigation Sidebar ===== */
+.copilot-nav-sidebar {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(135deg,
+    rgba(15, 20, 41, 0.98) 0%,
+    rgba(10, 14, 39, 0.98) 100%);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border-right: 1px solid var(--glass-border-medium);
+  z-index: 2000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+.copilot-nav-sidebar.active {
+  left: 0;
+}
+
+.copilot-nav-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--glass-border-subtle);
+}
+
+.copilot-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: var(--accent-green);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.copilot-nav-brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.copilot-nav-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.copilot-nav-close:hover {
+  color: var(--text-primary);
+}
+
+.copilot-nav-close svg {
+  width: 24px;
+  height: 24px;
+}
+
+.copilot-nav-menu {
+  list-style: none;
+  padding: 1rem 0;
+}
+
+.copilot-nav-menu > li {
+  margin: 0;
+}
+
+.copilot-nav-link {
+  display: block;
+  padding: 0.875rem 1.5rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.copilot-nav-link:hover {
+  color: var(--text-primary);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.copilot-nav-section {
+  margin-top: 1rem;
+}
+
+.copilot-nav-section-title {
+  padding: 0.5rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(168, 85, 247, 0.8);
+}
+
+.copilot-nav-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.copilot-nav-section ul .copilot-nav-link {
+  padding-left: 2.5rem;
+}
+
+.copilot-nav-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.copilot-nav-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
 .copilot-modal-backdrop {
   position: fixed;
@@ -641,17 +806,17 @@
   }
 }
 
-/* ===== Input Area with iOS Safari-style Design ===== */
+/* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 .copilot-chat-input-area {
   padding: 1rem 1.5rem;
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  background: rgba(0, 0, 0, 0.85);
+  background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
-  position: sticky;
-  bottom: 0;
+  /* Remove sticky positioning to allow iOS keyboard accessory behavior */
+  position: relative;
   z-index: 10;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -813,11 +978,10 @@
     padding: 0.875rem 1rem;
     padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
     flex-shrink: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.95);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    /* Ensure input area stays at bottom when keyboard opens */
-    position: sticky;
-    bottom: 0;
+    /* Remove sticky to allow iOS keyboard accessory behavior */
+    position: relative;
   }
   
   .copilot-send-button {
