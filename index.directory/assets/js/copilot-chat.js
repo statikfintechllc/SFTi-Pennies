@@ -152,11 +152,8 @@ class CopilotChat {
     copilotButton.setAttribute('aria-label', 'Open GitHub Copilot');
     
     // Determine correct path based on current location
-    // If we're at root (index.html), use 'index.directory/copilot.html'
-    // If we're in index.directory, use 'copilot.html'
-    const pathname = window.location.pathname;
-    const isInIndexDirectory = pathname.includes('/index.directory/');
-    copilotButton.href = isInIndexDirectory ? 'copilot.html' : 'index.directory/copilot.html';
+    // Use absolute path from root to ensure consistent navigation
+    copilotButton.href = '/index.directory/copilot.html';
     
     copilotButton.innerHTML = `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
