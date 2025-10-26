@@ -821,14 +821,9 @@ body {
   }
 }
 
-/* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
-/* Input is positioned FIXED at bottom on desktop, and at bottom of viewport on mobile */
-/* On mobile, it moves with the keyboard */
+/* ===== Input Area - No positioning for iOS keyboard compatibility ===== */
+/* Input bar stays in normal document flow so iOS keyboard doesn't scroll the page */
 .copilot-chat-input-area {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   z-index: 100;
   max-width: 100%;
   margin: 0 auto;
