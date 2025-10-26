@@ -852,14 +852,14 @@ body {
 .copilot-chat-input {
   flex: 1;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  padding: 0.875rem 1.25rem;
+  border: none;
+  border-radius: 12px;
+  padding: 0.4375rem 1.25rem;
   color: var(--text-primary);
   font-size: 16px;
   font-family: var(--font-sans);
   resize: none;
-  min-height: 48px;
+  min-height: 24px;
   max-height: 150px;
   transition: all 0.3s ease;
   outline: none;
@@ -869,10 +869,10 @@ body {
 }
 
 .copilot-chat-input:focus {
-  border-color: rgba(168, 85, 247, 0.5);
   background: rgba(255, 255, 255, 0.12);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .copilot-chat-input::placeholder {
@@ -880,12 +880,12 @@ body {
 }
 
 .copilot-send-button {
-  padding: 0.875rem 1.5rem;
+  padding: 0.4375rem 1.5rem;
   background: linear-gradient(135deg, 
     rgb(168, 85, 247) 0%, 
     rgb(124, 58, 237) 100%);
   border: none;
-  border-radius: 24px;
+  border-radius: 12px;
   color: white;
   font-weight: 600;
   cursor: pointer;
@@ -977,7 +977,7 @@ body {
   }
   
   .copilot-send-button {
-    padding: 0.875rem 1.25rem;
+    padding: 0.4375rem 1.25rem;
   }
 }
 
