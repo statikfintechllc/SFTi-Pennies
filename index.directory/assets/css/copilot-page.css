@@ -842,6 +842,13 @@ body {
   width: 100%;
 }
 
+.copilot-chat-input-wrapper {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+}
+
 .copilot-chat-input {
   flex: 1;
   background: rgba(255, 255, 255, 0.1);
@@ -855,6 +862,17 @@ body {
   min-height: 48px;
   max-height: 150px;
   transition: all 0.3s ease;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.copilot-chat-input:focus {
+  border-color: rgba(168, 85, 247, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
 .copilot-chat-input::placeholder {
