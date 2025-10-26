@@ -11,76 +11,87 @@ class CopilotChat {
     this.chatHistory = this.loadChatHistory();
     this.currentChatId = null;
     
-    // Available GitHub Copilot models (matching GitHub Mobile app)
+    // Available GitHub Copilot models with GitHub routing
     this.models = [
       // Fast & Efficient
       {
         id: 'gpt-5-mini',
         name: 'GPT-5-mini',
         description: 'Fast & Efficient',
-        category: 'fast'
+        category: 'fast',
+        route: 'github/gpt-5-mini'
       },
       {
         id: 'grok-code-fast-1',
         name: 'Grok Code Fast 1',
         description: 'Fast & Efficient',
-        category: 'fast'
+        category: 'fast',
+        route: 'github/grok-code-fast-1'
       },
       // Versatile and Highly Intelligent
       {
         id: 'gpt-4.1',
         name: 'GPT-4.1',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/gpt-4.1'
       },
       {
         id: 'gpt-5',
         name: 'GPT-5',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/gpt-5'
       },
       {
         id: 'gpt-4o',
         name: 'GPT-4o',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/gpt-4o'
       },
       {
         id: 'claude-sonnet-3.5',
         name: 'Claude Sonnet 3.5',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/claude-sonnet-3.5'
       },
       {
         id: 'claude-sonnet-4',
         name: 'Claude Sonnet 4',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/claude-sonnet-4'
       },
       {
         id: 'claude-sonnet-4.5',
         name: 'Claude Sonnet 4.5',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/claude-sonnet-4.5'
       },
       {
         id: 'claude-haiku-4.5',
         name: 'Claude Haiku 4.5',
         description: 'Versatile and Highly Intelligent',
-        category: 'versatile'
+        category: 'versatile',
+        route: 'github/claude-haiku-4.5'
       },
       // Most Powerful at Complex Tasks
       {
         id: 'claude-opus-4.1',
         name: 'Claude Opus 4.1',
         description: 'Most Powerful at Complex Tasks',
-        category: 'powerful'
+        category: 'powerful',
+        route: 'github/claude-opus-4.1'
       },
       {
         id: 'gemini-2.5-pro',
         name: 'Gemini 2.5 Pro',
         description: 'Most Powerful at Complex Tasks',
-        category: 'powerful'
+        category: 'powerful',
+        route: 'github/gemini-2.5-pro'
       }
     ];
     
@@ -120,8 +131,16 @@ class CopilotChat {
     if (!isCopilotPage) {
       this.createCopilotButton();
     } else {
-      // On copilot.html, just attach event listeners - the HTML already has the interface
+      // On copilot.html, populate the model dropdown and attach event listeners
+      this.populateModelDropdown();
       this.attachEventListeners();
+    }
+  }
+  
+  populateModelDropdown() {
+    const modelDropdown = document.getElementById('model-dropdown');
+    if (modelDropdown) {
+      modelDropdown.innerHTML = this.renderModelsWithCategories();
     }
   }
   
@@ -143,6 +162,32 @@ class CopilotChat {
   }
   
   attachEventListeners() {
+    // Menu toggle
+    const menuToggle = document.getElementById('copilot-menu-toggle');
+    const navSidebar = document.getElementById('copilot-nav-sidebar');
+    const navOverlay = document.getElementById('copilot-nav-overlay');
+    const navClose = document.getElementById('copilot-nav-close');
+    
+    if (menuToggle && navSidebar && navOverlay) {
+      menuToggle.addEventListener('click', () => {
+        navSidebar.classList.add('active');
+        navOverlay.classList.add('active');
+        menuToggle.classList.add('active');
+      });
+      
+      const closeNav = () => {
+        navSidebar.classList.remove('active');
+        navOverlay.classList.remove('active');
+        menuToggle.classList.remove('active');
+      };
+      
+      if (navClose) {
+        navClose.addEventListener('click', closeNav);
+      }
+      
+      navOverlay.addEventListener('click', closeNav);
+    }
+    
     // Trigger button
     const triggerButton = document.getElementById('copilot-trigger');
     if (triggerButton) {
@@ -328,6 +373,11 @@ class CopilotChat {
       }
     });
     
+    // Log GitHub routing for debugging
+    if (model && model.route) {
+      console.log(`Switched to ${model.name} using GitHub route: ${model.route}`);
+    }
+    
     // Show notification
     this.addSystemMessage(`Switched to ${model ? model.name : modelId}`);
   }
@@ -376,7 +426,14 @@ class CopilotChat {
     // Simulate API call delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // In production, this would call the actual GitHub Copilot API
+    // Get current model route
+    const model = this.models.find(m => m.id === this.currentModel);
+    const modelRoute = model ? model.route : 'github/gpt-4o';
+    
+    // In production, this would call the GitHub Copilot API using the model route
+    // Example: await fetch(`https://api.github.com/copilot/chat/${modelRoute}`, {...})
+    console.log(`Using GitHub model route: ${modelRoute} for query: "${userMessage}"`);
+    
     // For now, return intelligent mock responses based on context
     const lowerMessage = userMessage.toLowerCase();
     
