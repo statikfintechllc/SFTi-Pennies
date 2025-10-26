@@ -288,86 +288,117 @@ class CopilotChat {
     this.cachedElements.inputArea = document.querySelector('.copilot-chat-input-area');
     this.cachedElements.messagesArea = document.getElementById('chat-messages');
     
-    // Handle mobile keyboard appearance to ensure proper layout
-    // Uses visualViewport API for modern browsers
+    const input = document.getElementById('chat-input');
+    if (!input) return;
+    
+    // Store original viewport height for comparison
+    let initialHeight = window.innerHeight;
+    let keyboardOpen = false;
+    
+    // Handle keyboard appearance using resize events
+    const handleResize = () => {
+      const currentHeight = window.innerHeight;
+      const { chatContainer, messagesArea, inputArea } = this.cachedElements;
+      
+      if (!chatContainer || !messagesArea || !inputArea) return;
+      
+      // Detect keyboard: viewport height decreased by threshold
+      const heightDiff = initialHeight - currentHeight;
+      const wasKeyboardOpen = keyboardOpen;
+      keyboardOpen = heightDiff > this.KEYBOARD_DETECTION_THRESHOLD;
+      
+      if (keyboardOpen && !wasKeyboardOpen) {
+        // Keyboard just opened - adjust layout
+        // Calculate available height: viewport - header
+        const headerHeight = 60; // Mobile header height
+        const availableHeight = currentHeight - headerHeight;
+        
+        // Set container to available height to prevent scrolling
+        chatContainer.style.height = `${availableHeight}px`;
+        
+        // Ensure messages area scrolls to bottom
+        setTimeout(() => {
+          messagesArea.scrollTop = messagesArea.scrollHeight;
+        }, 100);
+      } else if (!keyboardOpen && wasKeyboardOpen) {
+        // Keyboard closed - restore normal layout
+        chatContainer.style.height = '100%';
+      }
+    };
+    
+    // Handle input focus events
+    const handleFocus = () => {
+      const { messagesArea } = this.cachedElements;
+      if (!messagesArea) return;
+      
+      // Wait for keyboard animation, then scroll to bottom
+      setTimeout(() => {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      }, 300);
+      
+      // Also trigger resize handler after delay
+      setTimeout(handleResize, 400);
+    };
+    
+    // Handle input blur (keyboard closing)
+    const handleBlur = () => {
+      setTimeout(handleResize, 100);
+    };
+    
+    // Modern browsers: use visualViewport API for more accurate detection
     if ('visualViewport' in window) {
       const visualViewport = window.visualViewport;
+      let lastViewportHeight = visualViewport.height;
       
-      // Store original values
-      let lastHeight = visualViewport.height;
-      
-      const handleViewportResize = () => {
+      const handleViewportChange = () => {
         const currentHeight = visualViewport.height;
-        const { messagesArea } = this.cachedElements;
+        const { chatContainer, messagesArea } = this.cachedElements;
         
-        if (!messagesArea) return;
+        if (!chatContainer || !messagesArea) return;
         
-        // Calculate height difference (keyboard is open if viewport shrinks)
-        const heightDiff = lastHeight - currentHeight;
-        const keyboardOpen = heightDiff > this.KEYBOARD_DETECTION_THRESHOLD;
+        const heightDiff = lastViewportHeight - currentHeight;
+        const wasKeyboardOpen = keyboardOpen;
+        keyboardOpen = heightDiff > this.KEYBOARD_DETECTION_THRESHOLD;
         
-        if (keyboardOpen) {
-          // Keyboard is open - adjust layout
-          // The fixed input will move up naturally with the viewport
-          // Just ensure messages area has proper scroll
-          messagesArea.style.paddingBottom = this.CHAT_PADDING_KEYBOARD;
+        if (keyboardOpen && !wasKeyboardOpen) {
+          // Keyboard opened
+          const headerHeight = window.innerWidth <= 768 ? 60 : 70;
+          const availableHeight = currentHeight - headerHeight;
+          chatContainer.style.height = `${availableHeight}px`;
           
-          // Scroll to bottom to show latest message
           setTimeout(() => {
             messagesArea.scrollTop = messagesArea.scrollHeight;
           }, 100);
-        } else {
-          // Keyboard is closed - restore normal layout
-          messagesArea.style.paddingBottom = this.CHAT_PADDING_NORMAL;
+        } else if (!keyboardOpen && wasKeyboardOpen) {
+          // Keyboard closed
+          chatContainer.style.height = '100%';
         }
         
-        lastHeight = currentHeight;
+        lastViewportHeight = currentHeight;
       };
       
-      // Listen for viewport changes (keyboard open/close)
-      visualViewport.addEventListener('resize', handleViewportResize);
-      visualViewport.addEventListener('scroll', handleViewportResize);
+      visualViewport.addEventListener('resize', handleViewportChange);
+      visualViewport.addEventListener('scroll', handleViewportChange);
+    } else {
+      // Fallback: use window resize
+      window.addEventListener('resize', handleResize);
     }
     
-    // Fallback for older browsers - use window resize
-    else {
-      let lastHeight = window.innerHeight;
-      
-      const handleWindowResize = () => {
-        const currentHeight = window.innerHeight;
-        const { messagesArea } = this.cachedElements;
-        
-        if (!messagesArea) return;
-        
-        // If height decreased significantly, keyboard is probably open
-        if (lastHeight - currentHeight > this.KEYBOARD_DETECTION_THRESHOLD) {
-          messagesArea.style.paddingBottom = this.CHAT_PADDING_KEYBOARD;
-          setTimeout(() => {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-          }, 100);
-        } else {
-          messagesArea.style.paddingBottom = this.CHAT_PADDING_NORMAL;
-        }
-        
-        lastHeight = currentHeight;
-      };
-      
-      window.addEventListener('resize', handleWindowResize);
-    }
+    // Listen to input focus/blur events
+    input.addEventListener('focus', handleFocus);
+    input.addEventListener('blur', handleBlur);
     
-    // Also handle input focus events for additional reliability
-    const input = document.getElementById('chat-input');
-    if (input) {
-      input.addEventListener('focus', () => {
-        const { messagesArea } = this.cachedElements;
-        if (messagesArea) {
-          // Slight delay to allow keyboard animation
-          setTimeout(() => {
-            messagesArea.scrollTop = messagesArea.scrollHeight;
-          }, 300);
+    // Update initial height on orientation change
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        initialHeight = window.innerHeight;
+        keyboardOpen = false;
+        const { chatContainer } = this.cachedElements;
+        if (chatContainer) {
+          chatContainer.style.height = '100%';
         }
-      });
-    }
+      }, 300);
+    });
   }
   
   openChat() {
