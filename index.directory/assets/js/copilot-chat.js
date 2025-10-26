@@ -154,8 +154,9 @@ class CopilotChat {
     // Determine correct path based on current location
     // If we're at root (index.html), use 'index.directory/copilot.html'
     // If we're in index.directory, use 'copilot.html'
-    const isRootIndex = window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
-    copilotButton.href = isRootIndex ? 'index.directory/copilot.html' : 'copilot.html';
+    const pathname = window.location.pathname;
+    const isInIndexDirectory = pathname.includes('/index.directory/');
+    copilotButton.href = isInIndexDirectory ? 'copilot.html' : 'index.directory/copilot.html';
     
     copilotButton.innerHTML = `
       <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
