@@ -4,29 +4,31 @@
  * iOS 26-inspired design with enhanced glassmorphism
  */
 
-/* Lock the entire page - nothing should scroll except the messages area */
+/* Lock the entire page - MUST use position: fixed to prevent ANY scrolling */
 html {
   height: 100%;
   overflow: hidden;
-  position: relative;
+  position: fixed;
   width: 100%;
+  top: 0;
+  left: 0;
 }
 
 body {
   height: 100%;
   overflow: hidden;
-  position: relative;
+  position: fixed;
   width: 100%;
+  top: 0;
+  left: 0;
   margin: 0;
   padding: 0;
 }
 
 /* ===== Unified Navigation & Copilot Header ===== */
 .navbar.copilot-unified-header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: relative;
+  flex-shrink: 0;
   width: 100%;
   height: 70px;
   z-index: 100;
@@ -235,7 +237,7 @@ body {
 
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
 .copilot-modal-backdrop {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -273,6 +275,8 @@ body {
   opacity: 1;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Glass reflection effect on top */
@@ -577,17 +581,13 @@ body {
 
 /* ===== Chat Messages Area with Glass Scrollbar ===== */
 .copilot-chat-messages {
-  position: absolute;
-  top: 70px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
-  padding-bottom: 100px; /* Padding for fixed input overlay */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -837,10 +837,8 @@ body {
 
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 .copilot-chat-input-area {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  flex-shrink: 0;
   padding: 1rem 1.5rem;
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.95);
@@ -960,11 +958,9 @@ body {
     gap: 0.5rem;
   }
   
-  /* Messages area adjusted for mobile header height */
+  /* Messages area adjusted for mobile */
   .copilot-chat-messages {
-    top: 60px;
     padding: 1rem;
-    padding-bottom: 100px; /* Padding for fixed input overlay */
     gap: 1rem;
   }
   
