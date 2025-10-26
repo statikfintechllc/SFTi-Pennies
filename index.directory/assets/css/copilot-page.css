@@ -29,9 +29,16 @@
   padding: 0 1.5rem;
 }
 
-.navbar.copilot-unified-header .nav-brand {
-  flex: 0 0 auto;
-  font-size: 1.125rem;
+/* Left section - move 2 points to the left */
+.navbar.copilot-unified-header .nav-toggle {
+  display: flex;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.5rem;
+  flex-shrink: 0;
+  margin-left: -2px;
 }
 
 /* Center section with Copilot title and model selector */
@@ -41,17 +48,16 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
+  min-width: 0; /* Allow flex shrinking */
 }
 
-/* Hamburger menu button - always visible on copilot page */
-.navbar.copilot-unified-header .nav-toggle {
+/* Right section - move 2 points to the right */
+.copilot-header-right {
   display: flex;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 0.5rem;
-  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 0 0 auto;
+  margin-right: -2px;
 }
 
 .navbar.copilot-unified-header .hamburger {
@@ -293,6 +299,7 @@
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-primary);
+  margin-left: -2px; /* Move left 2 points */
 }
 
 .copilot-header-title svg {
@@ -305,7 +312,8 @@
 /* ===== Model Selector with Glass Effects ===== */
 .copilot-model-selector {
   position: relative;
-  flex: 1;
+  flex: 0 1 auto; /* Changed from flex: 1 to prevent excessive growth */
+  max-width: 200px; /* Limit width to prevent wrapping */
   display: flex;
   justify-content: center;
 }
@@ -322,6 +330,15 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap; /* Prevent text wrapping */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.copilot-model-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .copilot-model-button:hover {
@@ -334,6 +351,7 @@
   width: 16px;
   height: 16px;
   fill: currentColor;
+  flex-shrink: 0;
 }
 
 .copilot-model-dropdown {
@@ -354,22 +372,14 @@
   display: none;
   z-index: 2001; /* Higher than sidebar */
   overflow-y: auto;
+  /* Remove animation that causes the shift */
 }
 
 .copilot-model-dropdown.active {
   display: block;
-  animation: dropdownFadeIn 0.2s ease;
-}
-
-@keyframes dropdownFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+  /* Simplified - no animation to prevent positioning shift */
+  opacity: 1;
+  transform: translateX(-50%);
 }
 
 .copilot-model-category {
@@ -449,7 +459,7 @@
 .copilot-history-dropdown {
   position: absolute;
   top: calc(100% + 0.5rem);
-  right: 4rem;
+  right: 0;
   width: 320px;
   max-height: 400px;
   background: linear-gradient(135deg,
@@ -461,13 +471,14 @@
   border-radius: var(--glass-radius-md);
   box-shadow: var(--glass-shadow-lg);
   display: none;
-  z-index: 100;
+  z-index: 2001;
   overflow-y: auto;
 }
 
 .copilot-history-dropdown.active {
   display: block;
-  animation: dropdownFadeIn 0.2s ease;
+  /* Simplified - no animation to prevent positioning shift */
+  opacity: 1;
 }
 
 .copilot-history-item {
