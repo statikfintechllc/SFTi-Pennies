@@ -26,8 +26,12 @@ body {
 }
 
 /* ===== Unified Navigation & Copilot Header ===== */
+/* Fixed header that stays visible even when keyboard opens on mobile */
 .navbar.copilot-unified-header {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   flex-shrink: 0;
   width: 100%;
   height: 70px;
@@ -236,9 +240,10 @@ body {
 }
 
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
+/* Main container adjusted to account for fixed header */
 .copilot-modal-backdrop {
   position: fixed;
-  top: 0;
+  top: 70px; /* Height of fixed header */
   left: 0;
   right: 0;
   bottom: 0;
@@ -258,6 +263,7 @@ body {
 }
 
 /* ===== Copilot Chat Container with Glass Effects ===== */
+/* Chat container adjusted for fixed header and footer positioning */
 .copilot-chat-container {
   width: 100%;
   max-width: 900px;
@@ -276,7 +282,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: 100px; /* Space for input bar that slides up independently */
+  padding-bottom: 0; /* No padding needed - fixed input handles spacing */
 }
 
 /* Glass reflection effect on top */
@@ -580,7 +586,7 @@ body {
 }
 
 /* ===== Chat Messages Area with Glass Scrollbar ===== */
-/* ===== Messages Area with Internal Scrolling ===== */
+/* Messages area with internal scrolling - adjusted for fixed header */
 .copilot-chat-messages {
   flex: 1;
   min-height: 0;
@@ -589,7 +595,7 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
-  padding-top: 80px; /* Space for fixed header */
+  padding-bottom: 100px; /* Space for fixed input bar at bottom */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -933,10 +939,15 @@ body {
 
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
-  /* Unified header on mobile */
+  /* Fixed header on mobile - reduced height */
   .navbar.copilot-unified-header {
     height: 60px;
     padding: 0.75rem 0;
+  }
+  
+  /* Main backdrop adjusted for smaller header */
+  .copilot-modal-backdrop {
+    top: 60px;
   }
   
   .navbar.copilot-unified-header .nav-container {
@@ -965,10 +976,10 @@ body {
     gap: 0.5rem;
   }
   
-  /* Messages area adjusted for mobile */
+  /* Messages area adjusted for mobile with bottom padding for input */
   .copilot-chat-messages {
     padding: 1rem;
-    padding-top: 70px; /* Space for fixed header on mobile */
+    padding-bottom: 100px; /* Space for fixed input area */
     gap: 1rem;
   }
   

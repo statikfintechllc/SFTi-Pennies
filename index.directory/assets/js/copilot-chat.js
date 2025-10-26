@@ -134,6 +134,7 @@ class CopilotChat {
       // On copilot.html, populate the model dropdown and attach event listeners
       this.populateModelDropdown();
       this.attachEventListeners();
+      this.setupMobileKeyboardHandler();
     }
   }
   
@@ -270,7 +271,88 @@ class CopilotChat {
   }
   
   setupMobileKeyboardHandler() {
-    // Not needed - let CSS and browser handle it naturally
+    // Handle mobile keyboard appearance to ensure proper layout
+    // Uses visualViewport API for modern browsers
+    if ('visualViewport' in window) {
+      const visualViewport = window.visualViewport;
+      
+      // Store original values
+      let lastHeight = visualViewport.height;
+      
+      const handleViewportResize = () => {
+        const currentHeight = visualViewport.height;
+        const chatContainer = document.querySelector('.copilot-chat-container');
+        const inputArea = document.querySelector('.copilot-chat-input-area');
+        const messagesArea = document.getElementById('chat-messages');
+        
+        if (!chatContainer || !inputArea || !messagesArea) return;
+        
+        // Calculate height difference (keyboard is open if viewport shrinks)
+        const heightDiff = lastHeight - currentHeight;
+        const keyboardOpen = heightDiff > 100; // Threshold to detect keyboard
+        
+        if (keyboardOpen) {
+          // Keyboard is open - adjust layout
+          // The fixed input will move up naturally with the viewport
+          // Just ensure messages area has proper scroll
+          messagesArea.style.paddingBottom = '120px'; // Extra space for keyboard
+          
+          // Scroll to bottom to show latest message
+          setTimeout(() => {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+          }, 100);
+        } else {
+          // Keyboard is closed - restore normal layout
+          messagesArea.style.paddingBottom = '100px';
+        }
+        
+        lastHeight = currentHeight;
+      };
+      
+      // Listen for viewport changes (keyboard open/close)
+      visualViewport.addEventListener('resize', handleViewportResize);
+      visualViewport.addEventListener('scroll', handleViewportResize);
+    }
+    
+    // Fallback for older browsers - use window resize
+    else {
+      let lastHeight = window.innerHeight;
+      
+      const handleWindowResize = () => {
+        const currentHeight = window.innerHeight;
+        const messagesArea = document.getElementById('chat-messages');
+        
+        if (!messagesArea) return;
+        
+        // If height decreased significantly, keyboard is probably open
+        if (lastHeight - currentHeight > 100) {
+          messagesArea.style.paddingBottom = '120px';
+          setTimeout(() => {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+          }, 100);
+        } else {
+          messagesArea.style.paddingBottom = '100px';
+        }
+        
+        lastHeight = currentHeight;
+      };
+      
+      window.addEventListener('resize', handleWindowResize);
+    }
+    
+    // Also handle input focus events for additional reliability
+    const input = document.getElementById('chat-input');
+    if (input) {
+      input.addEventListener('focus', () => {
+        const messagesArea = document.getElementById('chat-messages');
+        if (messagesArea) {
+          // Slight delay to allow keyboard animation
+          setTimeout(() => {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+          }, 300);
+        }
+      });
+    }
   }
   
   openChat() {
