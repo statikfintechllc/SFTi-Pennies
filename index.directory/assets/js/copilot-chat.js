@@ -11,6 +11,18 @@ class CopilotChat {
     this.chatHistory = this.loadChatHistory();
     this.currentChatId = null;
     
+    // Keyboard detection and layout constants
+    this.KEYBOARD_DETECTION_THRESHOLD = 100; // pixels - viewport height change to detect keyboard
+    this.CHAT_PADDING_NORMAL = '100px'; // Normal bottom padding for messages
+    this.CHAT_PADDING_KEYBOARD = '120px'; // Extra padding when keyboard is open
+    
+    // Cached DOM elements for keyboard handler
+    this.cachedElements = {
+      chatContainer: null,
+      inputArea: null,
+      messagesArea: null
+    };
+    
     // Available GitHub Copilot models with GitHub routing
     this.models = [
       // Fast & Efficient
@@ -271,6 +283,11 @@ class CopilotChat {
   }
   
   setupMobileKeyboardHandler() {
+    // Cache DOM elements once for better performance
+    this.cachedElements.chatContainer = document.querySelector('.copilot-chat-container');
+    this.cachedElements.inputArea = document.querySelector('.copilot-chat-input-area');
+    this.cachedElements.messagesArea = document.getElementById('chat-messages');
+    
     // Handle mobile keyboard appearance to ensure proper layout
     // Uses visualViewport API for modern browsers
     if ('visualViewport' in window) {
@@ -281,21 +298,19 @@ class CopilotChat {
       
       const handleViewportResize = () => {
         const currentHeight = visualViewport.height;
-        const chatContainer = document.querySelector('.copilot-chat-container');
-        const inputArea = document.querySelector('.copilot-chat-input-area');
-        const messagesArea = document.getElementById('chat-messages');
+        const { messagesArea } = this.cachedElements;
         
-        if (!chatContainer || !inputArea || !messagesArea) return;
+        if (!messagesArea) return;
         
         // Calculate height difference (keyboard is open if viewport shrinks)
         const heightDiff = lastHeight - currentHeight;
-        const keyboardOpen = heightDiff > 100; // Threshold to detect keyboard
+        const keyboardOpen = heightDiff > this.KEYBOARD_DETECTION_THRESHOLD;
         
         if (keyboardOpen) {
           // Keyboard is open - adjust layout
           // The fixed input will move up naturally with the viewport
           // Just ensure messages area has proper scroll
-          messagesArea.style.paddingBottom = '120px'; // Extra space for keyboard
+          messagesArea.style.paddingBottom = this.CHAT_PADDING_KEYBOARD;
           
           // Scroll to bottom to show latest message
           setTimeout(() => {
@@ -303,7 +318,7 @@ class CopilotChat {
           }, 100);
         } else {
           // Keyboard is closed - restore normal layout
-          messagesArea.style.paddingBottom = '100px';
+          messagesArea.style.paddingBottom = this.CHAT_PADDING_NORMAL;
         }
         
         lastHeight = currentHeight;
@@ -320,18 +335,18 @@ class CopilotChat {
       
       const handleWindowResize = () => {
         const currentHeight = window.innerHeight;
-        const messagesArea = document.getElementById('chat-messages');
+        const { messagesArea } = this.cachedElements;
         
         if (!messagesArea) return;
         
         // If height decreased significantly, keyboard is probably open
-        if (lastHeight - currentHeight > 100) {
-          messagesArea.style.paddingBottom = '120px';
+        if (lastHeight - currentHeight > this.KEYBOARD_DETECTION_THRESHOLD) {
+          messagesArea.style.paddingBottom = this.CHAT_PADDING_KEYBOARD;
           setTimeout(() => {
             messagesArea.scrollTop = messagesArea.scrollHeight;
           }, 100);
         } else {
-          messagesArea.style.paddingBottom = '100px';
+          messagesArea.style.paddingBottom = this.CHAT_PADDING_NORMAL;
         }
         
         lastHeight = currentHeight;
@@ -344,7 +359,7 @@ class CopilotChat {
     const input = document.getElementById('chat-input');
     if (input) {
       input.addEventListener('focus', () => {
-        const messagesArea = document.getElementById('chat-messages');
+        const { messagesArea } = this.cachedElements;
         if (messagesArea) {
           // Slight delay to allow keyboard animation
           setTimeout(() => {
