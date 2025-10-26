@@ -8,16 +8,14 @@
 html {
   height: 100%;
   overflow: hidden;
-  position: fixed;
+  position: relative;
   width: 100%;
-  top: 0;
-  left: 0;
 }
 
 body {
   height: 100%;
   overflow: hidden;
-  position: fixed;
+  position: relative;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -237,7 +235,7 @@ body {
 
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
 .copilot-modal-backdrop {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -583,12 +581,13 @@ body {
   top: 70px;
   left: 0;
   right: 0;
-  bottom: 80px;
+  bottom: 0;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
+  padding-bottom: 100px; /* Padding for fixed input overlay */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -838,7 +837,7 @@ body {
 
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 .copilot-chat-input-area {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
@@ -849,6 +848,9 @@ body {
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .copilot-chat-input-wrapper {
@@ -962,6 +964,7 @@ body {
   .copilot-chat-messages {
     top: 60px;
     padding: 1rem;
+    padding-bottom: 100px; /* Padding for fixed input overlay */
     gap: 1rem;
   }
   
