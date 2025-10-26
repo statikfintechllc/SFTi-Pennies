@@ -25,8 +25,12 @@ body {
 
 /* ===== Unified Navigation & Copilot Header ===== */
 .navbar.copilot-unified-header {
-  position: relative; /* NOT fixed - let it be part of the grid */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
+  height: 70px;
   z-index: 100;
   background: linear-gradient(135deg,
     rgba(168, 85, 247, 0.15) 0%,
@@ -35,7 +39,6 @@ body {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--glass-border-medium);
   padding: 1rem 0;
-  flex-shrink: 0;
 }
 
 .navbar.copilot-unified-header .nav-container {
@@ -268,8 +271,6 @@ body {
   border: none;
   border-radius: 0;
   box-shadow: none;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
   transform: scale(1) translateY(0);
   opacity: 1;
   position: relative;
@@ -578,6 +579,11 @@ body {
 
 /* ===== Chat Messages Area with Glass Scrollbar ===== */
 .copilot-chat-messages {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 80px;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -586,8 +592,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  /* Use min-height instead of flex to prevent shrinking */
-  min-height: 0;
 }
 
 .copilot-chat-messages::-webkit-scrollbar {
@@ -834,13 +838,16 @@ body {
 
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 .copilot-chat-input-area {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
   padding: 1rem 1.5rem;
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(30px) saturate(180%);
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  flex-shrink: 0;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -921,6 +928,7 @@ body {
 @media (max-width: 768px) {
   /* Unified header on mobile */
   .navbar.copilot-unified-header {
+    height: 60px;
     padding: 0.75rem 0;
   }
   
@@ -950,12 +958,9 @@ body {
     gap: 0.5rem;
   }
   
-  /* Mobile adjustments */
-  .navbar.copilot-unified-header {
-    padding: 0.75rem 0;
-  }
-  
+  /* Messages area adjusted for mobile header height */
   .copilot-chat-messages {
+    top: 60px;
     padding: 1rem;
     gap: 1rem;
   }
