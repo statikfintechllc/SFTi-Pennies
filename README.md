@@ -44,9 +44,8 @@ Created a **fully transparent, organized trading account** with complete documen
 #### 2. [📝 index.directory/SFTi.Notez](./index.directory/SFTi.Notez/README.md)
 **Trading Frameworks & Strategies** - Actionable trading plans:
 - 🎯 [7-Step Penny Stocking Framework](./index.directory/SFTi.Notez/7.Step.Frame.md)
-- 🔄 [GSTRWT Daily Workflow](./index.directory/SFTi.Notez/GSTRWT.md)
+- 🔄 [GSTRWT Daily Workflow and Complete Trading Plan](./index.directory/SFTi.Notez/GSTRWT.md)
 - 📊 [Top 5 Penny Indicators](./index.directory/SFTi.Notez/Penny.Indicators.md)
-- 📋 [Complete Trading Plan](./index.directory/SFTi.Notez/Trade.Plan.md)
 - 💹 [Dip and Rip Pattern](./index.directory/SFTi.Notez/Dip.n.Rip.md)
 
 #### 3. [📊 index.directory/SFTi.Tradez](./index.directory/SFTi.Tradez/README.md)
