@@ -836,6 +836,8 @@ body {
 }
 
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
+/* Input uses flex-shrink: 0 as part of flexbox layout - NOT fixed positioning */
+/* This allows iOS to naturally move it up with the keyboard */
 .copilot-chat-input-area {
   position: relative;
   flex-shrink: 0;
@@ -846,9 +848,7 @@ body {
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-  z-index: 50;
-  max-width: 900px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .copilot-chat-input-wrapper {
