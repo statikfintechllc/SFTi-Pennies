@@ -269,63 +269,6 @@ class CopilotChat {
     }
   }
   
-  setupMobileKeyboardHandler() {
-    // Not needed - let CSS and browser handle it naturally
-  }
-  
-  openChat() {
-    const modal = document.getElementById('copilot-modal');
-    if (modal) {
-      this.isOpen = true;
-      modal.classList.add('active');
-      
-      // On mobile, prevent ANY scrolling of the page
-      if (window.innerWidth <= 768) {
-        // Lock both html and body to prevent any page scrolling
-        document.documentElement.style.position = 'fixed';
-        document.documentElement.style.width = '100%';
-        document.documentElement.style.height = '100%';
-        document.documentElement.style.overflow = 'hidden';
-        
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.height = '100%';
-        document.body.style.overflow = 'hidden';
-        document.body.style.top = '0';
-        document.body.style.left = '0';
-      } else {
-        document.body.style.overflow = 'hidden';
-      }
-      
-      // Focus input
-      setTimeout(() => {
-        const input = document.getElementById('chat-input');
-        if (input) input.focus();
-      }, 300);
-    }
-  }
-  
-  closeChat() {
-    const modal = document.getElementById('copilot-modal');
-    if (modal) {
-      this.isOpen = false;
-      modal.classList.remove('active');
-      
-      // Reset both html and body styles
-      document.documentElement.style.position = '';
-      document.documentElement.style.width = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.overflow = '';
-      
-      document.body.style.position = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.overflow = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-    }
-  }
-  
   newChat() {
     // Clear current messages
     this.messages = [];
