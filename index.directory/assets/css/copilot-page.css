@@ -4,21 +4,30 @@
  * iOS 26-inspired design with enhanced glassmorphism
  */
 
-/* ===== Fix body to prevent scrolling ===== */
-html, body {
+/* Lock the entire page - nothing should scroll except the messages area */
+html {
   height: 100%;
   overflow: hidden;
   position: fixed;
   width: 100%;
+  top: 0;
+  left: 0;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* ===== Unified Navigation & Copilot Header ===== */
 .navbar.copilot-unified-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+  position: relative; /* NOT fixed - let it be part of the grid */
+  width: 100%;
+  z-index: 100;
   background: linear-gradient(135deg,
     rgba(168, 85, 247, 0.15) 0%,
     rgba(124, 58, 237, 0.08) 100%);
@@ -26,6 +35,7 @@ html, body {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--glass-border-medium);
   padding: 1rem 0;
+  flex-shrink: 0;
 }
 
 .navbar.copilot-unified-header .nav-container {
@@ -229,8 +239,8 @@ html, body {
   left: 0;
   right: 0;
   bottom: 0;
-  height: 100vh;
-  height: 100dvh; /* Dynamic viewport height - better for mobile */
+  width: 100%;
+  height: 100%;
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 1) 0%,
     rgba(10, 14, 39, 1) 100%);
@@ -258,8 +268,8 @@ html, body {
   border: none;
   border-radius: 0;
   box-shadow: none;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   transform: scale(1) translateY(0);
   opacity: 1;
   position: relative;
@@ -568,15 +578,16 @@ html, body {
 
 /* ===== Chat Messages Area with Glass Scrollbar ===== */
 .copilot-chat-messages {
-  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
   padding: 1.5rem;
-  padding-top: 80px; /* Space for fixed header */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Use min-height instead of flex to prevent shrinking */
+  min-height: 0;
 }
 
 .copilot-chat-messages::-webkit-scrollbar {
@@ -830,9 +841,6 @@ html, body {
   -webkit-backdrop-filter: blur(30px) saturate(180%);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
-  /* Remove sticky positioning to allow iOS keyboard accessory behavior */
-  position: relative;
-  z-index: 10;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -942,25 +950,30 @@ html, body {
     gap: 0.5rem;
   }
   
-  /* Mobile-specific fixes */
-  .copilot-chat-messages {
-    padding: 1rem;
-    padding-top: 70px; /* Adjust for mobile header height */
+  /* Mobile adjustments */
+  .navbar.copilot-unified-header {
+    padding: 0.75rem 0;
   }
   
+  .copilot-chat-messages {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  
+  .copilot-chat-input-area {
+    padding: 0.875rem 1rem;
+    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
+  }
+  
+  /* Critical: Prevent iOS zoom on input focus */
   .copilot-chat-input {
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    font-size: 16px !important;
   }
   
   .copilot-message-avatar {
     width: 32px;
     height: 32px;
     font-size: 0.8125rem;
-  }
-  
-  .copilot-chat-input-area {
-    padding: 0.875rem 1rem;
-    padding-bottom: max(0.875rem, env(safe-area-inset-bottom));
   }
   
   .copilot-send-button {
