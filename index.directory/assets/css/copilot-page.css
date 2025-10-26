@@ -13,6 +13,7 @@ body {
   left: 0;
   margin: 0;
   padding: 0;
+  /* Removed by chat-mobile-fix.css for better mobile keyboard handling */
 }
 
 /* ===== Unified Navigation & Copilot Header ===== */
@@ -245,6 +246,7 @@ body {
   opacity: 1;
   pointer-events: auto;
   overflow: hidden;
+  /* Mobile keyboard handling: padding adjusted by chat-mobile-fix.css */
 }
 
 /* ===== Copilot Chat Container with Glass Effects ===== */
@@ -265,7 +267,7 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: 100px; /* Space for input bar that slides up independently */
+  /* Mobile keyboard handling: padding removed, managed by chat-mobile-fix.css */
 }
 
 /* Glass reflection effect on top */
@@ -563,7 +565,6 @@ body {
   stroke: currentColor;
 }
 
-/* ===== Chat Messages Area with Glass Scrollbar ===== */
 /* ===== Messages Area with Internal Scrolling ===== */
 .copilot-chat-messages {
   flex: 1;
@@ -573,7 +574,7 @@ body {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
-  padding-top: 80px; /* Space for fixed header */
+  /* Mobile keyboard handling: padding-top removed, managed by chat-mobile-fix.css */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -824,11 +825,9 @@ body {
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 /* Input is positioned OUTSIDE the chat container as a sibling element */
 /* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
+/* Mobile keyboard handling: Layout managed by chat-mobile-fix.css for better keyboard behavior */
 .copilot-chat-input-area {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  /* Base styles - positioning handled by chat-mobile-fix.css */
   z-index: 100;
   max-width: 900px;
   margin: 0 auto;
@@ -840,6 +839,14 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   width: 100%;
+}
+
+.copilot-chat-input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .copilot-chat-input {
@@ -935,13 +942,13 @@ body {
     gap: 0.5rem;
   }
   
-  /* Messages area adjusted for mobile */
+  /* Messages area adjusted for mobile - padding managed by chat-mobile-fix.css */
   .copilot-chat-messages {
     padding: 1rem;
-    padding-top: 70px; /* Space for fixed header on mobile */
     gap: 1rem;
   }
   
+  /* Input area adjusted for mobile - positioning managed by chat-mobile-fix.css */
   .copilot-chat-input-area {
     padding: 0.875rem 1rem;
     padding-bottom: max(0.875rem, env(safe-area-inset-bottom));

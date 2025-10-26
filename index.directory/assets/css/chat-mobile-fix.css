@@ -1,0 +1,216 @@
+/**
+ * Mobile Keyboard/Input Bar Fix for Chat UI
+ * Handles virtual keyboard behavior on mobile browsers (Chrome, Safari)
+ * Ensures header stays fixed, messages scroll, and input bar moves with keyboard
+ */
+
+/* CSS Custom Properties for dynamic keyboard offset */
+:root {
+  --keyboard-offset: 0px;
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===== Mobile-First Layout Structure ===== */
+/* Ensure the body and html take full viewport without causing page scroll */
+html {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== Chat Root Container ===== */
+/* Full viewport container that holds the entire chat layout */
+.chat-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ===== Fixed Header ===== */
+/* Navigation/header stays at top, never scrolls */
+.navbar.copilot-unified-header,
+.chat-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+/* ===== Scrollable Messages Container ===== */
+/* Messages area becomes independently scrollable */
+.copilot-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding-top: 70px; /* Header height */
+  padding-bottom: calc(100px + var(--keyboard-offset)); /* Input area + keyboard */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.copilot-chat-container {
+  flex: 1;
+  min-height: 0; /* Allow flex shrinking */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0; /* Remove default padding */
+}
+
+.copilot-chat-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 1.5rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+/* ===== Fixed Input Bar ===== */
+/* Input bar fixed at bottom, moves with keyboard via transform */
+.copilot-chat-input-area {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 101;
+  padding: 1rem 1.5rem;
+  padding-bottom: calc(1rem + var(--safe-area-bottom));
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  
+  /* Transform for keyboard offset - smoother than changing bottom */
+  transform: translateY(calc(-1 * var(--keyboard-offset)));
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
+
+.copilot-chat-input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===== Keyboard Visibility Class ===== */
+/* Applied by JS when keyboard is visible */
+body.keyboard-visible {
+  /* Additional adjustments when keyboard is shown */
+}
+
+body.keyboard-visible .copilot-modal-backdrop {
+  padding-bottom: calc(100px + var(--keyboard-offset));
+}
+
+/* ===== Prevent iOS Zoom on Input Focus ===== */
+/* Critical: Input font-size must be 16px or larger to prevent zoom */
+.copilot-chat-input {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ===== Mobile Responsive Adjustments ===== */
+@media (max-width: 768px) {
+  .copilot-modal-backdrop {
+    padding-top: 60px; /* Smaller header on mobile */
+    padding-bottom: calc(80px + var(--keyboard-offset));
+  }
+  
+  .copilot-chat-messages {
+    padding: 1rem;
+  }
+  
+  .copilot-chat-input-area {
+    padding: 0.875rem 1rem;
+    padding-bottom: calc(0.875rem + var(--safe-area-bottom));
+  }
+}
+
+/* ===== Landscape Mode Adjustments ===== */
+@media (max-width: 896px) and (orientation: landscape) {
+  .copilot-modal-backdrop {
+    padding-top: 50px; /* Even smaller header in landscape */
+  }
+  
+  .copilot-chat-messages {
+    padding: 0.75rem 1rem;
+  }
+  
+  .copilot-chat-input-area {
+    padding: 0.5rem 1rem;
+    padding-bottom: calc(0.5rem + var(--safe-area-bottom));
+  }
+}
+
+/* ===== Accessibility - Respect user motion preferences ===== */
+@media (prefers-reduced-motion: reduce) {
+  .copilot-chat-input-area {
+    transition: none;
+  }
+}
+
+/* ===== Safari-specific fixes ===== */
+/* Handle Safari's unique viewport behavior */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari specific styles */
+  .copilot-chat-input-area {
+    /* Use position sticky as fallback for iOS Safari */
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
+
+/* ===== Prevent page bounce on overscroll ===== */
+/* Particularly important for iOS */
+.copilot-modal-backdrop,
+.copilot-chat-container,
+.copilot-chat-messages {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== Focus state improvements ===== */
+.copilot-chat-input:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+/* ===== Performance optimizations ===== */
+.copilot-chat-input-area,
+.copilot-chat-messages,
+.copilot-modal-backdrop {
+  /* Use GPU acceleration for smoother transforms */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+}

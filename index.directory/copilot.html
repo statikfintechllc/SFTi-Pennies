@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/glass-effects.css">
   <link rel="stylesheet" href="assets/css/copilot-page.css">
+  <link rel="stylesheet" href="assets/css/chat-mobile-fix.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="../manifest.json">
@@ -127,10 +128,10 @@
   </div>
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
 
-  <div class="copilot-modal-backdrop" id="copilot-modal">
-    <div class="copilot-chat-container">
+  <div class="copilot-modal-backdrop" id="copilot-modal" data-chat-root>
+    <div class="copilot-chat-container" data-chat-container>
       
-      <div class="copilot-chat-messages" id="chat-messages">
+      <div class="copilot-chat-messages" id="chat-messages" data-chat-messages>
         <div class="copilot-welcome">
           <h3>Welcome to GitHub Copilot</h3>
           <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
@@ -141,13 +142,14 @@
   </div>
   
   <!-- Input bar as sibling element - moves independently with iOS keyboard -->
-  <div class="copilot-chat-input-area">
+  <div class="copilot-chat-input-area" data-chat-input-area>
     <div class="copilot-chat-input-wrapper">
       <textarea 
         class="copilot-chat-input" 
         id="chat-input" 
         placeholder="Ask Copilot anything about trading..." 
         rows="1"
+        data-chat-input
       ></textarea>
       <button class="copilot-send-button" id="send-button">
         <span>Send</span>
@@ -172,6 +174,9 @@
   
   <!-- Firebase Auth -->
   <script src="assets/js/auth.js"></script>
+  
+  <!-- Mobile Keyboard Fix -->
+  <script src="assets/js/mobile-keyboard-fix.js"></script>
   
   <!-- Copilot Chat -->
   <script src="assets/js/copilot-chat.js"></script>
