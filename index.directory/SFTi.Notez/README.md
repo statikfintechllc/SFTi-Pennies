@@ -84,10 +84,6 @@ This directory contains comprehensive trading notes, frameworks, and strategies 
 
 ## 🔗 Related Resources
 
-### See These Strategies in Action:
-- [📊 Week 001 Trades](../SFTi.Tradez/week.001/README.md) - Real examples of framework application
-- [📊 Week 002 Trades](../SFTi.Tradez/week.002/README.md) - Continued practice and refinement
-
 ### Visual Learning:
 - [🎨 7-Step Framework Charts](../.github/assets/sfti.notez.assets/7.step.framework.assets/README.md) - Visual examples of each framework step
 - [🎨 Trade Plan Diagrams](../.github/assets/sfti.notez.assets/trade.plan.assets/README.md) - Strategy visualization
