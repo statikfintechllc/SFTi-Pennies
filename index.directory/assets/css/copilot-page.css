@@ -233,13 +233,15 @@
   margin: 0;
   opacity: 1;
   pointer-events: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* ===== Copilot Chat Container with Glass Effects ===== */
 .copilot-chat-container {
   width: 100%;
   max-width: 900px;
-  height: 100%;
+  min-height: 100%;
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 0.96) 0%,
     rgba(10, 14, 39, 0.98) 100%);
@@ -252,7 +254,6 @@
   flex-direction: column;
   transform: scale(1) translateY(0);
   opacity: 1;
-  overflow: hidden;
   position: relative;
 }
 
@@ -933,30 +934,23 @@
   
   /* Fix iOS Safari keyboard behavior */
   .copilot-modal-backdrop {
-    /* Remove centering on mobile to allow natural keyboard behavior */
+    /* Allow natural scrolling for iOS keyboard */
     padding: 0;
     align-items: stretch;
-    /* Use position fixed but allow content to scroll */
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    width: 100%;
-    /* Use standard viewport height, not dynamic */
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
   }
   
   .copilot-chat-container {
     max-width: 100%;
     width: 100%;
-    /* Use standard viewport height */
-    height: 100vh;
+    min-height: 100vh;
     border-radius: 0;
     border: none;
     margin: 0;
-    /* Keep as flex container */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -966,14 +960,12 @@
     padding: 1rem;
     /* Add padding for fixed unified header on mobile (approx 60px) */
     padding-top: calc(60px + 1rem);
-    /* Add bottom padding for fixed input area (approx 80px) */
-    padding-bottom: calc(80px + 1rem);
+    padding-bottom: 1rem;
     gap: 1rem;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* Allow content to scroll behind keyboard */
     overscroll-behavior: contain;
   }
   
@@ -989,15 +981,10 @@
     flex-shrink: 0;
     background: rgba(0, 0, 0, 0.95);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    /* Use fixed positioning to stick to bottom of viewport */
-    position: fixed;
+    /* Natural flow for iOS keyboard integration */
+    position: sticky;
     bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1001;
-    /* Enable hardware acceleration */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    z-index: 10;
   }
   
   .copilot-send-button {
