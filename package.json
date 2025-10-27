@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/marked": "^5.0.2",
+    "@types/marked": "^6.0.0",
     "esbuild": "^0.25.11",
     "highlight.js": "^11.11.1",
     "marked": "^16.4.1",
