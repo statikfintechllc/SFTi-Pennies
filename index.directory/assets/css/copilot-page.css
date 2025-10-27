@@ -815,10 +815,11 @@
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 /* Input is positioned OUTSIDE the chat container as a sibling element */
 /* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
-/* ===== Input Area Fixed at Bottom using Tailwind ===== */
-/* Position managed by Tailwind: fixed bottom-0 left-0 right-0 z-[101] */
+/* ===== Input Area - Dynamically positioned by JavaScript ===== */
+/* Position managed by JavaScript using Visual Viewport API */
 .copilot-chat-input-area {
-  /* Position now handled by Tailwind classes */
+  /* Tailwind classes: fixed left-0 right-0 z-[101] */
+  /* Bottom position set dynamically by JavaScript */
   max-width: 900px;
   margin: 0 auto;
   padding: 1rem 1.5rem;
@@ -830,8 +831,8 @@
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   width: 100%;
   /* Smooth transition for keyboard adjustments */
-  transition: transform 0.2s ease-out;
-  will-change: transform;
+  transition: bottom 0.2s ease-out;
+  will-change: bottom;
 }
 
 .copilot-chat-input-wrapper {
