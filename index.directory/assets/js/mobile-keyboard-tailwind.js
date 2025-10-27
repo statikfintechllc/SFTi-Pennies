@@ -87,9 +87,6 @@ class MobileChatKeyboard {
     
     // Auto-resize textarea
     this.setupTextareaAutoResize();
-    
-    // Scroll messages to bottom on focus
-    this.setupScrollOnFocus();
   }
   
   /**
@@ -237,20 +234,6 @@ class MobileChatKeyboard {
           this.handleKeyboardChange(this.keyboardHeight);
         }
       }
-    });
-  }
-  
-  /**
-   * Scroll messages to bottom when input is focused
-   */
-  setupScrollOnFocus() {
-    this.inputField.addEventListener('focus', () => {
-      // Wait for keyboard animation to complete before scrolling
-      setTimeout(() => {
-        if (this.messages) {
-          this.messages.scrollTop = this.messages.scrollHeight;
-        }
-      }, MobileChatKeyboard.KEYBOARD_ANIMATION_DELAY);
     });
   }
   
