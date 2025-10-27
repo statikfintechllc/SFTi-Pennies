@@ -109,13 +109,14 @@ class MobileChatKeyboard {
    */
   setupIOSFixes() {
     // Prevent iOS from scrolling when input is tapped
-    // Lock body BEFORE focus event fires
+    // Lock body BEFORE focus event fires - keep viewport at top
     this.inputField.addEventListener('touchstart', () => {
-      this.bodyScrollY = window.scrollY;
+      // Always lock to top (0) to keep header visible
+      this.bodyScrollY = 0;
       
-      // Lock immediately on touch
+      // Lock immediately on touch - viewport stays at top
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${this.bodyScrollY}px`;
+      document.body.style.top = '0';
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       document.body.style.height = '100vh';
@@ -127,14 +128,17 @@ class MobileChatKeyboard {
       document.documentElement.style.height = '100vh';
       document.documentElement.style.position = 'fixed';
       document.documentElement.style.width = '100%';
+      document.documentElement.style.top = '0';
+      document.documentElement.style.left = '0';
     }, { passive: true });
     
-    // When input is focused, ensure lock is in place
+    // When input is focused, ensure lock is in place and viewport at top
     this.inputField.addEventListener('focus', () => {
       if (!this.isKeyboardOpen) {
-        this.bodyScrollY = window.scrollY;
+        // Keep viewport at top
+        this.bodyScrollY = 0;
         document.body.style.position = 'fixed';
-        document.body.style.top = `-${this.bodyScrollY}px`;
+        document.body.style.top = '0';
         document.body.style.width = '100%';
         document.body.style.overflow = 'hidden';
         document.body.style.height = '100vh';
@@ -145,12 +149,19 @@ class MobileChatKeyboard {
         document.documentElement.style.height = '100vh';
         document.documentElement.style.position = 'fixed';
         document.documentElement.style.width = '100%';
+        document.documentElement.style.top = '0';
+        document.documentElement.style.left = '0';
       }
       
       this.isKeyboardOpen = true;
       
-      // Scroll to top of fixed element to ensure input is visible
+      // Force scroll to top to keep header visible
       window.scrollTo(0, 0);
+      
+      // Prevent any programmatic scrolling
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 10);
     });
     
     // When input loses focus, restore body position
@@ -168,8 +179,10 @@ class MobileChatKeyboard {
         document.documentElement.style.height = '';
         document.documentElement.style.position = '';
         document.documentElement.style.width = '';
+        document.documentElement.style.top = '';
+        document.documentElement.style.left = '';
         
-        window.scrollTo(0, this.bodyScrollY);
+        window.scrollTo(0, 0);
         this.isKeyboardOpen = false;
       }
     });
