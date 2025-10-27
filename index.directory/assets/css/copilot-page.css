@@ -848,8 +848,8 @@ body {
   /* No background on container - only on input elements */
   background: transparent;
   
-  /* Smooth transition for keyboard movements */
-  transition: bottom 0.2s ease-out;
+  /* No transition - instant response to keyboard for fluid animation */
+  transition: none;
   
   /* Ensure proper stacking and no extra visual borders */
   transform: translateZ(0);

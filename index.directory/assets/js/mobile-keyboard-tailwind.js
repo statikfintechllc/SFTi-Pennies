@@ -113,18 +113,11 @@ class MobileChatKeyboard {
    */
   setupVisualViewport() {
     const viewport = window.visualViewport;
-    let debounceTimer = null;
     
     const handleViewportChange = () => {
-      // Debounce to prevent glitchy animations during keyboard open
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-      
-      debounceTimer = setTimeout(() => {
-        const keyboardHeight = this.initialHeight - viewport.height;
-        this.handleKeyboardChange(keyboardHeight);
-      }, 50); // 50ms debounce
+      // Immediate response - no debounce for fluid keyboard animation
+      const keyboardHeight = this.initialHeight - viewport.height;
+      this.handleKeyboardChange(keyboardHeight);
     };
     
     viewport.addEventListener('resize', handleViewportChange);
@@ -239,6 +232,17 @@ class MobileChatKeyboard {
       // Force scroll to top to keep header visible
       // Multiple attempts needed due to iOS async keyboard behavior
       this.forceScrollToTop();
+      
+      // Trigger immediate keyboard height check for faster response
+      // This helps on iOS where visualViewport events might be delayed
+      if (window.visualViewport) {
+        setTimeout(() => {
+          const keyboardHeight = this.initialHeight - window.visualViewport.height;
+          if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
+            this.handleKeyboardChange(keyboardHeight);
+          }
+        }, 10);
+      }
     });
     
     // When input loses focus, restore body position
