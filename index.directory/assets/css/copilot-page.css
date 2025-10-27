@@ -853,7 +853,6 @@ body {
   
   /* Ensure proper stacking */
   transform: translateZ(0);
-  will-change: bottom;
 }
 
 .copilot-input {
