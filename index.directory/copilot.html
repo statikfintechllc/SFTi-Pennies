@@ -27,6 +27,18 @@
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  
+  <style>
+    /* Prevent body scroll on mobile when keyboard is open */
+    html, body {
+      max-height: 100vh;
+      position: relative;
+    }
+    
+    body {
+      overflow-x: hidden;
+    }
+  </style>
 </head>
 <body>
 
@@ -128,7 +140,7 @@
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
 
   <!-- Chat Container with Tailwind - Mobile Keyboard Optimized -->
-  <div id="chat-root" class="fixed inset-0 flex flex-col" style="top: 70px; background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1;">
+  <div id="chat-root" class="fixed inset-0 flex flex-col" style="top: 70px; bottom: 0; background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1; max-height: calc(100vh - 70px); overflow: hidden;">
     
     <!-- Messages Container - Independently scrollable -->
     <div id="chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-4" style="-webkit-overflow-scrolling: touch; overscroll-behavior: contain;">

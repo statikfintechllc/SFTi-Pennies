@@ -114,6 +114,13 @@ class MobileChatKeyboard {
       document.body.style.position = 'fixed';
       document.body.style.top = `-${this.bodyScrollY}px`;
       document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+      
+      // Also lock html element
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
+      
       this.isKeyboardOpen = true;
     });
     
@@ -123,6 +130,12 @@ class MobileChatKeyboard {
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+        
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.height = '';
+        
         window.scrollTo(0, this.bodyScrollY);
         this.isKeyboardOpen = false;
       }
