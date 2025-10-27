@@ -13,7 +13,7 @@
 /* ===== Mobile-First Layout Structure ===== */
 /* Ensure the body and html take full viewport without causing page scroll */
 /* Only apply on copilot.html page to avoid interfering with other pages */
-body:has(.copilot-modal-backdrop) html,
+html:has(.copilot-modal-backdrop),
 body:has(.copilot-modal-backdrop) {
   position: fixed;
   width: 100%;
@@ -169,6 +169,8 @@ body.keyboard-visible .copilot-modal-backdrop {
 /* Handle Safari's unique viewport behavior */
 /* Note: Using position: fixed with transform for iOS compatibility */
 /* Sticky positioning is not used as it conflicts with keyboard offset transforms */
+/* Safari's viewport behavior with sticky elements causes layout jumps when the keyboard appears */
+/* The fixed + transform approach provides smoother animations and better control over positioning */
 
 /* ===== Prevent page bounce on overscroll ===== */
 /* Particularly important for iOS */
