@@ -1,7 +1,12 @@
-/**
- * Copilot Page Styles for SFTi-Pennies
- * Glass effects and chat interface styles specifically for copilot.html
- * iOS 26-inspired design with enhanced glassmorphism
+/* ===== Z-INDEX HIERARCHY (CONSOLIDATED) ===== */
+/*
+ * Clear z-index hierarchy to prevent conflicts:
+ * - Input bar: 10000 (highest - always on top)
+ * - Dropdowns/modals: 2001
+ * - Sidebar: 2000
+ * - Overlay: 1999
+ * - Header: 500
+ * - Chat root: 1
  */
 
 body {
@@ -21,7 +26,7 @@ body {
   flex-shrink: 0;
   width: 100%;
   height: 70px;
-  z-index: 100;
+  z-index: 500; /* Below input bar, above content */
   background: linear-gradient(135deg,
     rgba(168, 85, 247, 0.15) 0%,
     rgba(124, 58, 237, 0.08) 100%);
@@ -825,12 +830,12 @@ body {
 /* All positioning, layout, and styling in one consolidated section */
 
 .copilot-input-bar {
-  /* Positioning */
+  /* Positioning - HIGHEST z-index to always float on top */
   position: fixed;
   bottom: 0.5rem;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 10000; /* Highest - always on top of everything */
   
   /* Layout */
   display: flex;

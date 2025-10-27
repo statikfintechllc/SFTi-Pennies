@@ -17,13 +17,13 @@ class MobileChatKeyboard {
   // Constants
   static KEYBOARD_THRESHOLD = 150; // Minimum keyboard height to detect keyboard open (in pixels)
   static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
-  static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches Tailwind max-h-[150px])
+  static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches CSS max-height)
   
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
     this.messages = document.getElementById('chat-messages');
-    this.input = document.getElementById('chat-input');
-    this.inputField = document.getElementById('chat-input-field');
+    this.input = document.getElementById('chat-input'); // Updated: now references .copilot-input-bar
+    this.inputField = document.getElementById('chat-input-field'); // Updated: now references .copilot-input
     
     if (!this.root || !this.messages || !this.input || !this.inputField) {
       console.warn('MobileChatKeyboard: Required elements not found');
