@@ -1,10 +1,12 @@
 /* ===== Z-INDEX HIERARCHY (CONSOLIDATED) ===== */
 /*
  * Clear z-index hierarchy to prevent conflicts:
- * - Input bar: 10000 (highest - always on top)
+ * - Sidebar (active): 10001 (highest when open - covers everything)
+ * - Overlay (active): 10000 (covers input bar when sidebar open)
+ * - Input bar: 10000 (highest in normal state)
  * - Dropdowns/modals: 2001
- * - Sidebar: 2000
- * - Overlay: 1999
+ * - Sidebar (inactive): 2000
+ * - Overlay (inactive): 1999
  * - Header: 500
  * - Chat root: 1
  */
@@ -123,6 +125,7 @@ body {
 
 .copilot-nav-sidebar.active {
   left: 0;
+  z-index: 10001; /* Higher than input bar (10000) when active */
 }
 
 .copilot-nav-header {
@@ -228,6 +231,7 @@ body {
 .copilot-nav-overlay.active {
   opacity: 1;
   pointer-events: auto;
+  z-index: 10000; /* Same as input bar when active, but below sidebar */
 }
 
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
