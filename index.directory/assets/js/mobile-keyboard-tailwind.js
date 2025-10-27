@@ -108,20 +108,49 @@ class MobileChatKeyboard {
    * iOS-specific fixes to prevent body scroll jump
    */
   setupIOSFixes() {
-    // When input is focused, lock the body position
-    this.inputField.addEventListener('focus', () => {
+    // Prevent iOS from scrolling when input is tapped
+    // Lock body BEFORE focus event fires
+    this.inputField.addEventListener('touchstart', () => {
       this.bodyScrollY = window.scrollY;
+      
+      // Lock immediately on touch
       document.body.style.position = 'fixed';
       document.body.style.top = `-${this.bodyScrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100%';
+      document.body.style.height = '100vh';
+      document.body.style.left = '0';
+      document.body.style.right = '0';
       
       // Also lock html element
       document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100%';
+      document.documentElement.style.height = '100vh';
+      document.documentElement.style.position = 'fixed';
+      document.documentElement.style.width = '100%';
+    }, { passive: true });
+    
+    // When input is focused, ensure lock is in place
+    this.inputField.addEventListener('focus', () => {
+      if (!this.isKeyboardOpen) {
+        this.bodyScrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${this.bodyScrollY}px`;
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+        document.body.style.height = '100vh';
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        
+        document.documentElement.style.overflow = 'hidden';
+        document.documentElement.style.height = '100vh';
+        document.documentElement.style.position = 'fixed';
+        document.documentElement.style.width = '100%';
+      }
       
       this.isKeyboardOpen = true;
+      
+      // Scroll to top of fixed element to ensure input is visible
+      window.scrollTo(0, 0);
     });
     
     // When input loses focus, restore body position
@@ -132,9 +161,13 @@ class MobileChatKeyboard {
         document.body.style.width = '';
         document.body.style.overflow = '';
         document.body.style.height = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
         
         document.documentElement.style.overflow = '';
         document.documentElement.style.height = '';
+        document.documentElement.style.position = '';
+        document.documentElement.style.width = '';
         
         window.scrollTo(0, this.bodyScrollY);
         this.isKeyboardOpen = false;

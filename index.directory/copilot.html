@@ -33,10 +33,23 @@
     html, body {
       max-height: 100vh;
       position: relative;
+      margin: 0;
+      padding: 0;
     }
     
     body {
       overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    /* Ensure chat-root doesn't cause scroll */
+    #chat-root {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(100vh - 70px);
     }
   </style>
 </head>
@@ -140,7 +153,7 @@
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
 
   <!-- Chat Container with Tailwind - Mobile Keyboard Optimized -->
-  <div id="chat-root" class="fixed inset-0 flex flex-col" style="top: 70px; bottom: 0; background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1; max-height: calc(100vh - 70px); overflow: hidden;">
+  <div id="chat-root" class="flex flex-col" style="background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1; overflow: hidden;">
     
     <!-- Messages Container - Independently scrollable -->
     <div id="chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-4" style="-webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
