@@ -13,28 +13,28 @@ import shutil
 def main():
     """Main execution function"""
     print("Generating master trade index...")
-    
+
     # Check if trades-index.json exists
-    if not os.path.exists('index.directory/trades-index.json'):
+    if not os.path.exists("index.directory/trades-index.json"):
         print("Warning: index.directory/trades-index.json not found")
         print("This file should be created by parse_trades.py")
         return
-    
+
     # Load the index
-    with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
+    with open("index.directory/trades-index.json", "r", encoding="utf-8") as f:
         index_data = json.load(f)
-    
-    trades = index_data.get('trades', [])
-    stats = index_data.get('statistics', {})
-    
+
+    trades = index_data.get("trades", [])
+    stats = index_data.get("statistics", {})
+
     print(f"Master index contains {len(trades)} trade(s)")
     print(f"Total P&L: ${stats.get('total_pnl', 0)}")
     print(f"Win Rate: {stats.get('win_rate', 0)}%")
-    
+
     # Ensure the file is in place for GitHub Pages
     # (it's already at index.directory/, which is correct)
     print("Master index is ready at index.directory/trades-index.json")
-    
+
     # Create a simple trade list HTML for easy browsing (optional)
     create_trade_list_html(trades)
 
@@ -42,29 +42,30 @@ def main():
 def create_trade_list_html(trades):
     """
     Create a simple HTML page listing all trades
-    
+
     Args:
         trades (list): List of trade dictionaries
     """
     if not trades:
         return
-    
+
     # Sort by trade number
-    sorted_trades = sorted(trades, key=lambda t: t.get('trade_number', 0), reverse=True)
-    
+    sorted_trades = sorted(trades, key=lambda t: t.get("trade_number", 0), reverse=True)
+
     # Generate table rows
     rows = []
     for trade in sorted_trades:
-        pnl = trade.get('pnl_usd', 0)
-        pnl_class = 'positive' if pnl >= 0 else 'negative'
-        pnl_sign = '+' if pnl >= 0 else ''
-        
+        pnl = trade.get("pnl_usd", 0)
+        pnl_class = "positive" if pnl >= 0 else "negative"
+        pnl_sign = "+" if pnl >= 0 else ""
+
         # Generate trade page link
-        trade_number = trade.get('trade_number', 0)
-        ticker = trade.get('ticker', 'UNKNOWN')
+        trade_number = trade.get("trade_number", 0)
+        ticker = trade.get("ticker", "UNKNOWN")
         trade_link = f"trades/trade-{trade_number:03d}-{ticker}.html"
-        
-        rows.append(f"""
+
+        rows.append(
+            f"""
         <tr style="cursor: pointer;" onclick="window.location.href='{trade_link}'">
             <td><a href="{trade_link}" style="color: inherit; text-decoration: none;">#{trade.get('trade_number', 'N/A')}</a></td>
             <td><a href="{trade_link}" style="color: inherit; text-decoration: none;"><strong>{trade.get('ticker', 'N/A')}</strong></a></td>
@@ -76,8 +77,9 @@ def create_trade_list_html(trades):
             <td>{trade.get('entry_date', 'N/A')}</td>
             <td>{trade.get('strategy', 'N/A')}</td>
         </tr>
-        """)
-    
+        """
+        )
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -244,12 +246,12 @@ def create_trade_list_html(trades):
 </body>
 </html>
 """
-    
-    with open('index.directory/all-trades.html', 'w', encoding='utf-8') as f:
+
+    with open("index.directory/all-trades.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    
+
     print("Trade list HTML created at index.directory/all-trades.html")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

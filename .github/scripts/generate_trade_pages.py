@@ -22,7 +22,7 @@ from datetime import datetime
 def load_trades_index():
     """Load the trades index JSON file"""
     try:
-        with open('index.directory/trades-index.json', 'r', encoding='utf-8') as f:
+        with open("index.directory/trades-index.json", "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
         print("Error: index.directory/trades-index.json not found")
@@ -32,47 +32,47 @@ def load_trades_index():
 def generate_trade_html(trade):
     """
     Generate HTML for a single trade detail page with full details
-    
+
     Args:
         trade (dict): Trade dictionary
-        
+
     Returns:
         str: HTML content
     """
     # Extract trade data
-    trade_number = trade.get('trade_number', 0)
-    ticker = trade.get('ticker', 'UNKNOWN')
-    entry_date = trade.get('entry_date', '')
-    entry_time = trade.get('entry_time', '')
-    exit_date = trade.get('exit_date', '')
-    exit_time = trade.get('exit_time', '')
-    entry_price = trade.get('entry_price', 0)
-    exit_price = trade.get('exit_price', 0)
-    position_size = trade.get('position_size', 0)
-    pnl_usd = trade.get('pnl_usd', 0)
-    pnl_percent = trade.get('pnl_percent', 0)
-    direction = trade.get('direction', 'LONG')
-    strategy = trade.get('strategy', 'Unknown')
-    stop_loss = trade.get('stop_loss', 0)
-    target_price = trade.get('target_price', 0)
-    risk_reward_ratio = trade.get('risk_reward_ratio', 0)
-    broker = trade.get('broker', 'Unknown')
-    notes = trade.get('notes', 'No notes recorded.')
-    
+    trade_number = trade.get("trade_number", 0)
+    ticker = trade.get("ticker", "UNKNOWN")
+    entry_date = trade.get("entry_date", "")
+    entry_time = trade.get("entry_time", "")
+    exit_date = trade.get("exit_date", "")
+    exit_time = trade.get("exit_time", "")
+    entry_price = trade.get("entry_price", 0)
+    exit_price = trade.get("exit_price", 0)
+    position_size = trade.get("position_size", 0)
+    pnl_usd = trade.get("pnl_usd", 0)
+    pnl_percent = trade.get("pnl_percent", 0)
+    direction = trade.get("direction", "LONG")
+    strategy = trade.get("strategy", "Unknown")
+    stop_loss = trade.get("stop_loss", 0)
+    target_price = trade.get("target_price", 0)
+    risk_reward_ratio = trade.get("risk_reward_ratio", 0)
+    broker = trade.get("broker", "Unknown")
+    notes = trade.get("notes", "No notes recorded.")
+
     # Get tags (v1.1 schema)
-    strategy_tags = trade.get('strategy_tags', [])
-    setup_tags = trade.get('setup_tags', [])
-    session_tags = trade.get('session_tags', [])
-    market_condition_tags = trade.get('market_condition_tags', [])
-    
+    strategy_tags = trade.get("strategy_tags", [])
+    setup_tags = trade.get("setup_tags", [])
+    session_tags = trade.get("session_tags", [])
+    market_condition_tags = trade.get("market_condition_tags", [])
+
     # Get images
-    images = trade.get('images', [])
-    screenshots = trade.get('screenshots', [])
+    images = trade.get("images", [])
+    screenshots = trade.get("screenshots", [])
     if not images and screenshots:
         images = screenshots if isinstance(screenshots, list) else []
-    
+
     # Calculate additional metrics
-    time_in_trade = ''
+    time_in_trade = ""
     if entry_date and exit_date and entry_time and exit_time:
         try:
             entry_dt = datetime.strptime(f"{entry_date} {entry_time}", "%Y-%m-%d %H:%M")
@@ -85,48 +85,52 @@ def generate_trade_html(trade):
                 time_in_trade = f"{hours:.1f} hours"
         except:
             time_in_trade = "Unknown"
-    
+
     # Generate tag badges HTML
     def render_tags(tags, color):
         if not tags:
             return '<span style="color: var(--text-secondary); font-style: italic;">None</span>'
         badges = []
         for tag in tags:
-            badges.append(f'<span style="display: inline-block; padding: 0.25rem 0.75rem; background: {color}; color: white; border-radius: 4px; font-size: 0.875rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">{tag}</span>')
-        return ''.join(badges)
-    
+            badges.append(
+                f'<span style="display: inline-block; padding: 0.25rem 0.75rem; background: {color}; color: white; border-radius: 4px; font-size: 0.875rem; margin-right: 0.5rem; margin-bottom: 0.5rem;">{tag}</span>'
+            )
+        return "".join(badges)
+
     # Generate image gallery HTML
-    gallery_html = ''
+    gallery_html = ""
     if images and len(images) > 0:
         gallery_items = []
         for idx, img in enumerate(images):
-            if img and img != 'None' and img.strip():
+            if img and img != "None" and img.strip():
                 # Adjust path: images come as ../../assets/... from markdown files
                 # From trades/ directory, we need ../assets/...
-                img_path = img.replace('../../assets/', '../assets/')
-                gallery_items.append(f'''
+                img_path = img.replace("../../assets/", "../assets/")
+                gallery_items.append(
+                    f"""
                 <a href="{img_path}" class="glightbox" data-gallery="trade-{trade_number}">
                     <img src="{img_path}" alt="Trade screenshot {idx+1}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color); transition: all 0.3s;">
                 </a>
-                ''')
-        
+                """
+                )
+
         if gallery_items:
-            gallery_html = f'''
+            gallery_html = f"""
             <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
                 <h2 style="margin-bottom: 1rem;">📸 Screenshots</h2>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
                     {''.join(gallery_items)}
                 </div>
             </div>
-            '''
+            """
         else:
-            gallery_html = '''
+            gallery_html = """
             <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
                 <h2 style="margin-bottom: 1rem;">📸 Screenshots</h2>
                 <p style="color: var(--text-secondary); margin: 0;">No screenshots available for this trade.</p>
             </div>
-            '''
-    
+            """
+
     # Generate full HTML template
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -392,50 +396,50 @@ def generate_trade_html(trade):
 </body>
 </html>
 """
-    
+
     return html
 
 
 def main():
     """Main execution function"""
     print("Generating trade detail pages...")
-    
+
     # Load trades
     index_data = load_trades_index()
     if not index_data:
         return
-    
-    trades = index_data.get('trades', [])
+
+    trades = index_data.get("trades", [])
     if not trades:
         print("No trades found")
         return
-    
+
     print(f"Processing {len(trades)} trade(s)...")
-    
+
     # Create output directory
-    output_dir = Path('index.directory/trades')
+    output_dir = Path("index.directory/trades")
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Generate pages
     for trade in trades:
-        trade_number = trade.get('trade_number', 0)
-        ticker = trade.get('ticker', 'UNKNOWN')
-        
+        trade_number = trade.get("trade_number", 0)
+        ticker = trade.get("ticker", "UNKNOWN")
+
         # Generate HTML
         html_content = generate_trade_html(trade)
-        
+
         # Write file
         filename = f"trade-{trade_number:03d}-{ticker}.html"
         filepath = output_dir / filename
-        
-        with open(filepath, 'w', encoding='utf-8') as f:
+
+        with open(filepath, "w", encoding="utf-8") as f:
             f.write(html_content)
-        
+
         print(f"Generated: {filepath}")
-    
+
     print(f"\n✓ Generated {len(trades)} trade detail page(s)")
     print(f"Output directory: {output_dir}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
