@@ -832,19 +832,30 @@ body {
 .copilot-input-bar {
   /* Positioning - HIGHEST z-index to always float on top */
   position: fixed;
-  bottom: 0.5rem;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 10000; /* Highest - always on top of everything */
   
   /* Layout */
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 0.5rem;
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.75rem 1rem;
-  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  padding: 0.5rem 1rem;
+  
+  /* No background on container - only on input elements */
+  background: transparent;
+  
+  /* Smooth transition for keyboard movements */
+  transition: bottom 0.2s ease-out;
+  
+  /* Ensure proper stacking and no extra visual borders */
+  transform: translateZ(0);
+  border: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .copilot-input {
@@ -854,7 +865,9 @@ body {
   max-height: 150px;
   
   /* Appearance */
-  background: transparent;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   color: white;
@@ -876,7 +889,7 @@ body {
 
 .copilot-input:focus {
   border-color: rgba(168, 85, 247, 0.6);
-  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.3);
 }
 
 .copilot-send {
@@ -885,7 +898,9 @@ body {
   flex-shrink: 0;
   
   /* Appearance */
-  background: transparent;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(168, 85, 247, 0.5);
   border-radius: 24px;
   color: rgb(168, 85, 247);
@@ -932,7 +947,6 @@ body {
 @media (max-width: 768px) {
   .copilot-input-bar {
     padding: 0.5rem 0.75rem;
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
   }
   
   .copilot-input {
