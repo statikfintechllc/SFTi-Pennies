@@ -71,34 +71,6 @@ class MobileChatKeyboard {
            this.input.hasAttribute('data-keyboard-open');
   }
   
-  /**
-   * Aggressively scroll to top to keep viewport pinned at header
-   * iOS requires multiple scroll attempts due to async keyboard behavior
-   * This method schedules scroll attempts at strategic intervals during keyboard animation
-   */
-  forceScrollToTop() {
-    // Immediate scroll
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
-    
-    // Early keyboard animation (10ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    }, 10);
-    
-    // Mid keyboard animation (50ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    }, 50);
-    
-    // Late keyboard animation (100ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
-  }
-  
   init() {
     // Use VisualViewport API if available (modern browsers)
     if (window.visualViewport) {
@@ -187,99 +159,19 @@ class MobileChatKeyboard {
    * iOS-specific fixes to prevent body scroll jump
    */
   setupIOSFixes() {
-    // Prevent iOS from scrolling when input is tapped
-    // Lock body BEFORE focus event fires - keep viewport at top
-    this.inputField.addEventListener('touchstart', (e) => {
-      // Store scroll position but always reset to 0
-      const currentScroll = window.scrollY;
-      if (currentScroll > 0) {
-        window.scrollTo(0, 0);
-      }
-      
-      // Always lock to top (0) to keep header visible
-      this.bodyScrollY = 0;
-      
-      // Lock immediately on touch - viewport stays at top
-      document.body.style.position = 'fixed';
-      document.body.style.top = '0';
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      
-      // Also lock html element
-      document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100vh';
-      document.documentElement.style.position = 'fixed';
-      document.documentElement.style.width = '100%';
-      document.documentElement.style.top = '0';
-      document.documentElement.style.left = '0';
-    }, { passive: true });
-    
     // Prevent scroll on touchmove while typing
     this.inputField.addEventListener('touchmove', (e) => {
       e.stopPropagation();
     }, { passive: true });
     
-    // When input is focused, ensure lock is in place and viewport at top
+    // When input is focused, mark keyboard as open
     this.inputField.addEventListener('focus', (e) => {
-      // Prevent default scroll behavior
-      if (e.preventDefault) {
-        try {
-          e.preventDefault();
-        } catch (err) {
-          // Some browsers don't allow preventDefault on focus
-        }
-      }
-      
-      if (!this.isKeyboardOpen) {
-        // Keep viewport at top
-        this.bodyScrollY = 0;
-        document.body.style.position = 'fixed';
-        document.body.style.top = '0';
-        document.body.style.width = '100%';
-        document.body.style.overflow = 'hidden';
-        document.body.style.height = '100vh';
-        document.body.style.left = '0';
-        document.body.style.right = '0';
-        
-        document.documentElement.style.overflow = 'hidden';
-        document.documentElement.style.height = '100vh';
-        document.documentElement.style.position = 'fixed';
-        document.documentElement.style.width = '100%';
-        document.documentElement.style.top = '0';
-        document.documentElement.style.left = '0';
-      }
-      
       this.isKeyboardOpen = true;
-      
-      // Force scroll to top to keep header visible
-      // Multiple attempts needed due to iOS async keyboard behavior
-      this.forceScrollToTop();
     });
     
-    // When input loses focus, restore body position
+    // When input loses focus, mark keyboard as closed
     this.inputField.addEventListener('blur', () => {
-      if (this.isKeyboardOpen) {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        document.body.style.height = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.height = '';
-        document.documentElement.style.position = '';
-        document.documentElement.style.width = '';
-        document.documentElement.style.top = '';
-        document.documentElement.style.left = '';
-        
-        window.scrollTo(0, 0);
-        this.isKeyboardOpen = false;
-      }
+      this.isKeyboardOpen = false;
     });
   }
   
