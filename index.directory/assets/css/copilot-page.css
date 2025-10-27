@@ -832,19 +832,18 @@ body {
 .copilot-input-bar {
   /* Positioning - HIGHEST z-index to always float on top */
   position: fixed;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0);
   left: 0;
   right: 0;
   z-index: 10000; /* Highest - always on top of everything */
   
-  /* Layout */
+  /* Layout - minimal padding */
   display: flex;
   align-items: center;
   gap: 0.5rem;
   max-width: 900px;
   margin: 0 auto;
-  padding: 0.5rem 1rem;
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  padding: 0.25rem 0.75rem;
   
   /* No background on container - only on input elements */
   background: transparent;
@@ -944,8 +943,7 @@ body {
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .copilot-input-bar {
-    padding: 0.5rem 0.75rem;
-    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    padding: 0.25rem 0.5rem;
   }
   
   .copilot-input {
