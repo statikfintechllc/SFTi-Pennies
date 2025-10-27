@@ -19,6 +19,7 @@ class MobileChatKeyboard {
   static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
   static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches CSS max-height)
   static BOTTOM_SPACING_BUFFER = 20; // Extra padding buffer for message content above input bar (in pixels)
+  static SCREENSHOT_THRESHOLD = 50; // Maximum viewport height change to consider as screenshot/system event (in pixels)
   
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
@@ -113,10 +114,25 @@ class MobileChatKeyboard {
    */
   setupVisualViewport() {
     const viewport = window.visualViewport;
+    let lastHeight = viewport.height;
     
     const handleViewportChange = () => {
+      const currentHeight = viewport.height;
+      const heightDiff = Math.abs(currentHeight - lastHeight);
+      
+      // If height change is small (< SCREENSHOT_THRESHOLD), it's likely a screenshot or system event
+      // Preserve the input bar position if keyboard is marked as open
+      if (heightDiff < MobileChatKeyboard.SCREENSHOT_THRESHOLD && 
+          this.input.hasAttribute('data-keyboard-open')) {
+        lastHeight = currentHeight; // Update tracking even when preserving position
+        return; // Keep current position - don't reset
+      }
+      
+      // Update last height and process keyboard change
+      lastHeight = currentHeight;
+      
       // Immediate response - no debounce to ensure input bar moves with keyboard
-      const keyboardHeight = this.initialHeight - viewport.height;
+      const keyboardHeight = this.initialHeight - currentHeight;
       this.handleKeyboardChange(keyboardHeight);
     };
     
@@ -256,26 +272,6 @@ class MobileChatKeyboard {
         this.isKeyboardOpen = false;
       }
     });
-    
-    // Handle viewport changes from screenshots or other system events
-    // Preserve input bar position if keyboard is still open
-    if (window.visualViewport) {
-      let lastHeight = window.visualViewport.height;
-      
-      window.visualViewport.addEventListener('resize', () => {
-        const currentHeight = window.visualViewport.height;
-        const heightDiff = Math.abs(currentHeight - lastHeight);
-        
-        // If height change is small (< 50px), it's likely a screenshot or system event
-        // Preserve the input bar position if keyboard is marked as open
-        if (heightDiff < 50 && this.input.hasAttribute('data-keyboard-open')) {
-          // Keep the current bottom position - don't reset
-          return;
-        }
-        
-        lastHeight = currentHeight;
-      });
-    }
   }
   
   /**
