@@ -256,7 +256,10 @@ class MobileChatKeyboard {
       this.inputField.style.height = 'auto';
       
       // Set height to scrollHeight, with max constraint
-      const maxHeight = 150; // max-h-[150px] in Tailwind
+      // Get max-height from computed style (matches Tailwind class)
+      const computedMaxHeight = window.getComputedStyle(this.inputField).maxHeight;
+      // Parse value (e.g., "150px" => 150)
+      const maxHeight = computedMaxHeight.endsWith('px') ? parseInt(computedMaxHeight, 10) : 150;
       const newHeight = Math.min(this.inputField.scrollHeight, maxHeight);
       this.inputField.style.height = `${newHeight}px`;
       
