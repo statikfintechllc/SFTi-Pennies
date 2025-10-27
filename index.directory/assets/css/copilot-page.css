@@ -2,23 +2,17 @@
  * Copilot Page Styles for SFTi-Pennies
  * Glass effects and chat interface styles specifically for copilot.html
  * iOS 26-inspired design with enhanced glassmorphism
+ * Note: Layout now uses Tailwind utility classes for mobile keyboard handling
  */
 
-body {
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-  width: 100%;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-  /* Removed by chat-mobile-fix.css for better mobile keyboard handling */
-}
+/* Body styles removed - now using Tailwind classes: fixed inset-0 overflow-hidden */
 
 /* ===== Unified Navigation & Copilot Header ===== */
 .navbar.copilot-unified-header {
-  position: sticky;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   flex-shrink: 0;
   width: 100%;
   height: 70px;
@@ -227,12 +221,10 @@ body {
 }
 
 /* ===== Copilot Page Backdrop (Full Page View) ===== */
+/* ===== Copilot Page Backdrop (Full Page View) ===== */
+/* Layout now managed by Tailwind classes for mobile keyboard handling */
 .copilot-modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  /* Position managed by Tailwind: flex-1 overflow-hidden */
   width: 100%;
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 1) 0%,
@@ -241,18 +233,15 @@ body {
   display: flex;
   align-items: stretch;
   justify-content: center;
-  padding: 0;
   margin: 0;
   opacity: 1;
   pointer-events: auto;
-  overflow: hidden;
-  /* Mobile keyboard handling: padding adjusted by chat-mobile-fix.css */
 }
 
 /* ===== Copilot Chat Container with Glass Effects ===== */
 .copilot-chat-container {
   width: 100%;
-  height: 100%;
+  /* Height managed by Tailwind: h-full */
   background: linear-gradient(135deg,
     rgba(15, 20, 41, 0.96) 0%,
     rgba(10, 14, 39, 0.98) 100%);
@@ -264,10 +253,9 @@ body {
   transform: scale(1) translateY(0);
   opacity: 1;
   position: relative;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  /* Mobile keyboard handling: padding removed, managed by chat-mobile-fix.css */
+  /* Padding removed - messages container handles its own spacing */
 }
 
 /* Glass reflection effect on top */
@@ -565,16 +553,16 @@ body {
   stroke: currentColor;
 }
 
+/* ===== Chat Messages Area with Glass Scrollbar ===== */
 /* ===== Messages Area with Internal Scrolling ===== */
+/* ===== Messages Area with Internal Scrolling ===== */
+/* Layout now managed by Tailwind: h-full overflow-y-auto pb-[120px] */
 .copilot-chat-messages {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* Flex and overflow managed by Tailwind */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding: 1.5rem;
-  /* Mobile keyboard handling: padding-top removed, managed by chat-mobile-fix.css */
+  /* padding-top removed - no longer needed with fixed layout */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -825,10 +813,10 @@ body {
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 /* Input is positioned OUTSIDE the chat container as a sibling element */
 /* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
-/* Mobile keyboard handling: Layout managed by chat-mobile-fix.css for better keyboard behavior */
+/* ===== Input Area Fixed at Bottom using Tailwind ===== */
+/* Position managed by Tailwind: fixed bottom-0 left-0 right-0 z-[101] */
 .copilot-chat-input-area {
-  /* Base styles - positioning handled by chat-mobile-fix.css */
-  z-index: 100;
+  /* Position now handled by Tailwind classes */
   max-width: 900px;
   margin: 0 auto;
   padding: 1rem 1.5rem;
@@ -856,7 +844,7 @@ body {
   border-radius: 24px;
   padding: 0.875rem 1.25rem;
   color: var(--text-primary);
-  font-size: 16px;
+  /* Font size set to 16px to prevent iOS zoom - also set via Tailwind */
   font-family: var(--font-sans);
   resize: none;
   min-height: 48px;
@@ -942,13 +930,13 @@ body {
     gap: 0.5rem;
   }
   
-  /* Messages area adjusted for mobile - padding managed by chat-mobile-fix.css */
+  /* Messages area adjusted for mobile */
   .copilot-chat-messages {
     padding: 1rem;
+    /* padding-top removed - managed by Tailwind pt-[70px] on parent */
     gap: 1rem;
   }
   
-  /* Input area adjusted for mobile - positioning managed by chat-mobile-fix.css */
   .copilot-chat-input-area {
     padding: 0.875rem 1rem;
     padding-bottom: max(0.875rem, env(safe-area-inset-bottom));

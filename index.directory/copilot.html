@@ -20,7 +20,6 @@
   <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/glass-effects.css">
   <link rel="stylesheet" href="assets/css/copilot-page.css">
-  <link rel="stylesheet" href="assets/css/chat-mobile-fix.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="../manifest.json">
@@ -29,9 +28,9 @@
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
 </head>
-<body>
+<body class="fixed inset-0 overflow-hidden">
 
-  <canvas id="bg-canvas"></canvas>
+  <canvas id="bg-canvas" class="fixed inset-0"></canvas>
   
   <!-- Unified Navigation & Copilot Header Bar -->
   <nav class="navbar copilot-unified-header">
@@ -128,35 +127,36 @@
   </div>
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
 
-  <div class="copilot-modal-backdrop" id="copilot-modal" data-chat-root>
-    <div class="copilot-chat-container" data-chat-container>
-      
-      <div class="copilot-chat-messages" id="chat-messages" data-chat-messages>
-        <div class="copilot-welcome">
-          <h3>Welcome to GitHub Copilot</h3>
-          <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
+  <!-- Main chat container with fixed layout -->
+  <div class="fixed inset-0 pt-[70px] pb-0 flex flex-col">
+    <!-- Messages area - scrollable -->
+    <div class="copilot-modal-backdrop flex-1 overflow-hidden" id="copilot-modal">
+      <div class="copilot-chat-container h-full">
+        <div class="copilot-chat-messages h-full overflow-y-auto pb-[120px]" id="chat-messages">
+          <div class="copilot-welcome">
+            <h3>Welcome to GitHub Copilot</h3>
+            <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
+          </div>
         </div>
       </div>
-      
     </div>
-  </div>
-  
-  <!-- Input bar as sibling element - moves independently with iOS keyboard -->
-  <div class="copilot-chat-input-area" data-chat-input-area>
-    <div class="copilot-chat-input-wrapper">
-      <textarea 
-        class="copilot-chat-input" 
-        id="chat-input" 
-        placeholder="Ask Copilot anything about trading..." 
-        rows="1"
-        data-chat-input
-      ></textarea>
-      <button class="copilot-send-button" id="send-button">
-        <span>Send</span>
-        <svg viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-        </svg>
-      </button>
+    
+    <!-- Input bar - fixed at bottom using Tailwind -->
+    <div class="fixed bottom-0 left-0 right-0 z-[101] copilot-chat-input-area">
+      <div class="copilot-chat-input-wrapper">
+        <textarea 
+          class="copilot-chat-input text-base" 
+          id="chat-input" 
+          placeholder="Ask Copilot anything about trading..." 
+          rows="1"
+        ></textarea>
+        <button class="copilot-send-button" id="send-button">
+          <span>Send</span>
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
   
@@ -174,9 +174,6 @@
   
   <!-- Firebase Auth -->
   <script src="assets/js/auth.js"></script>
-  
-  <!-- Mobile Keyboard Fix -->
-  <script src="assets/js/mobile-keyboard-fix.js"></script>
   
   <!-- Copilot Chat -->
   <script src="assets/js/copilot-chat.js"></script>
