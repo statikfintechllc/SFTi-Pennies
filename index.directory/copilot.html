@@ -29,6 +29,19 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   
   <style>
+    /* Prevent body scroll on mobile when keyboard is open */
+    html, body {
+      max-height: 100vh;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
     /* Ensure chat-root doesn't cause scroll */
     #chat-root {
       position: fixed;
@@ -38,7 +51,11 @@
       bottom: 0;
       height: calc(100vh - 70px);
       z-index: 1; /* Keep below input bar which is z-index: 10000 */
-      overflow: hidden; /* Prevent container from causing scroll */
+    }
+    
+    /* Hide footer on copilot page since chat takes full screen */
+    .footer {
+      display: none;
     }
   </style>
 </head>
