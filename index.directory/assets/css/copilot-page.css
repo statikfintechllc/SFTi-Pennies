@@ -824,6 +824,113 @@ body {
 /* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
 /* Input is positioned OUTSIDE the chat container as a sibling element */
 /* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
+
+/* Input container - free-floating at bottom with margin to keep it visible */
+.copilot-input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin-bottom: 2rem; /* Move input bar UP from bottom */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.copilot-input-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+
+.copilot-input-group {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/* Textarea - transparent/free-floating with no background */
+.copilot-textarea {
+  flex: 1;
+  background: transparent; /* No background */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 0.5rem 1rem;
+  color: white;
+  font-size: 16px; /* Prevents iOS auto-zoom */
+  font-family: var(--font-sans);
+  resize: none;
+  min-height: 24px; /* Half of original 48px */
+  max-height: 150px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.copilot-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.copilot-textarea:focus {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+}
+
+/* Send button - transparent/free-floating with no background */
+.copilot-send-btn {
+  padding: 0.5rem 1.5rem; /* Half of original padding */
+  background: transparent; /* No background */
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: 24px;
+  color: rgb(168, 85, 247);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.copilot-send-btn:hover:not(:disabled) {
+  border-color: rgb(168, 85, 247);
+  color: white;
+  background: rgba(168, 85, 247, 0.1);
+  transform: translateY(-1px);
+}
+
+.copilot-send-btn:active:not(:disabled) {
+  transform: translateY(0);
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.copilot-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.copilot-send-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .copilot-input-container {
+    margin-bottom: 1.5rem; /* Slightly less margin on mobile */
+  }
+  
+  .copilot-input-wrapper {
+    padding: 0.75rem 1rem;
+  }
+  
+  .copilot-textarea {
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+}
+
+/* Legacy class compatibility - keep for existing references */
 .copilot-chat-input-area {
   position: relative;
   bottom: 0;
