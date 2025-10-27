@@ -113,10 +113,18 @@ class MobileChatKeyboard {
    */
   setupVisualViewport() {
     const viewport = window.visualViewport;
+    let debounceTimer = null;
     
     const handleViewportChange = () => {
-      const keyboardHeight = this.initialHeight - viewport.height;
-      this.handleKeyboardChange(keyboardHeight);
+      // Debounce to prevent glitchy animations during keyboard open
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      
+      debounceTimer = setTimeout(() => {
+        const keyboardHeight = this.initialHeight - viewport.height;
+        this.handleKeyboardChange(keyboardHeight);
+      }, 50); // 50ms debounce
     };
     
     viewport.addEventListener('resize', handleViewportChange);
