@@ -2,35 +2,35 @@
 
 ## Overview
 
-This week's trading session included **1 trades** with a total P&L of **$0.00**.
+This week's trading session included **1 trades** with a total P&L of **$-3.90**.
 
 ## Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | Total Trades | 1 |
-| Total P&L | $0.00 |
+| Total P&L | $-3.90 |
 | Win Rate | 0.0% |
 | Wins | 0 |
-| Losses | 0 |
-| Breakeven | 1 |
+| Losses | 1 |
+| Breakeven | 0 |
 | Average Win | $0.00 |
-| Average Loss | $0.00 |
+| Average Loss | $-3.90 |
 | Largest Win | $0.00 |
-| Largest Loss | $0.00 |
+| Largest Loss | $-3.90 |
 | Profit Factor | 0.00 |
 | Gross Profit | $0.00 |
-| Gross Loss | $0.00 |
+| Gross Loss | $3.90 |
 
 ## Trade List
 
 
-### 1. SGBX - N/A
+### 1. SGBX - 2025-10-23
 
 - **Direction**: LONG
 - **Entry**: $3.43
 - **Exit**: $3.17
-- **P&L**: $0.00
+- **P&L**: $-3.90
 - **Strategy**: VWAP Test, Step #5, Dip Buy
 - **Setup**: Failed Bounce, Breakdown
 
@@ -41,4 +41,4 @@ _Add your weekly reflection, lessons learned, and improvements for next week..._
 
 ---
 
-*Generated on 2025-10-27 13:04:11*
+*Generated on 2025-10-27 13:07:51*
