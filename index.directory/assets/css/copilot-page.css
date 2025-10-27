@@ -832,7 +832,7 @@ body {
 .copilot-input-bar {
   /* Positioning - HIGHEST z-index to always float on top */
   position: fixed;
-  bottom: 0.5rem;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 10000; /* Highest - always on top of everything */
@@ -845,6 +845,15 @@ body {
   margin: 0 auto;
   padding: 0.75rem 1rem;
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  
+  /* Background to ensure visibility */
+  background: linear-gradient(to bottom, transparent 0%, rgba(10, 14, 39, 0.95) 10%, rgba(10, 14, 39, 0.98) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  /* Ensure proper stacking */
+  transform: translateZ(0);
+  will-change: bottom;
 }
 
 .copilot-input {

@@ -259,28 +259,25 @@ class MobileChatKeyboard {
   /**
    * Handle keyboard height change
    * Updates inline styles on chat components
+   * Uses bottom positioning instead of transform for better stacking context
    */
   handleKeyboardChange(keyboardHeight) {
     this.keyboardHeight = keyboardHeight;
     
     if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
       // Keyboard is open
-      // Move input up by keyboard height
-      this.input.style.transform = `translateY(-${keyboardHeight}px)`;
+      // Move input up by keyboard height using bottom property (not transform)
+      // This maintains proper z-index stacking
+      this.input.style.bottom = `${keyboardHeight}px`;
       
-      // Adjust messages container height to account for keyboard
-      const headerHeight = document.getElementById('chat-header')?.offsetHeight || 70;
+      // Adjust messages container bottom padding to account for input + keyboard
       const inputHeight = this.input.offsetHeight;
-      const availableHeight = window.innerHeight - headerHeight - inputHeight - keyboardHeight;
+      const totalBottomSpace = keyboardHeight + inputHeight + 20; // 20px extra padding
       
-      this.messages.style.height = `${availableHeight}px`;
-      
-      // Add padding to messages to prevent content from being hidden
-      this.messages.style.paddingBottom = '20px';
+      this.messages.style.paddingBottom = `${totalBottomSpace}px`;
     } else {
       // Keyboard is closed - reset to defaults
-      this.input.style.transform = '';
-      this.messages.style.height = '';
+      this.input.style.bottom = '';
       this.messages.style.paddingBottom = '';
     }
   }

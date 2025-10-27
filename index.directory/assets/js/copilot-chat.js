@@ -214,7 +214,7 @@ class CopilotChat {
     }
     
     // Input enter key
-    const input = document.getElementById('chat-input');
+    const input = document.getElementById('chat-input-field');
     if (input) {
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -290,7 +290,7 @@ class CopilotChat {
     }
     
     // Clear input
-    const input = document.getElementById('chat-input');
+    const input = document.getElementById('chat-input-field');
     if (input) {
       input.value = '';
       input.style.height = 'auto';
@@ -327,7 +327,7 @@ class CopilotChat {
   }
   
   async sendMessage() {
-    const input = document.getElementById('chat-input');
+    const input = document.getElementById('chat-input-field');
     const sendButton = document.getElementById('send-button');
     
     if (!input || !input.value.trim()) return;
