@@ -18,6 +18,7 @@ class MobileChatKeyboard {
   static KEYBOARD_THRESHOLD = 150; // Minimum keyboard height to detect keyboard open (in pixels)
   static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
   static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches CSS max-height)
+  static BOTTOM_SPACING_BUFFER = 20; // Extra padding buffer for message content above input bar (in pixels)
   
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
@@ -272,7 +273,7 @@ class MobileChatKeyboard {
       
       // Adjust messages container bottom padding to account for input + keyboard
       const inputHeight = this.input.offsetHeight;
-      const totalBottomSpace = keyboardHeight + inputHeight + 20; // 20px extra padding
+      const totalBottomSpace = keyboardHeight + inputHeight + MobileChatKeyboard.BOTTOM_SPACING_BUFFER;
       
       this.messages.style.paddingBottom = `${totalBottomSpace}px`;
     } else {
