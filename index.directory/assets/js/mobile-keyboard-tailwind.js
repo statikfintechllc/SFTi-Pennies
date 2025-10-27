@@ -62,10 +62,11 @@ class MobileChatKeyboard {
   }
   
   /**
-   * Check if viewport change is likely a screenshot or system event
-   * Small viewport changes (< SCREENSHOT_THRESHOLD) are not keyboard-related
+   * Check if viewport change should preserve input bar position
+   * Small viewport changes (< SCREENSHOT_THRESHOLD) with keyboard open are likely
+   * screenshots or system events, not keyboard-related changes
    */
-  isScreenshotEvent(heightDiff) {
+  shouldPreserveInputPosition(heightDiff) {
     return heightDiff < MobileChatKeyboard.SCREENSHOT_THRESHOLD && 
            this.input.hasAttribute('data-keyboard-open');
   }
@@ -129,9 +130,9 @@ class MobileChatKeyboard {
       const currentHeight = viewport.height;
       const heightDiff = Math.abs(currentHeight - this.lastViewportHeight);
       
-      // If height change is small (< SCREENSHOT_THRESHOLD), it's likely a screenshot or system event
-      // Preserve the input bar position if keyboard is marked as open
-      if (this.isScreenshotEvent(heightDiff)) {
+      // Preserve input bar position for small viewport changes (screenshots, system events)
+      // when keyboard is open
+      if (this.shouldPreserveInputPosition(heightDiff)) {
         this.lastViewportHeight = currentHeight; // Update tracking even when preserving position
         return; // Keep current position - don't reset
       }
