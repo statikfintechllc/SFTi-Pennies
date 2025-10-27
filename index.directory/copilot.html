@@ -174,25 +174,20 @@
     </div>
   </div>
   
-  <!-- Input Area - Fixed at bottom, OUTSIDE chat container to float on top -->
-  <div id="chat-input" class="copilot-input-container">
-    <div class="copilot-input-wrapper">
-      <div class="copilot-input-group">
-        <textarea 
-          id="chat-input-field"
-          class="copilot-textarea"
-          placeholder="Ask Copilot anything about trading..." 
-          rows="1"
-        ></textarea>
-        <!-- Note: 16px font-size prevents iOS Safari auto-zoom on focus (iOS zooms on inputs with font-size < 16px) -->
-        <button id="send-button" class="copilot-send-btn">
-          <span>Send</span>
-          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-          </svg>
-        </button>
-      </div>
-    </div>
+  <!-- Input Area - Fixed at bottom, simplified structure -->
+  <div id="chat-input" class="copilot-input-bar">
+    <textarea 
+      id="chat-input-field"
+      class="copilot-input"
+      placeholder="Ask Copilot anything about trading..." 
+      rows="1"
+    ></textarea>
+    <button id="send-button" class="copilot-send">
+      <span>Send</span>
+      <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+      </svg>
+    </button>
   </div>
   
   <footer class="footer">

@@ -821,191 +821,118 @@ body {
   }
 }
 
-/* ===== Input Area with iOS Keyboard Accessory Behavior ===== */
-/* Input is positioned OUTSIDE the chat container as a sibling element */
-/* This allows iOS to freely move it when the keyboard appears, without triggering container scroll */
+/* ===== Input Bar - Simplified Single Component ===== */
+/* All positioning, layout, and styling in one consolidated section */
 
-/* Input container - free-floating at bottom with margin to keep it visible */
-.copilot-input-container {
+.copilot-input-bar {
+  /* Positioning */
   position: fixed;
-  bottom: 0;
+  bottom: 0.5rem;
   left: 0;
   right: 0;
-  z-index: 1000; /* High z-index to float on top of chat content */
-  margin-bottom: 0.5rem; /* Small margin from bottom - closer to screen edge */
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.copilot-input-wrapper {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0.75rem 1rem; /* Reduced padding for more compact appearance */
-}
-
-.copilot-input-group {
+  z-index: 1000;
+  
+  /* Layout */
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
 }
 
-/* Textarea - transparent/free-floating with no background */
-.copilot-textarea {
+.copilot-input {
+  /* Size */
   flex: 1;
-  background: transparent; /* No background */
+  min-height: 24px;
+  max-height: 150px;
+  
+  /* Appearance */
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
-  padding: 0.5rem 1rem;
   color: white;
-  font-size: 16px; /* Prevents iOS auto-zoom */
+  
+  /* Text */
+  font-size: 16px;
   font-family: var(--font-sans);
+  
+  /* Behavior */
   resize: none;
-  min-height: 24px; /* Half of original 48px */
-  max-height: 150px;
-  transition: all 0.3s ease;
   outline: none;
+  padding: 0.5rem 1rem;
+  transition: border-color 0.2s ease;
 }
 
-.copilot-textarea::placeholder {
+.copilot-input::placeholder {
   color: rgba(255, 255, 255, 0.4);
 }
 
-.copilot-textarea:focus {
+.copilot-input:focus {
   border-color: rgba(168, 85, 247, 0.6);
   box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
 }
 
-/* Send button - transparent/free-floating with no background */
-.copilot-send-btn {
-  padding: 0.5rem 1.5rem; /* Half of original padding */
-  background: transparent; /* No background */
+.copilot-send {
+  /* Size */
+  padding: 0.5rem 1.5rem;
+  flex-shrink: 0;
+  
+  /* Appearance */
+  background: transparent;
   border: 1px solid rgba(168, 85, 247, 0.5);
   border-radius: 24px;
   color: rgb(168, 85, 247);
-  font-weight: 600;
+  
+  /* Text */
   font-size: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  white-space: nowrap;
+  
+  /* Layout */
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-shrink: 0;
-  white-space: nowrap;
+  
+  /* Behavior */
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.copilot-send-btn:hover:not(:disabled) {
+.copilot-send:hover:not(:disabled) {
   border-color: rgb(168, 85, 247);
   color: white;
   background: rgba(168, 85, 247, 0.1);
   transform: translateY(-1px);
 }
 
-.copilot-send-btn:active:not(:disabled) {
+.copilot-send:active:not(:disabled) {
   transform: translateY(0);
   background: rgba(168, 85, 247, 0.2);
 }
 
-.copilot-send-btn:disabled {
+.copilot-send:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.copilot-send-btn svg {
+.copilot-send svg {
   width: 18px;
   height: 18px;
   fill: currentColor;
 }
 
-/* Mobile responsive adjustments */
+/* Mobile adjustments */
 @media (max-width: 768px) {
-  .copilot-input-container {
-    margin-bottom: 0.5rem; /* Keep close to bottom on mobile too */
+  .copilot-input-bar {
+    padding: 0.5rem 0.75rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
   }
   
-  .copilot-input-wrapper {
-    padding: 0.75rem 1rem;
+  .copilot-input {
+    font-size: 16px !important; /* Prevent iOS zoom */
   }
-  
-  .copilot-textarea {
-    font-size: 16px !important; /* Prevent zoom on iOS */
-  }
-}
-
-/* Legacy class compatibility - keep for existing references */
-.copilot-chat-input-area {
-  position: relative;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
-  padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-  width: 100%;
-}
-
-.copilot-chat-input {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 24px;
-  padding: 0.875rem 1.25rem;
-  color: var(--text-primary);
-  font-size: 16px;
-  font-family: var(--font-sans);
-  resize: none;
-  min-height: 48px;
-  max-height: 150px;
-  transition: all 0.3s ease;
-}
-
-.copilot-chat-input::placeholder {
-  color: var(--text-dim);
-}
-
-.copilot-send-button {
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, 
-    rgb(168, 85, 247) 0%, 
-    rgb(124, 58, 237) 100%);
-  border: none;
-  border-radius: 24px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
-}
-
-.copilot-send-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4),
-              inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.copilot-send-button:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3),
-              inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.copilot-send-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.copilot-send-button svg {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
 }
 
 /* ===== Responsive Design ===== */
