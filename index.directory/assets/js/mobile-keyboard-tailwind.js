@@ -14,6 +14,11 @@
  */
 
 class MobileChatKeyboard {
+  // Constants
+  static KEYBOARD_THRESHOLD = 150; // Minimum keyboard height to detect keyboard open (in pixels)
+  static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
+  static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches Tailwind max-h-[150px])
+  
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
     this.messages = document.getElementById('chat-messages');
@@ -25,13 +30,60 @@ class MobileChatKeyboard {
       return;
     }
     
-    this.isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Feature detection for iOS instead of user agent sniffing
+    this.isIOS = this.detectIOS();
     this.initialHeight = window.innerHeight;
     this.bodyScrollY = 0;
     this.keyboardHeight = 0;
     this.isKeyboardOpen = false;
     
     this.init();
+  }
+  
+  /**
+   * Detect iOS using feature detection instead of user agent sniffing
+   * More reliable than checking navigator.userAgent
+   */
+  detectIOS() {
+    // Check for iOS-specific features
+    return [
+      'iPad Simulator',
+      'iPhone Simulator',
+      'iPod Simulator',
+      'iPad',
+      'iPhone',
+      'iPod'
+    ].includes(navigator.platform)
+    // iPad on iOS 13 detection
+    || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  }
+  
+  /**
+   * Aggressively scroll to top to keep viewport pinned at header
+   * iOS requires multiple scroll attempts due to async keyboard behavior
+   * This method schedules scroll attempts at strategic intervals during keyboard animation
+   */
+  forceScrollToTop() {
+    // Immediate scroll
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+    
+    // Early keyboard animation (10ms)
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }, 10);
+    
+    // Mid keyboard animation (50ms)
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }, 50);
+    
+    // Late keyboard animation (100ms)
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
   }
   
   init() {
@@ -175,23 +227,9 @@ class MobileChatKeyboard {
       
       this.isKeyboardOpen = true;
       
-      // Force scroll to top multiple times to keep header visible
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-      
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        requestAnimationFrame(() => window.scrollTo(0, 0));
-      }, 10);
-      
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-        requestAnimationFrame(() => window.scrollTo(0, 0));
-      }, 50);
-      
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 100);
+      // Force scroll to top to keep header visible
+      // Multiple attempts needed due to iOS async keyboard behavior
+      this.forceScrollToTop();
     });
     
     // When input loses focus, restore body position
@@ -225,7 +263,7 @@ class MobileChatKeyboard {
   handleKeyboardChange(keyboardHeight) {
     this.keyboardHeight = keyboardHeight;
     
-    if (keyboardHeight > 150) {
+    if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
       // Keyboard is open
       // Move input up by keyboard height
       this.input.style.transform = `translateY(-${keyboardHeight}px)`;
@@ -256,15 +294,13 @@ class MobileChatKeyboard {
       this.inputField.style.height = 'auto';
       
       // Set height to scrollHeight, with max constraint
-      // Get max-height from computed style (matches Tailwind class)
-      const computedMaxHeight = window.getComputedStyle(this.inputField).maxHeight;
-      // Parse value (e.g., "150px" => 150)
-      const maxHeight = computedMaxHeight.endsWith('px') ? parseInt(computedMaxHeight, 10) : 150;
+      // Use constant that matches Tailwind class max-h-[150px]
+      const maxHeight = MobileChatKeyboard.TEXTAREA_MAX_HEIGHT;
       const newHeight = Math.min(this.inputField.scrollHeight, maxHeight);
       this.inputField.style.height = `${newHeight}px`;
       
       // Trigger keyboard change handler to adjust layout
-      if (this.keyboardHeight > 150) {
+      if (this.keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
         this.handleKeyboardChange(this.keyboardHeight);
       }
     });
@@ -277,7 +313,7 @@ class MobileChatKeyboard {
         this.inputField.style.height = 'auto';
         
         // Trigger keyboard change handler
-        if (this.keyboardHeight > 150) {
+        if (this.keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
           this.handleKeyboardChange(this.keyboardHeight);
         }
       }
@@ -289,11 +325,12 @@ class MobileChatKeyboard {
    */
   setupScrollOnFocus() {
     this.inputField.addEventListener('focus', () => {
+      // Wait for keyboard animation to complete before scrolling
       setTimeout(() => {
         if (this.messages) {
           this.messages.scrollTop = this.messages.scrollHeight;
         }
-      }, 300); // Delay to allow keyboard animation
+      }, MobileChatKeyboard.KEYBOARD_ANIMATION_DELAY);
     });
   }
   
