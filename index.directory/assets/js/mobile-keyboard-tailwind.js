@@ -58,34 +58,6 @@ class MobileChatKeyboard {
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
   }
   
-  /**
-   * Aggressively scroll to top to keep viewport pinned at header
-   * iOS requires multiple scroll attempts due to async keyboard behavior
-   * This method schedules scroll attempts at strategic intervals during keyboard animation
-   */
-  forceScrollToTop() {
-    // Immediate scroll
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
-    
-    // Early keyboard animation (10ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    }, 10);
-    
-    // Mid keyboard animation (50ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    }, 50);
-    
-    // Late keyboard animation (100ms)
-    setTimeout(() => {
-      window.scrollTo(0, 0);
-    }, 100);
-  }
-  
   init() {
     // Use VisualViewport API if available (modern browsers)
     if (window.visualViewport) {
@@ -160,100 +132,43 @@ class MobileChatKeyboard {
    * iOS-specific fixes to prevent body scroll jump
    */
   setupIOSFixes() {
-    // Prevent iOS from scrolling when input is tapped
-    // Lock body BEFORE focus event fires - keep viewport at top
-    this.inputField.addEventListener('touchstart', (e) => {
-      // Store scroll position but always reset to 0
-      const currentScroll = window.scrollY;
-      if (currentScroll > 0) {
-        window.scrollTo(0, 0);
-      }
-      
-      // Always lock to top (0) to keep header visible
-      this.bodyScrollY = 0;
-      
-      // Lock immediately on touch - viewport stays at top
-      document.body.style.position = 'fixed';
-      document.body.style.top = '0';
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      
-      // Also lock html element
-      document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100vh';
-      document.documentElement.style.position = 'fixed';
-      document.documentElement.style.width = '100%';
-      document.documentElement.style.top = '0';
-      document.documentElement.style.left = '0';
-    }, { passive: true });
+    // Prevent iOS default scroll-into-view behavior on input focus
+    // We want the input to stay fixed at bottom, not scroll into view
     
-    // Prevent scroll on touchmove while typing
-    this.inputField.addEventListener('touchmove', (e) => {
-      e.stopPropagation();
-    }, { passive: true });
-    
-    // When input is focused, ensure lock is in place and viewport at top
     this.inputField.addEventListener('focus', (e) => {
-      // Prevent default scroll behavior
-      if (e.preventDefault) {
-        try {
-          e.preventDefault();
-        } catch (err) {
-          // Some browsers don't allow preventDefault on focus
-        }
-      }
-      
-      if (!this.isKeyboardOpen) {
-        // Keep viewport at top
-        this.bodyScrollY = 0;
-        document.body.style.position = 'fixed';
-        document.body.style.top = '0';
-        document.body.style.width = '100%';
-        document.body.style.overflow = 'hidden';
-        document.body.style.height = '100vh';
-        document.body.style.left = '0';
-        document.body.style.right = '0';
-        
-        document.documentElement.style.overflow = 'hidden';
-        document.documentElement.style.height = '100vh';
-        document.documentElement.style.position = 'fixed';
-        document.documentElement.style.width = '100%';
-        document.documentElement.style.top = '0';
-        document.documentElement.style.left = '0';
-      }
-      
+      // Mark keyboard as open
       this.isKeyboardOpen = true;
       
-      // Force scroll to top to keep header visible
-      // Multiple attempts needed due to iOS async keyboard behavior
-      this.forceScrollToTop();
+      // Prevent default iOS scroll behavior
+      window.scrollTo(0, 0);
+      
+      // Use setTimeout to ensure scroll prevention after iOS tries to scroll
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 10);
+      
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 50);
+      
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
     });
     
-    // When input loses focus, restore body position
+    // When input loses focus, mark keyboard as closed
     this.inputField.addEventListener('blur', () => {
-      if (this.isKeyboardOpen) {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        document.body.style.height = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.height = '';
-        document.documentElement.style.position = '';
-        document.documentElement.style.width = '';
-        document.documentElement.style.top = '';
-        document.documentElement.style.left = '';
-        
-        window.scrollTo(0, 0);
-        this.isKeyboardOpen = false;
-      }
+      this.isKeyboardOpen = false;
+      window.scrollTo(0, 0);
     });
+    
+    // Prevent body scroll while keyboard is open
+    let lastScrollY = 0;
+    window.addEventListener('scroll', () => {
+      if (this.isKeyboardOpen && window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+      }
+    }, { passive: false });
   }
   
   /**
@@ -265,22 +180,16 @@ class MobileChatKeyboard {
     
     if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
       // Keyboard is open
-      // Move input up by keyboard height
-      this.input.style.transform = `translateY(-${keyboardHeight}px)`;
+      // The input bar will automatically move up due to visualViewport behavior
+      // We just need to adjust the bottom padding of messages container
       
-      // Adjust messages container height to account for keyboard
-      const headerHeight = document.getElementById('chat-header')?.offsetHeight || 70;
+      // Adjust messages container bottom padding to account for keyboard and input
       const inputHeight = this.input.offsetHeight;
-      const availableHeight = window.innerHeight - headerHeight - inputHeight - keyboardHeight;
+      const totalBottomSpace = keyboardHeight + inputHeight + 20; // 20px buffer
       
-      this.messages.style.height = `${availableHeight}px`;
-      
-      // Add padding to messages to prevent content from being hidden
-      this.messages.style.paddingBottom = '20px';
+      this.messages.style.paddingBottom = `${totalBottomSpace}px`;
     } else {
       // Keyboard is closed - reset to defaults
-      this.input.style.transform = '';
-      this.messages.style.height = '';
       this.messages.style.paddingBottom = '';
     }
   }
