@@ -832,7 +832,7 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
-  margin-bottom: 2rem; /* Move input bar UP from bottom */
+  margin-bottom: 1rem; /* Move input bar UP from bottom */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
