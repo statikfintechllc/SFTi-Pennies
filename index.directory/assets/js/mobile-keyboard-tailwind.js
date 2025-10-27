@@ -110,7 +110,13 @@ class MobileChatKeyboard {
   setupIOSFixes() {
     // Prevent iOS from scrolling when input is tapped
     // Lock body BEFORE focus event fires - keep viewport at top
-    this.inputField.addEventListener('touchstart', () => {
+    this.inputField.addEventListener('touchstart', (e) => {
+      // Store scroll position but always reset to 0
+      const currentScroll = window.scrollY;
+      if (currentScroll > 0) {
+        window.scrollTo(0, 0);
+      }
+      
       // Always lock to top (0) to keep header visible
       this.bodyScrollY = 0;
       
@@ -132,8 +138,22 @@ class MobileChatKeyboard {
       document.documentElement.style.left = '0';
     }, { passive: true });
     
+    // Prevent scroll on touchmove while typing
+    this.inputField.addEventListener('touchmove', (e) => {
+      e.stopPropagation();
+    }, { passive: true });
+    
     // When input is focused, ensure lock is in place and viewport at top
-    this.inputField.addEventListener('focus', () => {
+    this.inputField.addEventListener('focus', (e) => {
+      // Prevent default scroll behavior
+      if (e.preventDefault) {
+        try {
+          e.preventDefault();
+        } catch (err) {
+          // Some browsers don't allow preventDefault on focus
+        }
+      }
+      
       if (!this.isKeyboardOpen) {
         // Keep viewport at top
         this.bodyScrollY = 0;
@@ -155,13 +175,23 @@ class MobileChatKeyboard {
       
       this.isKeyboardOpen = true;
       
-      // Force scroll to top to keep header visible
+      // Force scroll to top multiple times to keep header visible
       window.scrollTo(0, 0);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
       
-      // Prevent any programmatic scrolling
       setTimeout(() => {
         window.scrollTo(0, 0);
+        requestAnimationFrame(() => window.scrollTo(0, 0));
       }, 10);
+      
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        requestAnimationFrame(() => window.scrollTo(0, 0));
+      }, 50);
+      
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 100);
     });
     
     // When input loses focus, restore body position

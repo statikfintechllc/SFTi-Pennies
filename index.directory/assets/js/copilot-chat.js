@@ -363,7 +363,8 @@ class CopilotChat {
     // Re-enable input
     input.disabled = false;
     sendButton.disabled = false;
-    input.focus();
+    // Don't auto-focus on mobile to prevent viewport scroll
+    // input.focus();
   }
   
   async getAIResponse(userMessage) {
