@@ -1,10 +1,10 @@
 <div align="center">
 
-### G.S.T-R.W.T
+## G.S.T-R.W.T
 
- Grind.Scan.Trace.Research.Watch.Trade
+ *Grind.Scan.Trace.Research.Watch.Trade*
  
-  Build a watch list Daily
+  **Build a *watch-list* Daily**
 
 </div>
 
@@ -71,8 +71,8 @@ EMA/SMA 70-BOLL-MACD-SO
 
 <div align="center">
 
-  ✅Stay Ahead of the Fuckin Market✅ 
-------
+####  ✅Stay Ahead of the friggin Market✅ 
+-----
   🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫  
  🚫APPLE,NVDA,TSLA,MSFT,GOOG🚫  
   🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫🚫
