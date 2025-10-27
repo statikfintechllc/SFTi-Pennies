@@ -831,15 +831,15 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  margin-bottom: 1rem; /* Move input bar UP from bottom */
+  z-index: 1000; /* High z-index to float on top of chat content */
+  margin-bottom: 0.5rem; /* Small margin from bottom - closer to screen edge */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
 .copilot-input-wrapper {
   max-width: 900px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem; /* Reduced padding for more compact appearance */
 }
 
 .copilot-input-group {
@@ -918,7 +918,7 @@ body {
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .copilot-input-container {
-    margin-bottom: 1.5rem; /* Slightly less margin on mobile */
+    margin-bottom: 0.5rem; /* Keep close to bottom on mobile too */
   }
   
   .copilot-input-wrapper {
