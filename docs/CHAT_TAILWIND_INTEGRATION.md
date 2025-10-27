@@ -16,8 +16,20 @@ The new chat component is a self-contained, portable solution that:
 1. **`components/chat-tailwind.html`** - Self-contained Tailwind chat layout
 2. **`assets/js/mobile-keyboard-tailwind.js`** - Mobile keyboard handling JavaScript
 3. **`docs/CHAT_TAILWIND_INTEGRATION.md`** - This documentation
+4. **`index.directory/chat-tailwind-example.html`** - Working example page with basic functionality
 
 ## 🔧 Integration Steps
+
+### Step 0: View the Working Example
+
+Before integrating, you can view a working demo at:
+- **`index.directory/chat-tailwind-example.html`** - Open this file in your browser or visit the deployed URL
+
+This example demonstrates:
+- Complete chat layout with Tailwind classes
+- Mobile keyboard handling in action
+- Basic send/receive functionality
+- Auto-scrolling and textarea resize
 
 ### Step 1: Ensure Tailwind CSS is Available
 
