@@ -38,6 +38,7 @@ class MobileChatKeyboard {
     this.bodyScrollY = 0;
     this.keyboardHeight = 0;
     this.isKeyboardOpen = false;
+    this.lastViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     
     this.init();
   }
@@ -58,6 +59,15 @@ class MobileChatKeyboard {
     ].includes(navigator.platform)
     // iPad on iOS 13 detection
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  }
+  
+  /**
+   * Check if viewport change is likely a screenshot or system event
+   * Small viewport changes (< SCREENSHOT_THRESHOLD) are not keyboard-related
+   */
+  isScreenshotEvent(heightDiff) {
+    return heightDiff < MobileChatKeyboard.SCREENSHOT_THRESHOLD && 
+           this.input.hasAttribute('data-keyboard-open');
   }
   
   /**
@@ -114,22 +124,20 @@ class MobileChatKeyboard {
    */
   setupVisualViewport() {
     const viewport = window.visualViewport;
-    let lastHeight = viewport.height;
     
     const handleViewportChange = () => {
       const currentHeight = viewport.height;
-      const heightDiff = Math.abs(currentHeight - lastHeight);
+      const heightDiff = Math.abs(currentHeight - this.lastViewportHeight);
       
       // If height change is small (< SCREENSHOT_THRESHOLD), it's likely a screenshot or system event
       // Preserve the input bar position if keyboard is marked as open
-      if (heightDiff < MobileChatKeyboard.SCREENSHOT_THRESHOLD && 
-          this.input.hasAttribute('data-keyboard-open')) {
-        lastHeight = currentHeight; // Update tracking even when preserving position
+      if (this.isScreenshotEvent(heightDiff)) {
+        this.lastViewportHeight = currentHeight; // Update tracking even when preserving position
         return; // Keep current position - don't reset
       }
       
       // Update last height and process keyboard change
-      lastHeight = currentHeight;
+      this.lastViewportHeight = currentHeight;
       
       // Immediate response - no debounce to ensure input bar moves with keyboard
       const keyboardHeight = this.initialHeight - currentHeight;
