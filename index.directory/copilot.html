@@ -27,13 +27,43 @@
   <!-- Icons -->
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  
+  <style>
+    /* Prevent body scroll on mobile when keyboard is open */
+    html, body {
+      max-height: 100vh;
+      position: relative;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    /* Ensure chat-root doesn't cause scroll */
+    #chat-root {
+      position: fixed;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: calc(100vh - 70px);
+    }
+    
+    /* Hide footer on copilot page since chat takes full screen */
+    .footer {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
   <canvas id="bg-canvas"></canvas>
   
   <!-- Unified Navigation & Copilot Header Bar -->
-  <nav class="navbar copilot-unified-header">
+  <nav id="chat-header" class="navbar copilot-unified-header">
     <div class="nav-container">
       <!-- Left: Hamburger Menu -->
       <button class="nav-toggle" id="copilot-menu-toggle" aria-label="Toggle navigation">
@@ -127,35 +157,44 @@
   </div>
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
 
-  <div class="copilot-modal-backdrop" id="copilot-modal">
-    <div class="copilot-chat-container">
-      
-      <div class="copilot-chat-messages" id="chat-messages">
-        <div class="copilot-welcome">
-          <h3>Welcome to GitHub Copilot</h3>
-          <p>Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
+  <!-- Chat Container with Tailwind - Mobile Keyboard Optimized -->
+  <div id="chat-root" class="flex flex-col" style="background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1; overflow: hidden;">
+    
+    <!-- Messages Container - Independently scrollable -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-4" style="-webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
+      <div class="flex flex-col items-center justify-center text-center py-12 px-4">
+        <div class="bg-gradient-to-br from-purple-500/20 to-transparent rounded-full p-4 mb-4">
+          <svg class="w-12 h-12 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-white mb-2">Welcome to GitHub Copilot</h3>
+        <p class="text-gray-400 max-w-md">Ask me anything about trading, analyze your trades, or get help with your trading journal. I'm here to assist you!</p>
+      </div>
+    </div>
+    
+    <!-- Input Area - Moves with keyboard -->
+    <div id="chat-input" class="flex-shrink-0 bg-black/50 backdrop-blur-lg border-t border-white/10">
+      <div class="max-w-4xl mx-auto px-4 py-4" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+        <div class="flex items-end gap-2">
+          <textarea 
+            id="chat-input-field"
+            class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent min-h-[48px] max-h-[150px]"
+            placeholder="Ask Copilot anything about trading..." 
+            rows="1"
+            style="font-size: 16px;"
+          ></textarea>
+          <!-- Note: 16px font-size prevents iOS Safari auto-zoom on focus (iOS zooms on inputs with font-size < 16px) -->
+          <button id="send-button" class="flex-shrink-0 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold rounded-2xl px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/50 active:scale-95 flex items-center gap-2">
+            <span>Send</span>
+            <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+            </svg>
+          </button>
         </div>
       </div>
-      
     </div>
-  </div>
-  
-  <!-- Input bar as sibling element - moves independently with iOS keyboard -->
-  <div class="copilot-chat-input-area">
-    <div class="copilot-chat-input-wrapper">
-      <textarea 
-        class="copilot-chat-input" 
-        id="chat-input" 
-        placeholder="Ask Copilot anything about trading..." 
-        rows="1"
-      ></textarea>
-      <button class="copilot-send-button" id="send-button">
-        <span>Send</span>
-        <svg viewBox="0 0 20 20" fill="currentColor">
-          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
-        </svg>
-      </button>
-    </div>
+    
   </div>
   
   <footer class="footer">
@@ -172,6 +211,9 @@
   
   <!-- Firebase Auth -->
   <script src="assets/js/auth.js"></script>
+  
+  <!-- Mobile Keyboard Handler for Tailwind Chat -->
+  <script src="assets/js/mobile-keyboard-tailwind.js"></script>
   
   <!-- Copilot Chat -->
   <script src="assets/js/copilot-chat.js"></script>
