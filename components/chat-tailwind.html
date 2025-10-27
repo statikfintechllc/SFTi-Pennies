@@ -1,0 +1,136 @@
+<!--
+  Tailwind Chat Component for Mobile Keyboard Handling
+  
+  This is a self-contained, portable chat layout built with Tailwind utility classes.
+  It handles mobile keyboard behavior by allowing only the input to move while keeping
+  the header fixed and messages container independently scrollable.
+  
+  Integration:
+  1. Include Tailwind CSS in your page (via CDN or build process)
+  2. Copy this component into your chat page
+  3. Include the mobile-keyboard-tailwind.js script
+  4. Initialize: MobileChatKeyboard.init('chat-root')
+  
+  Structure:
+  - Fixed header (#chat-header) - stays in place
+  - Scrollable messages (#chat-messages) - independently scrollable
+  - Input area (#chat-input) - moves with keyboard
+  
+  The JavaScript helper will update inline styles to handle keyboard behavior.
+-->
+
+<div id="chat-root" class="fixed inset-0 flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+  
+  <!-- Header - Fixed at top -->
+  <div id="chat-header" class="flex-shrink-0 sticky top-0 z-50 bg-gradient-to-r from-purple-900/90 to-gray-900/90 backdrop-blur-lg border-b border-white/10">
+    <div class="flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
+      
+      <!-- Left: Menu button -->
+      <button class="p-2 rounded-lg hover:bg-white/10 transition-colors" aria-label="Menu">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      
+      <!-- Center: Title -->
+      <div class="flex items-center gap-2">
+        <svg class="w-6 h-6 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        <span class="font-mono text-lg font-semibold text-white">Copilot</span>
+      </div>
+      
+      <!-- Right: New chat button -->
+      <button class="p-2 rounded-lg hover:bg-white/10 transition-colors" aria-label="New chat">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+      </button>
+      
+    </div>
+  </div>
+  
+  <!-- Messages Container - Independently scrollable -->
+  <div id="chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-4 overscroll-contain" style="-webkit-overflow-scrolling: touch;">
+    
+    <!-- Welcome Message -->
+    <div class="flex flex-col items-center justify-center text-center py-12 px-4">
+      <div class="bg-gradient-to-br from-purple-500/20 to-transparent rounded-full p-4 mb-4">
+        <svg class="w-12 h-12 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-white mb-2">Welcome to Copilot Chat</h3>
+      <p class="text-gray-400 max-w-md">Ask me anything about trading, analyze your trades, or get help with your trading journal.</p>
+    </div>
+    
+    <!-- Example User Message -->
+    <div class="flex gap-3 max-w-3xl mx-auto">
+      <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500/30 border border-green-500 flex items-center justify-center text-green-400 text-xs font-bold">
+        U
+      </div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-sm font-semibold text-white">You</span>
+          <span class="text-xs text-gray-500">12:34 PM</span>
+        </div>
+        <div class="bg-green-500/10 border border-green-500/30 rounded-lg px-4 py-3 text-gray-200">
+          How can you help me with my trading?
+        </div>
+      </div>
+    </div>
+    
+    <!-- Example Assistant Message -->
+    <div class="flex gap-3 max-w-3xl mx-auto">
+      <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500/30 border border-purple-500 flex items-center justify-center text-purple-400 text-xs font-bold">
+        AI
+      </div>
+      <div class="flex-1">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-sm font-semibold text-white">GitHub Copilot</span>
+          <span class="text-xs text-gray-500">12:34 PM</span>
+        </div>
+        <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg px-4 py-3 text-gray-200">
+          <p class="mb-2">I can help you in several ways:</p>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong class="text-green-400">Trade Analysis</strong> - Review your performance patterns</li>
+            <li><strong class="text-green-400">Strategy Guidance</strong> - Help with frameworks and methods</li>
+            <li><strong class="text-green-400">Risk Management</strong> - Calculate position sizes</li>
+            <li><strong class="text-green-400">Pattern Recognition</strong> - Identify chart patterns</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- Input Area - Moves with keyboard -->
+  <div id="chat-input" class="flex-shrink-0 bg-black/50 backdrop-blur-lg border-t border-white/10">
+    <div class="max-w-4xl mx-auto px-4 py-4" style="padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+      <div class="flex items-end gap-2">
+        
+        <!-- Text Input -->
+        <textarea 
+          id="chat-input-field"
+          placeholder="Ask Copilot anything about trading..."
+          rows="1"
+          class="flex-1 bg-white/10 border border-white/20 rounded-2xl px-4 py-3 text-white placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent min-h-[48px] max-h-[150px]"
+          style="font-size: 16px;"
+        ></textarea>
+        
+        <!-- Send Button -->
+        <button 
+          class="flex-shrink-0 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold rounded-2xl px-6 py-3 transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/50 active:scale-95 flex items-center gap-2"
+          aria-label="Send message"
+        >
+          <span>Send</span>
+          <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+          </svg>
+        </button>
+        
+      </div>
+    </div>
+  </div>
+  
+</div>
