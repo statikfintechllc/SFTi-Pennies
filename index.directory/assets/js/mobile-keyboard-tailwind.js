@@ -19,6 +19,7 @@ class MobileChatKeyboard {
   static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
   static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches CSS max-height)
   static BOTTOM_SPACING_BUFFER = 20; // Extra padding buffer for message content above input bar (in pixels)
+  static IOS_KEYBOARD_RESPONSE_DELAY = 10; // Early detection timeout for iOS keyboard (in ms)
   
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
@@ -235,13 +236,14 @@ class MobileChatKeyboard {
       
       // Trigger immediate keyboard height check for faster response
       // This helps on iOS where visualViewport events might be delayed
+      // Using a small delay allows the keyboard to start animating before we check
       if (window.visualViewport) {
         setTimeout(() => {
           const keyboardHeight = this.initialHeight - window.visualViewport.height;
           if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
             this.handleKeyboardChange(keyboardHeight);
           }
-        }, 10);
+        }, MobileChatKeyboard.IOS_KEYBOARD_RESPONSE_DELAY);
       }
     });
     
