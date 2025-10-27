@@ -81,7 +81,7 @@ def collect_week_trades(week_folder: Path) -> List[Dict]:
             trades.append(trade_data)
 
     # Sort by date
-    trades.sort(key=lambda x: x.get("date", ""))
+    trades.sort(key=lambda x: x.get("entry_date", ""))
 
     return trades
 
@@ -117,7 +117,7 @@ def calculate_week_stats(trades: List[Dict]) -> Dict:
     breakeven = 0
 
     for trade in trades:
-        pnl = float(trade.get("pnl", 0) or 0)
+        pnl = float(trade.get("pnl_usd", 0) or 0)
         total_pnl += pnl
 
         if pnl > 0:
@@ -210,8 +210,8 @@ This week's trading session included **{stats['total_trades']} trades** with a t
     # Add trade list
     for i, trade in enumerate(trades, 1):
         ticker = trade.get("ticker", "N/A")
-        date = trade.get("date", "N/A")
-        pnl = float(trade.get("pnl", 0) or 0)
+        date = trade.get("entry_date", "N/A")
+        pnl = float(trade.get("pnl_usd", 0) or 0)
         pnl_str = f"${pnl:.2f}"
         direction = trade.get("direction", "LONG")
         entry = float(trade.get("entry_price", 0) or 0)
