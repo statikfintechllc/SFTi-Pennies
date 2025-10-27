@@ -113,18 +113,11 @@ class MobileChatKeyboard {
    */
   setupVisualViewport() {
     const viewport = window.visualViewport;
-    let debounceTimer = null;
     
     const handleViewportChange = () => {
-      // Debounce to prevent glitchy animations during keyboard open
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
-      }
-      
-      debounceTimer = setTimeout(() => {
-        const keyboardHeight = this.initialHeight - viewport.height;
-        this.handleKeyboardChange(keyboardHeight);
-      }, 50); // 50ms debounce
+      // Immediate response - no debounce to ensure input bar moves with keyboard
+      const keyboardHeight = this.initialHeight - viewport.height;
+      this.handleKeyboardChange(keyboardHeight);
     };
     
     viewport.addEventListener('resize', handleViewportChange);
@@ -263,6 +256,26 @@ class MobileChatKeyboard {
         this.isKeyboardOpen = false;
       }
     });
+    
+    // Handle viewport changes from screenshots or other system events
+    // Preserve input bar position if keyboard is still open
+    if (window.visualViewport) {
+      let lastHeight = window.visualViewport.height;
+      
+      window.visualViewport.addEventListener('resize', () => {
+        const currentHeight = window.visualViewport.height;
+        const heightDiff = Math.abs(currentHeight - lastHeight);
+        
+        // If height change is small (< 50px), it's likely a screenshot or system event
+        // Preserve the input bar position if keyboard is marked as open
+        if (heightDiff < 50 && this.input.hasAttribute('data-keyboard-open')) {
+          // Keep the current bottom position - don't reset
+          return;
+        }
+        
+        lastHeight = currentHeight;
+      });
+    }
   }
   
   /**
@@ -284,10 +297,14 @@ class MobileChatKeyboard {
       const totalBottomSpace = keyboardHeight + inputHeight + MobileChatKeyboard.BOTTOM_SPACING_BUFFER;
       
       this.messages.style.paddingBottom = `${totalBottomSpace}px`;
+      
+      // Mark as keyboard open to preserve position during viewport changes
+      this.input.setAttribute('data-keyboard-open', 'true');
     } else {
       // Keyboard is closed - reset to defaults
       this.input.style.bottom = '';
       this.messages.style.paddingBottom = '';
+      this.input.removeAttribute('data-keyboard-open');
     }
   }
   
