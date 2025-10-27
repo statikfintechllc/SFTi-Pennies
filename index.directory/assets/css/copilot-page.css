@@ -846,10 +846,8 @@ body {
   padding: 0.5rem 1rem;
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
   
-  /* Background to ensure visibility */
-  background: linear-gradient(to bottom, transparent 0%, rgba(10, 14, 39, 0.95) 10%, rgba(10, 14, 39, 0.98) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* No background on container - only on input elements */
+  background: transparent;
   
   /* Ensure proper stacking and no extra visual borders */
   transform: translateZ(0);
@@ -865,7 +863,9 @@ body {
   max-height: 150px;
   
   /* Appearance */
-  background: transparent;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   color: white;
@@ -896,7 +896,9 @@ body {
   flex-shrink: 0;
   
   /* Appearance */
-  background: transparent;
+  background: rgba(10, 14, 39, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(168, 85, 247, 0.5);
   border-radius: 24px;
   color: rgb(168, 85, 247);
