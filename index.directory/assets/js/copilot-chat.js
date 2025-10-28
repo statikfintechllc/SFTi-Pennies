@@ -794,7 +794,18 @@ Could you provide more details about what you'd like to know?
     // Also handle mouse leaving the element
     content.addEventListener('mouseleave', () => {
       if (mouseDown) {
-        handleMouseUp(new MouseEvent('mouseup'));
+        const diff = mouseStartX - currentX;
+        item.classList.remove('swiping');
+        
+        if (diff > swipeThreshold) {
+          item.classList.add('swiped');
+          content.style.transform = 'translateX(-80px)';
+        } else {
+          item.classList.remove('swiped');
+          content.style.transform = 'translateX(0)';
+        }
+        
+        mouseDown = false;
       }
     });
     
