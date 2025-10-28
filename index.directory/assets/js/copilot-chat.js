@@ -633,23 +633,169 @@ Could you provide more details about what you'd like to know?
       
       return `
         <div class="copilot-history-item" data-chat-id="${chat.id}">
-          <div class="copilot-history-title">${this.escapeHtml(chat.title)}</div>
-          <div class="copilot-history-preview">${this.escapeHtml(chat.preview)}</div>
-          <div class="copilot-history-time">${timeAgo}</div>
+          <div class="copilot-history-item-delete">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </div>
+          <div class="copilot-history-item-content">
+            <div class="copilot-history-title">${this.escapeHtml(chat.title)}</div>
+            <div class="copilot-history-preview">${this.escapeHtml(chat.preview)}</div>
+            <div class="copilot-history-time">${timeAgo}</div>
+          </div>
         </div>
       `;
     }).join('');
     
     historyList.innerHTML = historyHTML;
     
-    // Attach click listeners
+    // Attach swipe and click listeners
     historyList.querySelectorAll('.copilot-history-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const chatId = item.dataset.chatId;
+      this.attachHistoryItemListeners(item);
+    });
+  }
+  
+  attachHistoryItemListeners(item) {
+    const content = item.querySelector('.copilot-history-item-content');
+    const deleteBtn = item.querySelector('.copilot-history-item-delete');
+    const chatId = item.dataset.chatId;
+    
+    let startX = 0;
+    let currentX = 0;
+    let isSwiping = false;
+    let swipeThreshold = 60; // pixels to swipe for delete to show
+    
+    // Touch events for swipe
+    const handleTouchStart = (e) => {
+      startX = e.touches[0].clientX;
+      isSwiping = true;
+      item.classList.add('swiping');
+    };
+    
+    const handleTouchMove = (e) => {
+      if (!isSwiping) return;
+      
+      currentX = e.touches[0].clientX;
+      const diff = startX - currentX;
+      
+      // Only allow left swipe (diff > 0)
+      if (diff > 0 && diff <= 80) {
+        e.preventDefault();
+        content.style.transform = `translateX(-${diff}px)`;
+      }
+    };
+    
+    const handleTouchEnd = (e) => {
+      if (!isSwiping) return;
+      
+      const diff = startX - currentX;
+      item.classList.remove('swiping');
+      
+      if (diff > swipeThreshold) {
+        // Show delete button
+        item.classList.add('swiped');
+        content.style.transform = 'translateX(-80px)';
+      } else {
+        // Reset
+        item.classList.remove('swiped');
+        content.style.transform = 'translateX(0)';
+      }
+      
+      isSwiping = false;
+    };
+    
+    // Mouse events for desktop (optional)
+    let mouseDown = false;
+    const handleMouseDown = (e) => {
+      startX = e.clientX;
+      mouseDown = true;
+      item.classList.add('swiping');
+    };
+    
+    const handleMouseMove = (e) => {
+      if (!mouseDown) return;
+      
+      currentX = e.clientX;
+      const diff = startX - currentX;
+      
+      if (diff > 0 && diff <= 80) {
+        e.preventDefault();
+        content.style.transform = `translateX(-${diff}px)`;
+      }
+    };
+    
+    const handleMouseUp = (e) => {
+      if (!mouseDown) return;
+      
+      const diff = startX - currentX;
+      item.classList.remove('swiping');
+      
+      if (diff > swipeThreshold) {
+        item.classList.add('swiped');
+        content.style.transform = 'translateX(-80px)';
+      } else {
+        item.classList.remove('swiped');
+        content.style.transform = 'translateX(0)';
+      }
+      
+      mouseDown = false;
+    };
+    
+    // Attach touch listeners
+    content.addEventListener('touchstart', handleTouchStart, { passive: false });
+    content.addEventListener('touchmove', handleTouchMove, { passive: false });
+    content.addEventListener('touchend', handleTouchEnd);
+    
+    // Attach mouse listeners for desktop
+    content.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    // Click to load chat (only if not swiped)
+    content.addEventListener('click', (e) => {
+      if (!item.classList.contains('swiped')) {
         this.loadChat(chatId);
         document.getElementById('history-dropdown').classList.remove('active');
-      });
+      } else {
+        // If swiped, reset on content click
+        item.classList.remove('swiped');
+        content.style.transform = 'translateX(0)';
+      }
     });
+    
+    // Delete button click
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.deleteChat(chatId, item);
+    });
+  }
+  
+  deleteChat(chatId, itemElement) {
+    // Add deleting animation
+    itemElement.classList.add('deleting');
+    
+    // Wait for animation to complete
+    setTimeout(() => {
+      // Remove from history array
+      this.chatHistory = this.chatHistory.filter(chat => chat.id !== chatId);
+      
+      // Save to localStorage
+      localStorage.setItem('copilot_chat_history', JSON.stringify(this.chatHistory));
+      
+      // Remove from DOM
+      itemElement.remove();
+      
+      // If this was the current chat, clear it
+      if (this.currentChatId === chatId) {
+        this.newChat();
+      }
+      
+      // Update dropdown if empty
+      const historyList = document.getElementById('history-list');
+      if (historyList && this.chatHistory.length === 0) {
+        historyList.innerHTML = '<div class="copilot-history-empty">No chat history yet</div>';
+      }
+    }, 300);
   }
   
   loadChat(chatId) {

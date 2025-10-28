@@ -521,10 +521,14 @@ body {
 }
 
 .copilot-history-item {
+  position: relative;
   padding: 0.875rem 1rem;
   cursor: pointer;
   border-bottom: 1px solid var(--glass-border-subtle);
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.3s ease;
+  overflow: hidden;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .copilot-history-item:last-child {
@@ -533,6 +537,69 @@ body {
 
 .copilot-history-item:hover {
   background: rgba(168, 85, 247, 0.1);
+}
+
+/* Swipe-to-delete functionality */
+.copilot-history-item-content {
+  position: relative;
+  z-index: 1;
+  background: inherit;
+  transition: transform 0.3s ease;
+}
+
+.copilot-history-item.swiping .copilot-history-item-content {
+  transition: none;
+}
+
+.copilot-history-item-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 80px;
+  background: linear-gradient(90deg, transparent 0%, rgba(239, 68, 68, 0.8) 30%, rgba(220, 38, 38, 0.9) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.copilot-history-item.swiped .copilot-history-item-delete {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.copilot-history-item-delete svg {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+/* Deleting animation */
+.copilot-history-item.deleting {
+  animation: historyItemDelete 0.3s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes historyItemDelete {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100%);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
 }
 
 .copilot-history-title {
