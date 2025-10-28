@@ -67,10 +67,14 @@ function isValidWeekId(weekId) {
 
 /**
  * Validate file name to prevent path traversal
+ * Allows: alphanumeric, dash, underscore, dot, and colon (for time format like 10:23:2025.1.md)
  */
 function isValidFileName(fileName) {
-  // Only allow alphanumeric, dash, underscore, colon, dot
-  return /^[a-zA-Z0-9\-_:.]+\.md$/.test(fileName);
+  // Only allow alphanumeric, dash, underscore, colon, dot, ending with .md
+  // Colon is allowed for time-based filenames but limited to 2 occurrences max
+  const colonCount = (fileName.match(/:/g) || []).length;
+  if (colonCount > 2) return false; // Prevent abuse of colons
+  return /^[a-zA-Z0-9\-_:.]{1,100}\.md$/.test(fileName);
 }
 
 /**
