@@ -27,7 +27,7 @@ body {
   top: 70px;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 60px; /* Leave space for input bar (approx height) */
   display: flex;
   flex-direction: column;
   z-index: 1;
