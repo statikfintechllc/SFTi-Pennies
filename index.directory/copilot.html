@@ -31,7 +31,7 @@
   <style>
     /* Prevent body scroll on mobile when keyboard is open */
     html, body {
-      max-height: 100vh;
+      max-height: 0;
       position: relative;
       margin: 0;
       padding: 0;
@@ -44,7 +44,7 @@
     
     /* Ensure chat-root doesn't cause scroll */
     #chat-root {
-      position: fixed;
+      position: 0;
       top: 70px;
       left: 0;
       right: 0;
@@ -52,15 +52,9 @@
       height: calc(100vh - 70px);
       z-index: 1; /* Keep below input bar which is z-index: 10000 */
     }
-    
-    /* Hide footer on copilot page since chat takes full screen */
-    .footer {
-      display: none;
-    }
+
   </style>
 </head>
-<body>
-
   <canvas id="bg-canvas"></canvas>
   
   <!-- Unified Navigation & Copilot Header Bar -->
@@ -157,10 +151,10 @@
     </ul>
   </div>
   <div class="copilot-nav-overlay" id="copilot-nav-overlay"></div>
-
+<body>
   <!-- Chat Container with Tailwind - Mobile Keyboard Optimized -->
   <div id="chat-root" class="flex flex-col" style="background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%); z-index: 1; overflow: hidden;">
-    
+</body>    
     <!-- Messages Container - Independently scrollable -->
     <div id="chat-messages" class="flex-1 overflow-y-auto overflow-x-hidden px-4 py-6 space-y-4" style="-webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 120px;">
       <div class="flex flex-col items-center justify-center text-center py-12 px-4">
@@ -180,7 +174,7 @@
     <textarea 
       id="chat-input-field"
       class="copilot-input"
-      placeholder="Ask Copilot anything about trading..." 
+      placeholder="Ask about your trading..." 
       rows="1"
     ></textarea>
     <button id="send-button" class="copilot-send">
@@ -190,18 +184,6 @@
       </svg>
     </button>
   </div>
-  
-  <footer class="footer">
-    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
-    <p>
-      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
-      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
-      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
-    </p>
-  </footer>
-  
-  <!-- Background Animation -->
-  <script src="assets/js/background.js"></script>
   
   <!-- Firebase Auth -->
   <script src="assets/js/auth.js"></script>
@@ -215,5 +197,4 @@
   <!-- Main App -->
   <script src="assets/js/app.js"></script>
   
-</body>
 </html>
