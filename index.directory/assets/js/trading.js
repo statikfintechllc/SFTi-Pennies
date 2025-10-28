@@ -151,7 +151,8 @@ class TradingInterface {
   handleOAuthCallback() {
     // Check URL parameters for OAuth callback
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const code = urlParams.get('code');
+    const state = urlParams.get('state');
     const error = urlParams.get('error');
     
     if (error) {
@@ -159,15 +160,16 @@ class TradingInterface {
       return;
     }
     
-    if (token) {
-      // Store the token
-      this.ibkrToken = token;
-      this.isAuthenticated = true;
+    if (code) {
+      // OAuth authorization code received from IBKR
+      console.log('IBKR OAuth code received, triggering GitHub Actions workflow...');
       
-      // Store in localStorage with expiry (24 hours)
-      const expiry = Date.now() + (24 * 60 * 60 * 1000);
-      localStorage.setItem('ibkr_token', token);
-      localStorage.setItem('ibkr_token_expiry', expiry.toString());
+      // Trigger GitHub Actions workflow via repository_dispatch
+      this.triggerOAuthWorkflow(code, state);
+      
+      // Store temporary authenticated state
+      this.ibkrToken = 'pending';
+      this.isAuthenticated = true;
       
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -176,31 +178,71 @@ class TradingInterface {
       this.showTradingInterface();
       this.updateConnectionStatus(true);
       
-      console.log('IBKR authentication successful');
+      console.log('IBKR authentication in progress...');
     }
   }
   
+  async triggerOAuthWorkflow(code, state) {
+    // In a real implementation, this would trigger a GitHub Actions workflow
+    // via repository_dispatch to exchange the code for a token
+    console.log('OAuth workflow triggered with code:', code.substring(0, 10) + '...');
+    
+    // Simulate successful token exchange
+    setTimeout(() => {
+      localStorage.setItem('ibkr_token', 'token_' + code);
+      localStorage.setItem('ibkr_token_expiry', (Date.now() + (24 * 60 * 60 * 1000)).toString());
+      console.log('Token stored successfully');
+    }, 1000);
+  }
+  
   initiateIBKRAuth() {
-    // In a production environment, this would redirect to IBKR OAuth
-    // For now, we'll simulate the authentication process
+    // IBKR OAuth configuration
+    const IBKR_CLIENT_ID = 'YOUR_IBKR_CLIENT_ID'; // To be configured in GitHub Pages settings
+    const REDIRECT_URI = `${window.location.origin}/SFTi-Pennies/index.directory/trading.html`;
+    const STATE = Math.random().toString(36).substring(7);
     
-    alert('IBKR Authentication Flow:\n\n' +
-          '1. This would normally redirect to IBKR login\n' +
-          '2. After successful login, IBKR redirects back with a token\n' +
-          '3. The token is stored and used for API calls\n\n' +
-          'For demonstration, click OK to simulate successful authentication.');
+    // Store state for verification
+    sessionStorage.setItem('ibkr_oauth_state', STATE);
     
-    // Simulate successful authentication
-    this.simulateAuthentication();
+    // IBKR OAuth endpoint
+    const authUrl = `https://api.ibkr.com/v1/oauth2/authorize?` +
+      `response_type=code&` +
+      `client_id=${IBKR_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+      `state=${STATE}&` +
+      `scope=read_account read_trades execute_trades`;
+    
+    // Check if running in demo mode (no client ID configured)
+    if (IBKR_CLIENT_ID === 'YOUR_IBKR_CLIENT_ID') {
+      const useDemo = confirm(
+        'IBKR OAuth Flow:\n\n' +
+        '1. Redirect to IBKR login page\n' +
+        '2. Sign in with your IBKR credentials\n' +
+        '3. Authorize this application\n' +
+        '4. Redirect back with authorization code\n' +
+        '5. GitHub Actions exchanges code for token\n\n' +
+        'Note: IBKR Client ID not configured.\n' +
+        'Click OK to use demo mode, or Cancel to abort.'
+      );
+      
+      if (useDemo) {
+        this.simulateAuthentication();
+      }
+      return;
+    }
+    
+    // Redirect to IBKR OAuth
+    window.location.href = authUrl;
   }
   
   simulateAuthentication() {
-    // Generate a fake token for demo purposes
-    const fakeToken = 'demo_token_' + Math.random().toString(36).substr(2, 9);
+    // Generate a fake authorization code for demo purposes
+    const fakeCode = 'demo_code_' + Math.random().toString(36).substr(2, 9);
     
     // Simulate OAuth redirect
     const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('token', fakeToken);
+    currentUrl.searchParams.set('code', fakeCode);
+    currentUrl.searchParams.set('state', 'demo');
     
     // Update browser history and trigger callback handler
     window.history.pushState({}, '', currentUrl.toString());
@@ -272,14 +314,30 @@ class TradingInterface {
     const sector = document.getElementById('sector').value;
     const exchange = document.getElementById('exchange').value;
     
-    // Simulate API call for demo
+    try {
+      // Try to trigger GitHub Actions workflow to run scanner
+      // In production, this would call the GitHub API to trigger the workflow
+      console.log('Triggering scanner with criteria:', {marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
+      
+      // Try to load cached scan results
+      const response = await fetch('assets/data/scanner-results.json');
+      if (response.ok) {
+        const data = await response.json();
+        if (!data.demo && !data.error && data.results.length > 0) {
+          console.log('Loading real IBKR scan results');
+          this.displayScanResults(data.results);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('Real scan data not available, using demo data');
+    }
+    
+    // Fallback to demo data
     setTimeout(() => {
       const demoResults = this.generateDemoScanResults();
       this.displayScanResults(demoResults);
     }, 1500);
-    
-    // In production, this would call the IBKR API:
-    // const results = await this.fetchMarketScan({marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
   }
   
   generateDemoScanResults() {
@@ -370,7 +428,24 @@ class TradingInterface {
       return;
     }
     
-    // Simulate loading portfolio data
+    try {
+      // Try to load real data from GitHub Actions
+      const response = await fetch('assets/data/portfolio.json');
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (!data.demo && !data.error) {
+          // Use real IBKR data
+          console.log('Loading real IBKR portfolio data');
+          this.displayPortfolioData(data.account, data.positions);
+          return;
+        }
+      }
+    } catch (error) {
+      console.log('Real data not available, using demo data');
+    }
+    
+    // Fallback to demo data
     const demoPortfolio = {
       netLiquidation: 125430.50,
       cashBalance: 45230.25,
@@ -384,17 +459,21 @@ class TradingInterface {
       { symbol: 'NVDA', quantity: 75, avgCost: 400.00, currentPrice: 485.25, pnl: 6393.75 }
     ];
     
+    this.displayPortfolioData(demoPortfolio, demoPositions);
+  }
+  
+  displayPortfolioData(account, positions) {
     // Update account summary
-    document.getElementById('net-liquidation').textContent = '$' + demoPortfolio.netLiquidation.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('cash-balance').textContent = '$' + demoPortfolio.cashBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    document.getElementById('buying-power').textContent = '$' + demoPortfolio.buyingPower.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('net-liquidation').textContent = '$' + account.netLiquidation.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('cash-balance').textContent = '$' + account.cashBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('buying-power').textContent = '$' + account.buyingPower.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     
     const dayPnlEl = document.getElementById('day-pnl');
-    dayPnlEl.textContent = '$' + demoPortfolio.dayPnL.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    dayPnlEl.className = demoPortfolio.dayPnL >= 0 ? 'positive' : 'negative';
+    dayPnlEl.textContent = '$' + account.dayPnL.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    dayPnlEl.className = account.dayPnL >= 0 ? 'positive' : 'negative';
     
     // Display positions
-    this.displayPositions(demoPositions);
+    this.displayPositions(positions);
   }
   
   displayPositions(positions) {

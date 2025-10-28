@@ -1,0 +1,79 @@
+name: IBKR Trading Integration
+
+on:
+  # Manual trigger for OAuth authorization
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - 'fetch_portfolio'
+          - 'fetch_market_data'
+          - 'run_scanner'
+  
+  # Scheduled data refresh (every 5 minutes during market hours)
+  schedule:
+    - cron: '*/5 13-20 * * 1-5'  # 9:30 AM - 4:00 PM ET (Mon-Fri)
+  
+  # Trigger on OAuth callback (via repository_dispatch)
+  repository_dispatch:
+    types: [ibkr_oauth_callback]
+
+jobs:
+  ibkr_integration:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: |
+          npm install
+          npm install axios
+      
+      - name: Handle OAuth Callback
+        if: github.event_name == 'repository_dispatch' && github.event.action == 'ibkr_oauth_callback'
+        env:
+          IBKR_AUTH_TOKEN: ${{ github.event.client_payload.token }}
+          IBKR_REFRESH_TOKEN: ${{ github.event.client_payload.refresh_token }}
+        run: |
+          node .github/scripts/ibkr/store-oauth-token.mjs
+      
+      - name: Fetch Portfolio Data
+        if: github.event.inputs.action == 'fetch_portfolio' || github.event_name == 'schedule'
+        env:
+          IBKR_ACCESS_TOKEN: ${{ secrets.IBKR_ACCESS_TOKEN }}
+        run: |
+          node .github/scripts/ibkr/fetch-portfolio.mjs
+      
+      - name: Fetch Market Data
+        if: github.event.inputs.action == 'fetch_market_data' || github.event_name == 'schedule'
+        env:
+          IBKR_ACCESS_TOKEN: ${{ secrets.IBKR_ACCESS_TOKEN }}
+        run: |
+          node .github/scripts/ibkr/fetch-market-data.mjs
+      
+      - name: Run Stock Scanner
+        if: github.event.inputs.action == 'run_scanner'
+        env:
+          IBKR_ACCESS_TOKEN: ${{ secrets.IBKR_ACCESS_TOKEN }}
+        run: |
+          node .github/scripts/ibkr/run-scanner.mjs
+      
+      - name: Commit and push data updates
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add index.directory/assets/data/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update IBKR trading data [skip ci]" && git push)

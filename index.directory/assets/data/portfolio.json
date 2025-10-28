@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-01-01T00:00:00.000Z",
+  "demo": true,
+  "account": {
+    "netLiquidation": 0,
+    "cashBalance": 0,
+    "buyingPower": 0,
+    "dayPnL": 0
+  },
+  "positions": [],
+  "note": "This is placeholder data. Real data will be populated by GitHub Actions when IBKR integration is configured."
+}

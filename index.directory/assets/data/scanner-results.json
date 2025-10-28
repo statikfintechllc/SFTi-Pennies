@@ -1,0 +1,6 @@
+{
+  "timestamp": "2025-01-01T00:00:00.000Z",
+  "demo": true,
+  "results": [],
+  "note": "This is placeholder data. Real scanner results will be populated by GitHub Actions when IBKR integration is configured."
+}
