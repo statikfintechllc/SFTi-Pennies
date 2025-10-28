@@ -19,11 +19,71 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Rate limiting configuration (simple in-memory rate limiter)
+const rateLimitStore = new Map();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX = 100; // 100 requests per minute
+
+/**
+ * Rate limiting middleware
+ */
+function rateLimiter(req, res, next) {
+  const ip = req.ip || req.connection.remoteAddress;
+  const now = Date.now();
+  
+  if (!rateLimitStore.has(ip)) {
+    rateLimitStore.set(ip, []);
+  }
+  
+  const requests = rateLimitStore.get(ip).filter(time => now - time < RATE_LIMIT_WINDOW);
+  
+  if (requests.length >= RATE_LIMIT_MAX) {
+    return res.status(429).json({
+      success: false,
+      error: 'Rate limit exceeded'
+    });
+  }
+  
+  requests.push(now);
+  rateLimitStore.set(ip, requests);
+  next();
+}
+
+// Apply rate limiting to all routes
+app.use(rateLimiter);
+
 // Paths
 const REPO_ROOT = path.join(__dirname, '..', '..');
 const TRADES_DIR = path.join(REPO_ROOT, 'index.directory', 'SFTi.Tradez');
 const SUMMARIES_DIR = path.join(REPO_ROOT, 'index.directory', 'summaries');
 const HISTORY_DIR = path.join(SUMMARIES_DIR, 'history');
+
+/**
+ * Validate week ID format (YYYY.WW)
+ */
+function isValidWeekId(weekId) {
+  return /^\d{4}\.\d{1,2}$/.test(weekId);
+}
+
+/**
+ * Validate file name to prevent path traversal
+ */
+function isValidFileName(fileName) {
+  // Only allow alphanumeric, dash, underscore, colon, dot
+  return /^[a-zA-Z0-9\-_:.]+\.md$/.test(fileName);
+}
+
+/**
+ * Sanitize path to prevent traversal attacks
+ */
+function sanitizePath(basePath, relativePath) {
+  const fullPath = path.resolve(basePath, relativePath);
+  // Ensure the resolved path is within the base path
+  if (!fullPath.startsWith(path.resolve(basePath))) {
+    throw new Error('Invalid path');
+  }
+  return fullPath;
+}
 
 // Ensure directories exist
 async function ensureDirectories() {
@@ -75,7 +135,16 @@ app.get('/api/weeks', async (req, res) => {
 app.get('/api/trades/:week', async (req, res) => {
   try {
     const weekId = req.params.week;
-    const weekDir = path.join(TRADES_DIR, `week.${weekId}`);
+    
+    // Validate week ID format
+    if (!isValidWeekId(weekId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid week ID format'
+      });
+    }
+    
+    const weekDir = sanitizePath(TRADES_DIR, `week.${weekId}`);
 
     // Check if week directory exists
     try {
@@ -89,7 +158,7 @@ app.get('/api/trades/:week', async (req, res) => {
 
     // Read all markdown files except master.trade.md
     const files = await fs.readdir(weekDir);
-    const tradeFiles = files.filter(f => f.endsWith('.md') && f !== 'master.trade.md');
+    const tradeFiles = files.filter(f => isValidFileName(f) && f !== 'master.trade.md');
 
     const trades = [];
     for (const file of tradeFiles) {
@@ -131,7 +200,7 @@ app.get('/api/trades/:week', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Internal server error'
     });
   }
 });
@@ -143,7 +212,16 @@ app.get('/api/trades/:week', async (req, res) => {
 app.get('/api/trades/:week/:file', async (req, res) => {
   try {
     const { week, file } = req.params;
-    const filePath = path.join(TRADES_DIR, `week.${week}`, file);
+    
+    // Validate inputs
+    if (!isValidWeekId(week) || !isValidFileName(file)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid parameters'
+      });
+    }
+    
+    const filePath = sanitizePath(TRADES_DIR, path.join(`week.${week}`, file));
 
     const content = await fs.readFile(filePath, 'utf-8');
     
@@ -243,12 +321,39 @@ app.post('/api/summaries/draft', async (req, res) => {
         error: 'Content is required'
       });
     }
+    
+    // Validate inputs
+    if (!['weekly', 'monthly', 'yearly'].includes(period)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid period'
+      });
+    }
+    
+    if (!year || year < 2000 || year > 2100) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid year'
+      });
+    }
 
     // Generate filename
     let fileName;
     if (period === 'weekly' && week) {
+      if (week < 1 || week > 53) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid week number'
+        });
+      }
       fileName = `weekly-${year}-W${String(week).padStart(2, '0')}.draft.md`;
     } else if (period === 'monthly' && month) {
+      if (month < 1 || month > 12) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid month'
+        });
+      }
       fileName = `monthly-${year}-${String(month).padStart(2, '0')}.draft.md`;
     } else if (period === 'yearly') {
       fileName = `yearly-${year}.draft.md`;
@@ -256,6 +361,14 @@ app.post('/api/summaries/draft', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Invalid period or missing required parameters'
+      });
+    }
+    
+    // Validate filename format
+    if (!isValidFileName(fileName)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid filename generated'
       });
     }
 
@@ -271,7 +384,7 @@ app.post('/api/summaries/draft', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Failed to save draft'
     });
   }
 });
@@ -288,6 +401,14 @@ app.post('/api/summaries/publish', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Content is required'
+      });
+    }
+    
+    // Validate filename
+    if (!fileName || !isValidFileName(fileName.replace('.draft', ''))) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid filename'
       });
     }
 
@@ -326,7 +447,7 @@ app.post('/api/summaries/publish', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Failed to publish summary'
     });
   }
 });
@@ -346,25 +467,40 @@ app.post('/api/summaries/generate', async (req, res) => {
       options = {}
     } = req.body;
 
-    if (!period || !year) {
+    // Validate period
+    if (!period || !['month', 'year'].includes(period)) {
       return res.status(400).json({
         success: false,
-        error: 'Period and year are required'
+        error: 'Invalid period'
+      });
+    }
+    
+    // Validate year
+    if (!year || year < 2000 || year > 2100) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid year'
       });
     }
 
-    if (period === 'month' && !month) {
-      return res.status(400).json({
-        success: false,
-        error: 'Month is required for monthly summaries'
-      });
+    if (period === 'month') {
+      if (!month || month < 1 || month > 12) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid month'
+        });
+      }
     }
 
-    // Load trade files
+    // Load trade files with validation
     const tradeFiles = [];
     for (const tradePath of includeTrades) {
       try {
-        const filePath = path.join(TRADES_DIR, tradePath);
+        // Validate trade path format
+        if (typeof tradePath !== 'string' || !tradePath.match(/^week\.\d{4}\.\d{1,2}\/[a-zA-Z0-9\-_:.]+\.md$/)) {
+          continue;
+        }
+        const filePath = sanitizePath(TRADES_DIR, tradePath);
         const content = await fs.readFile(filePath, 'utf-8');
         const frontmatterMatch = content.match(/^---\s*\n(.*?)\n---\s*\n(.*)$/s);
         if (frontmatterMatch) {
@@ -372,19 +508,25 @@ app.post('/api/summaries/generate', async (req, res) => {
           tradeFiles.push(frontmatter);
         }
       } catch (error) {
-        console.error(`Error loading trade file ${tradePath}:`, error);
+        // Skip invalid files
+        continue;
       }
     }
 
-    // Load weekly summaries
+    // Load weekly summaries with validation
     const weeklySummaries = [];
     for (const weeklyPath of includeWeeklies) {
       try {
-        const filePath = path.join(SUMMARIES_DIR, weeklyPath);
+        // Validate weekly path format
+        if (typeof weeklyPath !== 'string' || !isValidFileName(weeklyPath)) {
+          continue;
+        }
+        const filePath = sanitizePath(SUMMARIES_DIR, weeklyPath);
         const content = await fs.readFile(filePath, 'utf-8');
         weeklySummaries.push(content);
       } catch (error) {
-        console.error(`Error loading weekly summary ${weeklyPath}:`, error);
+        // Skip invalid files
+        continue;
       }
     }
 
@@ -413,7 +555,7 @@ app.post('/api/summaries/generate', async (req, res) => {
     if (!result.success) {
       return res.status(500).json({
         success: false,
-        error: result.error || 'Failed to generate summary'
+        error: 'Failed to generate summary'
       });
     }
 
@@ -438,7 +580,7 @@ app.post('/api/summaries/generate', async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: 'Internal server error'
     });
   }
 });

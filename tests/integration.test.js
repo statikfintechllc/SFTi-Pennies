@@ -205,8 +205,8 @@ runner.test('POST /api/summaries/draft saves a draft', async () => {
     body: JSON.stringify({
       period: 'weekly',
       year: 2025,
-      week: 99,
-      content: '# Test Week 99 Summary\n\nThis is a test draft.'
+      week: 43, // Valid week number (1-53)
+      content: '# Test Week 43 Summary\n\nThis is a test draft.'
     })
   });
   
@@ -242,9 +242,16 @@ runner.test('POST /api/summaries/generate creates AI summary', async () => {
 });
 
 // Test: Invalid endpoints return errors
-runner.test('GET /api/trades/nonexistent returns 404', async () => {
+runner.test('GET /api/trades/invalid returns 400 for invalid format', async () => {
   const response = await makeRequest(`${API_BASE}/trades/nonexistent`);
-  runner.assertEqual(response.statusCode, 404, 'Status should be 404');
+  runner.assertEqual(response.statusCode, 400, 'Status should be 400 for invalid format');
+  runner.assert(!response.body.success, 'Should return failure');
+});
+
+// Test: Valid format but nonexistent week returns 404
+runner.test('GET /api/trades/9999.99 returns 404 for nonexistent week', async () => {
+  const response = await makeRequest(`${API_BASE}/trades/9999.99`);
+  runner.assertEqual(response.statusCode, 404, 'Status should be 404 for nonexistent week');
   runner.assert(!response.body.success, 'Should return failure');
 });
 
