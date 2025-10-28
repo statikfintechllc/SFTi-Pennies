@@ -661,27 +661,49 @@ Could you provide more details about what you'd like to know?
     const chatId = item.dataset.chatId;
     
     let startX = 0;
+    let startY = 0;
     let currentX = 0;
+    let currentY = 0;
     let isSwiping = false;
+    let isHorizontalSwipe = null; // Track if swipe is horizontal or vertical
     let swipeThreshold = 60; // pixels to swipe for delete to show
     
     // Touch events for swipe
     const handleTouchStart = (e) => {
       startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      currentX = startX;
+      currentY = startY;
       isSwiping = true;
-      item.classList.add('swiping');
+      isHorizontalSwipe = null;
     };
     
     const handleTouchMove = (e) => {
       if (!isSwiping) return;
       
       currentX = e.touches[0].clientX;
-      const diff = startX - currentX;
+      currentY = e.touches[0].clientY;
+      const diffX = startX - currentX;
+      const diffY = startY - currentY;
       
-      // Only allow left swipe (diff > 0)
-      if (diff > 0 && diff <= 80) {
-        e.preventDefault();
-        content.style.transform = `translateX(-${diff}px)`;
+      // Determine swipe direction on first significant move
+      if (isHorizontalSwipe === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
+        isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+      }
+      
+      // Only handle horizontal swipes
+      if (isHorizontalSwipe) {
+        // Only allow left swipe (diffX > 0)
+        if (diffX > 0 && diffX <= 80) {
+          e.preventDefault();
+          e.stopPropagation();
+          item.classList.add('swiping');
+          content.style.transform = `translateX(-${diffX}px)`;
+        } else if (diffX < 0) {
+          // Reset if swiping right
+          content.style.transform = 'translateX(0)';
+          item.classList.remove('swiped');
+        }
       }
     };
     
@@ -691,17 +713,21 @@ Could you provide more details about what you'd like to know?
       const diff = startX - currentX;
       item.classList.remove('swiping');
       
-      if (diff > swipeThreshold) {
-        // Show delete button
-        item.classList.add('swiped');
-        content.style.transform = 'translateX(-80px)';
-      } else {
-        // Reset
-        item.classList.remove('swiped');
-        content.style.transform = 'translateX(0)';
+      // Only process if it was a horizontal swipe
+      if (isHorizontalSwipe) {
+        if (diff > swipeThreshold) {
+          // Show delete button
+          item.classList.add('swiped');
+          content.style.transform = 'translateX(-80px)';
+        } else {
+          // Reset
+          item.classList.remove('swiped');
+          content.style.transform = 'translateX(0)';
+        }
       }
       
       isSwiping = false;
+      isHorizontalSwipe = null;
     };
     
     // Mouse events for desktop (optional)
@@ -742,9 +768,9 @@ Could you provide more details about what you'd like to know?
     };
     
     // Attach touch listeners
-    content.addEventListener('touchstart', handleTouchStart, { passive: false });
+    content.addEventListener('touchstart', handleTouchStart, { passive: true });
     content.addEventListener('touchmove', handleTouchMove, { passive: false });
-    content.addEventListener('touchend', handleTouchEnd);
+    content.addEventListener('touchend', handleTouchEnd, { passive: true });
     
     // Attach mouse listeners for desktop
     content.addEventListener('mousedown', handleMouseDown);
@@ -753,6 +779,12 @@ Could you provide more details about what you'd like to know?
     
     // Click to load chat (only if not swiped)
     content.addEventListener('click', (e) => {
+      // Prevent click if we just swiped
+      if (Math.abs(startX - currentX) > 10) {
+        e.preventDefault();
+        return;
+      }
+      
       if (!item.classList.contains('swiped')) {
         this.loadChat(chatId);
         document.getElementById('history-dropdown').classList.remove('active');
