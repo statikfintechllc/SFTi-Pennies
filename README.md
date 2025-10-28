@@ -188,6 +188,7 @@ This journal follows key principles:
 - [📝 Trading Frameworks](./index.directory/SFTi.Notez/README.md)
 - [📊 Trade Journal](./index.directory/SFTi.Tradez/README.md)
 - [🎨 Visual Assets](./index.directory/assets/README.md)
+- [🔍 Review Trades Workflow](./index.directory/REVIEW_TRADES_README.md) ✨ NEW
 
 </td>
 <td width="50%">
@@ -224,6 +225,8 @@ This journal follows key principles:
 - ✅ Equity curve charts
 - ✅ Performance metrics
 - ✅ Trade statistics
+- ✅ **Review Trades Workflow** ✨ NEW
+- ✅ **AI-Assisted Summaries** 🤖 NEW
 
 </td>
 <td width="33%">

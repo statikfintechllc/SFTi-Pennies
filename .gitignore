@@ -19,3 +19,4 @@ build/
 .venv/
 venv/
 ENV/
+index.directory/server/node_modules/

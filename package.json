@@ -8,6 +8,8 @@
     "test": "node tests/templateMerge.test.js && node tests/aiProvider.test.js",
     "test:template": "node tests/templateMerge.test.js",
     "test:ai": "node tests/aiProvider.test.js",
+    "test:integration": "node tests/integration.test.js",
+    "test:all": "npm run test && npm run test:integration",
     "server": "cd index.directory/server && npm start"
   },
   "keywords": [],
