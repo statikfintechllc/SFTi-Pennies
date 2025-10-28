@@ -667,6 +667,7 @@ Could you provide more details about what you'd like to know?
     let isSwiping = false;
     let isHorizontalSwipe = null; // Track if swipe is horizontal or vertical
     let swipeThreshold = 60; // pixels to swipe for delete to show
+    const directionThreshold = 10; // pixels of movement needed to determine direction
     
     // Touch events for swipe
     const handleTouchStart = (e) => {
@@ -685,18 +686,23 @@ Could you provide more details about what you'd like to know?
       currentY = e.touches[0].clientY;
       const diffX = startX - currentX;
       const diffY = startY - currentY;
+      const absDiffX = Math.abs(diffX);
+      const absDiffY = Math.abs(diffY);
       
       // Determine swipe direction on first significant move
-      if (isHorizontalSwipe === null && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
-        isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+      if (isHorizontalSwipe === null && (absDiffX > directionThreshold || absDiffY > directionThreshold)) {
+        // If horizontal movement is greater than vertical, it's a horizontal swipe
+        isHorizontalSwipe = absDiffX > absDiffY;
       }
       
       // Only handle horizontal swipes
-      if (isHorizontalSwipe) {
+      if (isHorizontalSwipe === true) {
+        // Prevent default scroll behavior when we detect horizontal swipe
+        e.preventDefault();
+        e.stopPropagation();
+        
         // Only allow left swipe (diffX > 0)
         if (diffX > 0 && diffX <= 80) {
-          e.preventDefault();
-          e.stopPropagation();
           item.classList.add('swiping');
           content.style.transform = `translateX(-${diffX}px)`;
         } else if (diffX < 0) {
@@ -704,6 +710,9 @@ Could you provide more details about what you'd like to know?
           content.style.transform = 'translateX(0)';
           item.classList.remove('swiped');
         }
+      } else if (isHorizontalSwipe === false) {
+        // If it's a vertical swipe, allow default scroll behavior
+        // Do nothing - let the dropdown scroll naturally
       }
     };
     
@@ -714,7 +723,7 @@ Could you provide more details about what you'd like to know?
       item.classList.remove('swiping');
       
       // Only process if it was a horizontal swipe
-      if (isHorizontalSwipe) {
+      if (isHorizontalSwipe === true) {
         if (diff > swipeThreshold) {
           // Show delete button
           item.classList.add('swiped');
@@ -732,28 +741,34 @@ Could you provide more details about what you'd like to know?
     
     // Mouse events for desktop (optional)
     let mouseDown = false;
+    let mouseStartX = 0;
+    
     const handleMouseDown = (e) => {
+      mouseStartX = e.clientX;
       startX = e.clientX;
       mouseDown = true;
       item.classList.add('swiping');
+      e.preventDefault(); // Prevent text selection
     };
     
     const handleMouseMove = (e) => {
       if (!mouseDown) return;
       
       currentX = e.clientX;
-      const diff = startX - currentX;
+      const diff = mouseStartX - currentX;
       
       if (diff > 0 && diff <= 80) {
         e.preventDefault();
         content.style.transform = `translateX(-${diff}px)`;
+      } else if (diff < 0) {
+        content.style.transform = 'translateX(0)';
       }
     };
     
     const handleMouseUp = (e) => {
       if (!mouseDown) return;
       
-      const diff = startX - currentX;
+      const diff = mouseStartX - currentX;
       item.classList.remove('swiping');
       
       if (diff > swipeThreshold) {
@@ -767,15 +782,21 @@ Could you provide more details about what you'd like to know?
       mouseDown = false;
     };
     
-    // Attach touch listeners
+    // Attach touch listeners with passive: false to allow preventDefault
     content.addEventListener('touchstart', handleTouchStart, { passive: true });
     content.addEventListener('touchmove', handleTouchMove, { passive: false });
     content.addEventListener('touchend', handleTouchEnd, { passive: true });
     
     // Attach mouse listeners for desktop
     content.addEventListener('mousedown', handleMouseDown);
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    content.addEventListener('mousemove', handleMouseMove);
+    content.addEventListener('mouseup', handleMouseUp);
+    // Also handle mouse leaving the element
+    content.addEventListener('mouseleave', () => {
+      if (mouseDown) {
+        handleMouseUp(new MouseEvent('mouseup'));
+      }
+    });
     
     // Click to load chat (only if not swiped)
     content.addEventListener('click', (e) => {
