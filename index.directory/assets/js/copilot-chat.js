@@ -125,12 +125,14 @@ class CopilotChat {
   }
   
   init() {
-    // Only create FAB button if not on copilot.html page
+    // Only create FAB buttons if not on copilot.html or trading.html pages
     const isCopilotPage = window.location.pathname.includes('copilot.html');
+    const isTradingPage = window.location.pathname.includes('trading.html');
     
-    if (!isCopilotPage) {
+    if (!isCopilotPage && !isTradingPage) {
       this.createCopilotButton();
-    } else {
+      this.createTradingButton();
+    } else if (isCopilotPage) {
       // On copilot.html, populate the model dropdown and attach event listeners
       this.populateModelDropdown();
       this.attachEventListeners();
@@ -166,6 +168,29 @@ class CopilotChat {
     
     // Append to body
     document.body.appendChild(copilotButton);
+  }
+  
+  createTradingButton() {
+    // Create floating Trading button (bottom left corner) as a link to trading page
+    const tradingButton = document.createElement('a');
+    tradingButton.className = 'trading-fab';
+    tradingButton.id = 'trading-trigger';
+    tradingButton.setAttribute('aria-label', 'Open Trading Interface');
+    
+    // Determine correct path based on current location
+    const pathname = window.location.pathname;
+    const isInIndexDirectory = pathname.includes('/index.directory/');
+    tradingButton.href = isInIndexDirectory ? 'trading.html' : 'index.directory/trading.html';
+    
+    // Trading icon (chart/candlestick)
+    tradingButton.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+      </svg>
+    `;
+    
+    // Append to body
+    document.body.appendChild(tradingButton);
   }
   
   attachEventListeners() {

@@ -1,0 +1,110 @@
+/**
+ * Trading Glass Button for SFTi-Pennies
+ * Floating Action Button (FAB) that appears on all pages except trading.html
+ * Styled identically to the purple copilot button but in red
+ * Positioned in the left corner
+ */
+
+/* ===== Trading Floating Action Button (FAB) ===== */
+.trading-fab {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.25);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 8px 32px rgba(239, 68, 68, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  z-index: 9998;
+  transform: translateZ(0);
+  overflow: visible;
+  text-decoration: none; /* Remove link underline */
+}
+
+.trading-fab::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.4) 0%, 
+    rgba(220, 38, 38, 0.2) 100%);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.trading-fab:hover::before {
+  opacity: 1;
+}
+
+.trading-fab:hover {
+  transform: translateY(-4px) scale(1.05) translateZ(0);
+  box-shadow: 
+    0 12px 40px rgba(239, 68, 68, 0.5),
+    0 6px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: rgba(239, 68, 68, 0.35);
+}
+
+.trading-fab:active {
+  transform: translateY(-2px) scale(1.0) translateZ(0);
+  box-shadow: 
+    0 6px 24px rgba(239, 68, 68, 0.4),
+    0 3px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.trading-fab svg {
+  width: 32px;
+  height: 32px;
+  fill: rgba(255, 255, 255, 0.95);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Pulse animation for attention */
+@keyframes trading-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 8px 32px rgba(239, 68, 68, 0.4),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 8px 32px rgba(239, 68, 68, 0.6),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 0 0 8px rgba(239, 68, 68, 0.1);
+  }
+}
+
+.trading-fab.pulse {
+  animation: trading-pulse 2s ease-in-out infinite;
+}
+
+/* Mobile responsive positioning */
+@media (max-width: 768px) {
+  .trading-fab {
+    width: 56px;
+    height: 56px;
+    bottom: 1.5rem;
+    left: 1.5rem;
+  }
+  
+  .trading-fab svg {
+    width: 28px;
+    height: 28px;
+  }
+}

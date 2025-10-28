@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="IBKR Trading Interface - Live market data and trading">
+  <meta name="theme-color" content="#ef4444">
+  
+  <title>Trading Interface - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  <link rel="stylesheet" href="assets/css/copilot-chat.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+  
+  <!-- TradingView Widget Library -->
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  
+  <style>
+    /* Trading Interface Specific Styles */
+    .trading-container {
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(15, 20, 41, 1) 0%, rgba(10, 14, 39, 1) 100%);
+      padding-top: 80px;
+    }
+    
+    .trading-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(15, 20, 41, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1rem 2rem;
+    }
+    
+    .trading-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+      padding: 0 1rem;
+    }
+    
+    .trading-tab {
+      padding: 1rem 2rem;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+      margin-bottom: -2px;
+    }
+    
+    .trading-tab:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .trading-tab.active {
+      color: #ef4444;
+      border-bottom-color: #ef4444;
+    }
+    
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .auth-card {
+      max-width: 500px;
+      margin: 4rem auto;
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.connected {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+    
+    .status-badge.disconnected {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    
+    .glass-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .chart-container {
+      height: 600px;
+      background: rgba(30, 41, 59, 0.4);
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+    
+    .screening-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    
+    .form-input, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(15, 20, 41, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      color: white;
+      font-size: 1rem;
+    }
+    
+    .form-input:focus, .form-select:focus {
+      outline: none;
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+    
+    .btn-red {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-red:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+    }
+    
+    .portfolio-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: rgba(15, 20, 41, 0.5);
+      border-radius: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .portfolio-item:hover {
+      background: rgba(15, 20, 41, 0.7);
+    }
+    
+    .positive {
+      color: #22c55e;
+    }
+    
+    .negative {
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="trading-nav">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="../index.html" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: white; font-weight: 700; font-size: 1.25rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: #ef4444;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+          </svg>
+          Trading Interface
+        </a>
+        <span id="connection-status" class="status-badge disconnected">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: currentColor;"></span>
+          Disconnected
+        </span>
+      </div>
+      <div style="display: flex; gap: 1rem;">
+        <a href="../index.html" class="btn btn-secondary">← Back to Journal</a>
+        <button id="auth-toggle-btn" class="btn-red">Connect IBKR</button>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main Container -->
+  <div class="trading-container">
+    <!-- Authentication Section -->
+    <div id="auth-section" class="auth-card">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <svg style="width: 64px; height: 64px; margin: 0 auto 1rem; color: #ef4444;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <h2 style="font-size: 1.875rem; font-weight: 700; color: white; margin-bottom: 0.5rem;">Connect to IBKR</h2>
+        <p style="color: rgba(255, 255, 255, 0.7);">Authenticate with Interactive Brokers to access live trading data</p>
+      </div>
+      
+      <div id="auth-instructions" style="margin-bottom: 2rem;">
+        <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+          <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.9);">
+            <strong>Note:</strong> This feature requires the IBKR Client Portal Gateway to be running locally or on your server.
+            Authentication will redirect you to IBKR's login page, then back to this application.
+          </p>
+        </div>
+        
+        <ol style="list-style: decimal; padding-left: 1.5rem; color: rgba(255, 255, 255, 0.8); line-height: 1.8;">
+          <li>Ensure IBKR Client Portal Gateway is running</li>
+          <li>Click "Connect to IBKR" to start OAuth flow</li>
+          <li>Login with your IBKR credentials</li>
+          <li>Authorize the application</li>
+          <li>You'll be redirected back with your session token</li>
+        </ol>
+      </div>
+      
+      <button id="connect-ibkr-btn" class="btn-red" style="width: 100%; padding: 1rem; font-size: 1.125rem;">
+        <span style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+          <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Connect to IBKR
+        </span>
+      </button>
+      
+      <p style="text-align: center; margin-top: 1.5rem; color: rgba(255, 255, 255, 0.5); font-size: 0.875rem;">
+        By connecting, you agree to IBKR's terms of service and API usage policies
+      </p>
+    </div>
+    
+    <!-- Trading Interface (Hidden until authenticated) -->
+    <div id="trading-interface" style="display: none; max-width: 1400px; margin: 0 auto; padding: 2rem;">
+      <!-- Tabs -->
+      <div class="trading-tabs">
+        <button class="trading-tab active" data-tab="scanning">
+          <span style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            Scanning
+          </span>
+        </button>
+        <button class="trading-tab" data-tab="charting">
+          <span style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Charting
+          </span>
+        </button>
+        <button class="trading-tab" data-tab="portfolio">
+          <span style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+            Portfolio
+          </span>
+        </button>
+      </div>
+      
+      <!-- Tab Content: Scanning -->
+      <div id="scanning-tab" class="tab-content active">
+        <div class="glass-card">
+          <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">Market Screener</h3>
+          
+          <div class="screening-grid">
+            <div class="form-group">
+              <label class="form-label">Market Cap</label>
+              <select class="form-select" id="market-cap">
+                <option value="">All</option>
+                <option value="nano">Nano Cap (&lt;$50M)</option>
+                <option value="micro">Micro Cap ($50M-$300M)</option>
+                <option value="small">Small Cap ($300M-$2B)</option>
+                <option value="mid">Mid Cap ($2B-$10B)</option>
+                <option value="large">Large Cap (&gt;$10B)</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Volume</label>
+              <select class="form-select" id="volume">
+                <option value="">All</option>
+                <option value="100k">Over 100K</option>
+                <option value="500k">Over 500K</option>
+                <option value="1m">Over 1M</option>
+                <option value="5m">Over 5M</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Price Range</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="number" class="form-input" id="price-min" placeholder="Min" step="0.01">
+                <input type="number" class="form-input" id="price-max" placeholder="Max" step="0.01">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">% Change</label>
+              <select class="form-select" id="percent-change">
+                <option value="">All</option>
+                <option value="up5">Up 5%+</option>
+                <option value="up10">Up 10%+</option>
+                <option value="up20">Up 20%+</option>
+                <option value="down5">Down 5%+</option>
+                <option value="down10">Down 10%+</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Sector</label>
+              <select class="form-select" id="sector">
+                <option value="">All Sectors</option>
+                <option value="technology">Technology</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="financial">Financial</option>
+                <option value="energy">Energy</option>
+                <option value="consumer">Consumer</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Exchange</label>
+              <select class="form-select" id="exchange">
+                <option value="">All</option>
+                <option value="NYSE">NYSE</option>
+                <option value="NASDAQ">NASDAQ</option>
+                <option value="AMEX">AMEX</option>
+                <option value="OTC">OTC</option>
+              </select>
+            </div>
+          </div>
+          
+          <button class="btn-red" id="run-scan-btn" style="width: 100%;">
+            <span style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              Run Scan
+            </span>
+          </button>
+        </div>
+        
+        <!-- Results -->
+        <div class="glass-card">
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 1rem;">Scan Results</h3>
+          <div id="scan-results" style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 2rem;">
+            Run a scan to see results
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab Content: Charting -->
+      <div id="charting-tab" class="tab-content">
+        <div class="glass-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="font-size: 1.5rem; font-weight: 700; color: white;">Live Charts</h3>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+              <input type="text" id="chart-symbol" class="form-input" placeholder="Enter symbol (e.g., AAPL)" style="width: 200px;">
+              <button class="btn-red" id="load-chart-btn">Load Chart</button>
+            </div>
+          </div>
+          
+          <div id="tradingview-chart" class="chart-container"></div>
+          
+          <div style="margin-top: 1rem; color: rgba(255, 255, 255, 0.6); font-size: 0.875rem;">
+            <p>Charts powered by TradingView. Data populated from IBKR API when connected.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab Content: Portfolio -->
+      <div id="portfolio-tab" class="tab-content">
+        <div class="glass-card">
+          <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">Account Summary</h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            <div style="background: rgba(15, 20, 41, 0.5); padding: 1.5rem; border-radius: 0.5rem;">
+              <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">Net Liquidation</div>
+              <div id="net-liquidation" style="font-size: 1.875rem; font-weight: 700; color: white;">$0.00</div>
+            </div>
+            
+            <div style="background: rgba(15, 20, 41, 0.5); padding: 1.5rem; border-radius: 0.5rem;">
+              <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">Cash Balance</div>
+              <div id="cash-balance" style="font-size: 1.875rem; font-weight: 700; color: white;">$0.00</div>
+            </div>
+            
+            <div style="background: rgba(15, 20, 41, 0.5); padding: 1.5rem; border-radius: 0.5rem;">
+              <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">Buying Power</div>
+              <div id="buying-power" style="font-size: 1.875rem; font-weight: 700; color: white;">$0.00</div>
+            </div>
+            
+            <div style="background: rgba(15, 20, 41, 0.5); padding: 1.5rem; border-radius: 0.5rem;">
+              <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">Day P&L</div>
+              <div id="day-pnl" style="font-size: 1.875rem; font-weight: 700;" class="positive">$0.00</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="glass-card">
+          <h3 style="font-size: 1.25rem; font-weight: 700; color: white; margin-bottom: 1rem;">Positions</h3>
+          <div id="positions-list">
+            <div style="color: rgba(255, 255, 255, 0.6); text-align: center; padding: 2rem;">
+              No positions to display. Connect to IBKR to view your portfolio.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/copilot-chat.js"></script>
+  <script src="assets/js/trading.js"></script>
+  
+</body>
+</html>
