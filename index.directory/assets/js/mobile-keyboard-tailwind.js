@@ -19,6 +19,7 @@ class MobileChatKeyboard {
   static KEYBOARD_ANIMATION_DELAY = 300; // Approximate keyboard animation duration (in ms)
   static TEXTAREA_MAX_HEIGHT = 150; // Maximum textarea height (in pixels, matches CSS max-height)
   static BOTTOM_SPACING_BUFFER = 20; // Extra padding buffer for message content above input bar (in pixels)
+  static HEADER_DEFAULT_HEIGHT = 70; // Default header height in pixels when element not found
   
   constructor(rootElementId = 'chat-root') {
     this.root = document.getElementById(rootElementId);
@@ -66,9 +67,10 @@ class MobileChatKeyboard {
   /**
    * Update CSS custom properties for dynamic positioning
    * This ensures html, body, and chat-root always know their dimensions
+   * Uses CSS custom properties instead of inline styles for better maintainability
    */
   updateCSSVariables() {
-    const headerHeight = this.header ? this.header.offsetHeight : 70;
+    const headerHeight = this.header ? this.header.offsetHeight : MobileChatKeyboard.HEADER_DEFAULT_HEIGHT;
     const inputHeight = this.input ? this.input.offsetHeight : 0;
     const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     
@@ -84,23 +86,7 @@ class MobileChatKeyboard {
     document.documentElement.style.setProperty('--keyboard-height', `${this.keyboardHeight}px`);
     document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
     
-    // Update html element positioning
-    document.documentElement.style.height = '100%';
-    document.documentElement.style.position = 'fixed';
-    document.documentElement.style.width = '100%';
-    document.documentElement.style.overflow = 'hidden';
-    document.documentElement.style.top = '0';
-    document.documentElement.style.left = '0';
-    
-    // Update body positioning to always know where input bar is
-    document.body.style.height = '100%';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-    document.body.style.top = '0';
-    document.body.style.left = '0';
-    
-    // Update chat-root positioning
+    // Update chat-root positioning using CSS variables
     if (this.root) {
       this.root.style.bottom = `${chatRootBottom}px`;
     }

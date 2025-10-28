@@ -29,38 +29,16 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   
   <style>
-    /* Dynamic positioning managed by JavaScript */
-    html {
-      height: 100%;
-      position: fixed;
-      width: 100%;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      height: 100%;
-      position: fixed;
-      width: 100%;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-      top: 0;
-      left: 0;
-    }
-    
-    /* Chat root - dynamically positioned by JS */
+    /* Chat root - dynamically positioned by JS using CSS variables */
     #chat-root {
       position: fixed;
-      top: 70px;
+      top: var(--header-height, 70px);
       left: 0;
       right: 0;
-      bottom: var(--input-bar-top, 0);
+      bottom: var(--chat-root-bottom, 0);
       z-index: 1; /* Keep below input bar which is z-index: 10000 */
       overflow: hidden;
     }
-
   </style>
 </head>
   <canvas id="bg-canvas"></canvas>
