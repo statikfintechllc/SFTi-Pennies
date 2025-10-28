@@ -1,0 +1,46 @@
+{
+  "name": "SFTi Stock Scanner",
+  "short_name": "SFTi Scanner",
+  "description": "Professional real-time penny stock scanner with AI-powered analysis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/src/assets/images/graph-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "AI Picks",
+      "short_name": "AI Picks",
+      "description": "View AI-powered stock picks",
+      "url": "/?tab=sfti_top10",
+      "icons": [
+        {
+          "src": "/src/assets/stock-chart-icon.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Scanner",
+      "short_name": "Scanner", 
+      "description": "Open stock scanner",
+      "url": "/?tab=scanner",
+      "icons": [
+        {
+          "src": "/src/assets/stock-chart-icon.svg",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

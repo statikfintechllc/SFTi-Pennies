@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SFTi Stock Scanner</title>
+    <meta name="description" content="Professional real-time penny stock scanner with AI-powered analysis and Interactive Brokers integration">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SFTi Scanner">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/src/assets/stock-chart-icon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/src/assets/images/graph-icon-512.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/src/assets/stock-chart-icon.svg">
+    <link rel="icon" type="image/png" href="/src/assets/images/graph-icon-512.png">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#10b981">
+    <meta name="msapplication-TileColor" content="#0f172a">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="/src/main.css" rel="stylesheet" />
+</head>
+
+<body class="dark">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>

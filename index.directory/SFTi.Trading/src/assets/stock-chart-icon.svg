@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle for PWA icon -->
+  <circle cx="256" cy="256" r="240" fill="#0f172a" stroke="#1e293b" stroke-width="32"/>
+  
+  <!-- Grid lines -->
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#334155" stroke-width="1" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect x="80" y="80" width="352" height="352" fill="url(#grid)"/>
+  
+  <!-- Chart axes -->
+  <line x1="100" y1="400" x2="430" y2="400" stroke="#64748b" stroke-width="3"/>
+  <line x1="100" y1="400" x2="100" y2="120" stroke="#64748b" stroke-width="3"/>
+  
+  <!-- Stock price line (smooth upward trend) -->
+  <path d="M 100 380 Q 150 360 200 320 T 300 200 T 430 140" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="6" 
+        stroke-linecap="round"/>
+  
+  <!-- Glow effect -->
+  <path d="M 100 380 Q 150 360 200 320 T 300 200 T 430 140" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="12" 
+        stroke-linecap="round"
+        opacity="0.3"/>
+  
+  <!-- Data points -->
+  <circle cx="100" cy="380" r="4" fill="#10b981"/>
+  <circle cx="150" cy="360" r="4" fill="#10b981"/>
+  <circle cx="200" cy="320" r="4" fill="#10b981"/>
+  <circle cx="250" cy="280" r="4" fill="#10b981"/>
+  <circle cx="300" cy="200" r="4" fill="#10b981"/>
+  <circle cx="350" cy="170" r="4" fill="#10b981"/>
+  <circle cx="430" cy="140" r="6" fill="#10b981"/>
+  
+  <!-- Arrow pointing up -->
+  <path d="M 420 150 L 430 140 L 440 150" 
+        fill="none" 
+        stroke="#10b981" 
+        stroke-width="4" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+  
+  <!-- Percentage indicator -->
+  <text x="380" y="120" fill="#10b981" font-family="Inter, sans-serif" font-size="24" font-weight="600">+47%</text>
+</svg>
