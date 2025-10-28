@@ -192,12 +192,26 @@ class MobileChatKeyboard {
       
       this.messages.style.paddingBottom = `${totalBottomSpace}px`;
       
+      // Dynamically position #chat-root above the input bar
+      const chatRoot = document.getElementById('chat-root');
+      if (chatRoot) {
+        const chatRootBottom = keyboardHeight + inputHeight;
+        chatRoot.style.bottom = `${chatRootBottom}px`;
+      }
+      
       // Mark as keyboard open to preserve position during viewport changes
       this.input.setAttribute('data-keyboard-open', 'true');
     } else {
       // Keyboard is closed - reset to defaults
       this.input.style.bottom = '';
       this.messages.style.paddingBottom = '';
+      
+      // Reset #chat-root to default position
+      const chatRoot = document.getElementById('chat-root');
+      if (chatRoot) {
+        chatRoot.style.bottom = '';
+      }
+      
       this.input.removeAttribute('data-keyboard-open');
     }
   }
