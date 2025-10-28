@@ -29,34 +29,7 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   
   <style>
-    /* Minimal styles - let Tailwind and copilot-page.css handle layout */
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-    }
-    
-    /* Chat root container - fixed positioning below navbar */
-    #chat-root {
-      position: fixed;
-      top: 70px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: flex;
-      flex-direction: column;
-      z-index: 1;
-    }
-    
-    /* Messages container - scrollable area */
-    #chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Hide footer on copilot page */
+    /* Hide footer on copilot page - CSS handles all layout */
     .footer {
       display: none;
     }
