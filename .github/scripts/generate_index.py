@@ -102,6 +102,7 @@ def create_trade_list_html(trades):
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/glass-effects.css">
     <link rel="stylesheet" href="assets/css/copilot-chat.css">
+    <link rel="stylesheet" href="assets/css/trading-button.css">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
