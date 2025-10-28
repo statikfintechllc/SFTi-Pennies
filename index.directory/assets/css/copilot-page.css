@@ -527,7 +527,7 @@ body {
   border-bottom: 1px solid var(--glass-border-subtle);
   transition: background 0.2s ease, transform 0.3s ease;
   overflow: hidden;
-  touch-action: pan-x pan-y; /* Allow both horizontal and vertical touch gestures */
+  touch-action: pan-y; /* Only allow vertical scrolling initially - horizontal swipe is handled by JS */
   user-select: none;
 }
 
@@ -545,7 +545,7 @@ body {
   z-index: 1;
   background: inherit;
   transition: transform 0.3s ease;
-  touch-action: pan-x; /* Allow horizontal swipe on content */
+  touch-action: none; /* Disable browser gestures - we'll handle all touch in JS */
 }
 
 .copilot-history-item.swiping .copilot-history-item-content {
