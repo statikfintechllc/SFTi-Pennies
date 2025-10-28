@@ -11,15 +11,38 @@
  * - Chat root: 1
  */
 
-body {
+/* ===== Dynamic Positioning with CSS Variables ===== */
+/* CSS variables are updated by JavaScript for smooth dynamic positioning */
+:root {
+  --header-height: 70px;
+  --input-bar-height: 0px;
+  --input-bar-top: 0px;
+  --chat-root-bottom: 0px;
+  --keyboard-height: 0px;
+  --viewport-height: 100vh;
+}
+
+/* HTML and Body managed by JavaScript for dynamic positioning */
+html {
   height: 100%;
-  overflow: hidden;
-  position: relative;
+  position: fixed;
   width: 100%;
-  top: 0;
-  left: 0;
+  overflow: hidden;
   margin: 0;
   padding: 0;
+  top: 0;
+  left: 0;
+}
+
+body {
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  top: 0;
+  left: 0;
 }
 
 /* ===== Unified Navigation & Copilot Header ===== */

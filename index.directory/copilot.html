@@ -29,28 +29,36 @@
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
   
   <style>
-    /* Prevent body scroll on mobile when keyboard is open */
-    html, body {
-      max-height: 0;
-      position: relative;
+    /* Dynamic positioning managed by JavaScript */
+    html {
+      height: 100%;
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
       margin: 0;
       padding: 0;
     }
     
     body {
-      overflow-x: hidden;
-      min-height: 100vh;
+      height: 100%;
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      top: 0;
+      left: 0;
     }
     
-    /* Ensure chat-root doesn't cause scroll */
+    /* Chat root - dynamically positioned by JS */
     #chat-root {
-      position: 0;
+      position: fixed;
       top: 70px;
       left: 0;
       right: 0;
-      bottom: 0;
-      height: calc(100vh - 70px);
+      bottom: var(--input-bar-top, 0);
       z-index: 1; /* Keep below input bar which is z-index: 10000 */
+      overflow: hidden;
     }
 
   </style>

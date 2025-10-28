@@ -25,6 +25,7 @@ class MobileChatKeyboard {
     this.messages = document.getElementById('chat-messages');
     this.input = document.getElementById('chat-input'); // Updated: now references .copilot-input-bar
     this.inputField = document.getElementById('chat-input-field'); // Updated: now references .copilot-input
+    this.header = document.getElementById('chat-header'); // Navigation header
     
     if (!this.root || !this.messages || !this.input || !this.inputField) {
       console.warn('MobileChatKeyboard: Required elements not found');
@@ -37,6 +38,9 @@ class MobileChatKeyboard {
     this.bodyScrollY = 0;
     this.keyboardHeight = 0;
     this.isKeyboardOpen = false;
+    
+    // Initialize CSS custom properties for dynamic positioning
+    this.updateCSSVariables();
     
     this.init();
   }
@@ -57,6 +61,49 @@ class MobileChatKeyboard {
     ].includes(navigator.platform)
     // iPad on iOS 13 detection
     || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+  }
+  
+  /**
+   * Update CSS custom properties for dynamic positioning
+   * This ensures html, body, and chat-root always know their dimensions
+   */
+  updateCSSVariables() {
+    const headerHeight = this.header ? this.header.offsetHeight : 70;
+    const inputHeight = this.input ? this.input.offsetHeight : 0;
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    
+    // Calculate positions
+    const inputBarTop = viewportHeight - inputHeight - this.keyboardHeight;
+    const chatRootBottom = inputHeight + this.keyboardHeight;
+    
+    // Set CSS custom properties on document root
+    document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
+    document.documentElement.style.setProperty('--input-bar-height', `${inputHeight}px`);
+    document.documentElement.style.setProperty('--input-bar-top', `${inputBarTop}px`);
+    document.documentElement.style.setProperty('--chat-root-bottom', `${chatRootBottom}px`);
+    document.documentElement.style.setProperty('--keyboard-height', `${this.keyboardHeight}px`);
+    document.documentElement.style.setProperty('--viewport-height', `${viewportHeight}px`);
+    
+    // Update html element positioning
+    document.documentElement.style.height = '100%';
+    document.documentElement.style.position = 'fixed';
+    document.documentElement.style.width = '100%';
+    document.documentElement.style.overflow = 'hidden';
+    document.documentElement.style.top = '0';
+    document.documentElement.style.left = '0';
+    
+    // Update body positioning to always know where input bar is
+    document.body.style.height = '100%';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    document.body.style.top = '0';
+    document.body.style.left = '0';
+    
+    // Update chat-root positioning
+    if (this.root) {
+      this.root.style.bottom = `${chatRootBottom}px`;
+    }
   }
   
   /**
@@ -106,6 +153,21 @@ class MobileChatKeyboard {
     
     // Scroll messages to bottom on focus
     this.setupScrollOnFocus();
+    
+    // Update CSS variables on window resize
+    window.addEventListener('resize', () => {
+      this.updateCSSVariables();
+    });
+    
+    // Update on orientation change
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.updateCSSVariables();
+      }, 100);
+    });
+    
+    // Initial update
+    this.updateCSSVariables();
   }
   
   /**
@@ -181,22 +243,8 @@ class MobileChatKeyboard {
       // Always lock to top (0) to keep header visible
       this.bodyScrollY = 0;
       
-      // Lock immediately on touch - viewport stays at top
-      document.body.style.position = 'fixed';
-      document.body.style.top = '0';
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      document.body.style.height = '100vh';
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      
-      // Also lock html element
-      document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100vh';
-      document.documentElement.style.position = 'fixed';
-      document.documentElement.style.width = '100%';
-      document.documentElement.style.top = '0';
-      document.documentElement.style.left = '0';
+      // Update CSS variables for locked state
+      this.updateCSSVariables();
     }, { passive: true });
     
     // Prevent scroll on touchmove while typing
@@ -218,23 +266,12 @@ class MobileChatKeyboard {
       if (!this.isKeyboardOpen) {
         // Keep viewport at top
         this.bodyScrollY = 0;
-        document.body.style.position = 'fixed';
-        document.body.style.top = '0';
-        document.body.style.width = '100%';
-        document.body.style.overflow = 'hidden';
-        document.body.style.height = '100vh';
-        document.body.style.left = '0';
-        document.body.style.right = '0';
-        
-        document.documentElement.style.overflow = 'hidden';
-        document.documentElement.style.height = '100vh';
-        document.documentElement.style.position = 'fixed';
-        document.documentElement.style.width = '100%';
-        document.documentElement.style.top = '0';
-        document.documentElement.style.left = '0';
       }
       
       this.isKeyboardOpen = true;
+      
+      // Update CSS variables
+      this.updateCSSVariables();
       
       // Force scroll to top to keep header visible
       // Multiple attempts needed due to iOS async keyboard behavior
@@ -244,23 +281,11 @@ class MobileChatKeyboard {
     // When input loses focus, restore body position
     this.inputField.addEventListener('blur', () => {
       if (this.isKeyboardOpen) {
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        document.body.style.height = '';
-        document.body.style.left = '';
-        document.body.style.right = '';
-        
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.height = '';
-        document.documentElement.style.position = '';
-        document.documentElement.style.width = '';
-        document.documentElement.style.top = '';
-        document.documentElement.style.left = '';
-        
         window.scrollTo(0, 0);
         this.isKeyboardOpen = false;
+        
+        // Update CSS variables for unlocked state
+        this.updateCSSVariables();
       }
     });
   }
@@ -268,10 +293,13 @@ class MobileChatKeyboard {
   /**
    * Handle keyboard height change
    * Updates inline styles on chat components
-   * Uses bottom positioning instead of transform for better stacking context
+   * Uses bottom positioning and CSS variables for dynamic layout
    */
   handleKeyboardChange(keyboardHeight) {
     this.keyboardHeight = keyboardHeight;
+    
+    // Always update CSS variables to ensure everything stays in sync
+    this.updateCSSVariables();
     
     if (keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
       // Keyboard is open
@@ -305,6 +333,9 @@ class MobileChatKeyboard {
       const newHeight = Math.min(this.inputField.scrollHeight, maxHeight);
       this.inputField.style.height = `${newHeight}px`;
       
+      // Update CSS variables when textarea size changes
+      this.updateCSSVariables();
+      
       // Trigger keyboard change handler to adjust layout
       if (this.keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
         this.handleKeyboardChange(this.keyboardHeight);
@@ -317,6 +348,9 @@ class MobileChatKeyboard {
         // Submit message (implement your send logic here)
         e.preventDefault();
         this.inputField.style.height = 'auto';
+        
+        // Update CSS variables when textarea resets
+        this.updateCSSVariables();
         
         // Trigger keyboard change handler
         if (this.keyboardHeight > MobileChatKeyboard.KEYBOARD_THRESHOLD) {
