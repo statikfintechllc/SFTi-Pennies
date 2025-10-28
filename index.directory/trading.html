@@ -136,7 +136,9 @@
     }
     
     .chart-container {
-      height: 600px;
+      height: 400px;
+      width: 100%;
+      max-width: 100%;
       background: rgba(30, 41, 59, 0.4);
       border-radius: 0.5rem;
       overflow: hidden;
@@ -147,6 +149,35 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1rem;
       margin-bottom: 2rem;
+    }
+    
+    .screening-criteria {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    
+    .screening-criteria.open {
+      max-height: 1000px;
+    }
+    
+    .criteria-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      background: rgba(15, 20, 41, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .criteria-toggle:hover {
+      background: rgba(15, 20, 41, 0.9);
     }
     
     .form-group {
@@ -213,6 +244,29 @@
     
     .negative {
       color: #ef4444;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .trading-container {
+        padding-top: 70px;
+      }
+      
+      #trading-interface {
+        padding: 1rem !important;
+      }
+      
+      .portfolio-grid-2col {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .screening-grid {
+        grid-template-columns: 1fr !important;
+      }
+      
+      .chart-container {
+        height: 300px !important;
+      }
     }
   </style>
 </head>
@@ -285,7 +339,7 @@
     </div>
     
     <!-- Trading Interface (Hidden until authenticated) -->
-    <div id="trading-interface" style="display: none; max-width: 1400px; margin: 0 auto; padding: 2rem;">
+    <div id="trading-interface" style="display: none; width: 100%; max-width: 100%; margin: 0 auto; padding: 1rem 2rem;">
       <!-- Tabs -->
       <div class="trading-tabs">
         <button class="trading-tab active" data-tab="scanning">
@@ -319,71 +373,82 @@
         <div class="glass-card">
           <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">Market Screener</h3>
           
-          <div class="screening-grid">
-            <div class="form-group">
-              <label class="form-label">Market Cap</label>
-              <select class="form-select" id="market-cap">
-                <option value="">All</option>
-                <option value="nano">Nano Cap (&lt;$50M)</option>
-                <option value="micro">Micro Cap ($50M-$300M)</option>
-                <option value="small">Small Cap ($300M-$2B)</option>
-                <option value="mid">Mid Cap ($2B-$10B)</option>
-                <option value="large">Large Cap (&gt;$10B)</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Volume</label>
-              <select class="form-select" id="volume">
-                <option value="">All</option>
-                <option value="100k">Over 100K</option>
-                <option value="500k">Over 500K</option>
-                <option value="1m">Over 1M</option>
-                <option value="5m">Over 5M</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Price Range</label>
-              <div style="display: flex; gap: 0.5rem;">
-                <input type="number" class="form-input" id="price-min" placeholder="Min" step="0.01">
-                <input type="number" class="form-input" id="price-max" placeholder="Max" step="0.01">
+          <!-- Collapsible Criteria Toggle -->
+          <button class="criteria-toggle" id="criteria-toggle">
+            <span>Filter Criteria</span>
+            <svg id="criteria-icon" style="width: 20px; height: 20px; transition: transform 0.3s;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          
+          <!-- Collapsible Criteria Section -->
+          <div class="screening-criteria open" id="screening-criteria">
+            <div class="screening-grid">
+              <div class="form-group">
+                <label class="form-label">Market Cap</label>
+                <select class="form-select" id="market-cap">
+                  <option value="">All</option>
+                  <option value="nano">Nano Cap (&lt;$50M)</option>
+                  <option value="micro">Micro Cap ($50M-$300M)</option>
+                  <option value="small">Small Cap ($300M-$2B)</option>
+                  <option value="mid">Mid Cap ($2B-$10B)</option>
+                  <option value="large">Large Cap (&gt;$10B)</option>
+                </select>
               </div>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">% Change</label>
-              <select class="form-select" id="percent-change">
-                <option value="">All</option>
-                <option value="up5">Up 5%+</option>
-                <option value="up10">Up 10%+</option>
-                <option value="up20">Up 20%+</option>
-                <option value="down5">Down 5%+</option>
-                <option value="down10">Down 10%+</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Sector</label>
-              <select class="form-select" id="sector">
-                <option value="">All Sectors</option>
-                <option value="technology">Technology</option>
-                <option value="healthcare">Healthcare</option>
-                <option value="financial">Financial</option>
-                <option value="energy">Energy</option>
-                <option value="consumer">Consumer</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label class="form-label">Exchange</label>
-              <select class="form-select" id="exchange">
-                <option value="">All</option>
-                <option value="NYSE">NYSE</option>
-                <option value="NASDAQ">NASDAQ</option>
-                <option value="AMEX">AMEX</option>
-                <option value="OTC">OTC</option>
-              </select>
+              
+              <div class="form-group">
+                <label class="form-label">Volume</label>
+                <select class="form-select" id="volume">
+                  <option value="">All</option>
+                  <option value="100k">Over 100K</option>
+                  <option value="500k">Over 500K</option>
+                  <option value="1m">Over 1M</option>
+                  <option value="5m">Over 5M</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Price Range</label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="number" class="form-input" id="price-min" placeholder="Min" step="0.01">
+                  <input type="number" class="form-input" id="price-max" placeholder="Max" step="0.01">
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">% Change</label>
+                <select class="form-select" id="percent-change">
+                  <option value="">All</option>
+                  <option value="up5">Up 5%+</option>
+                  <option value="up10">Up 10%+</option>
+                  <option value="up20">Up 20%+</option>
+                  <option value="down5">Down 5%+</option>
+                  <option value="down10">Down 10%+</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Sector</label>
+                <select class="form-select" id="sector">
+                  <option value="">All Sectors</option>
+                  <option value="technology">Technology</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="financial">Financial</option>
+                  <option value="energy">Energy</option>
+                  <option value="consumer">Consumer</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Exchange</label>
+                <select class="form-select" id="exchange">
+                  <option value="">All</option>
+                  <option value="NYSE">NYSE</option>
+                  <option value="NASDAQ">NASDAQ</option>
+                  <option value="AMEX">AMEX</option>
+                  <option value="OTC">OTC</option>
+                </select>
+              </div>
             </div>
           </div>
           
@@ -420,7 +485,7 @@
           <div id="tradingview-chart" class="chart-container"></div>
           
           <div style="margin-top: 1rem; color: rgba(255, 255, 255, 0.6); font-size: 0.875rem;">
-            <p>Charts powered by TradingView. Data populated from IBKR API when connected.</p>
+            <p><strong>Note:</strong> Charts are powered by TradingView for display. When connected to IBKR, real-time data will be fetched from the IBKR API to populate the charts. Currently displaying TradingView's default data feed for demonstration.</p>
           </div>
         </div>
       </div>
@@ -430,7 +495,7 @@
         <div class="glass-card">
           <h3 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 1.5rem;">Account Summary</h3>
           
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <div class="portfolio-grid-2col" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
             <div style="background: rgba(15, 20, 41, 0.5); padding: 1.5rem; border-radius: 0.5rem;">
               <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.875rem; margin-bottom: 0.5rem;">Net Liquidation</div>
               <div id="net-liquidation" style="font-size: 1.875rem; font-weight: 700; color: white;">$0.00</div>

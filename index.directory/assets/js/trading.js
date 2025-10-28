@@ -86,6 +86,22 @@ class TradingInterface {
         }
       });
     }
+    
+    // Criteria toggle for collapsible scanner
+    const criteriaToggle = document.getElementById('criteria-toggle');
+    const criteriaSection = document.getElementById('screening-criteria');
+    const criteriaIcon = document.getElementById('criteria-icon');
+    
+    if (criteriaToggle && criteriaSection) {
+      criteriaToggle.addEventListener('click', () => {
+        criteriaSection.classList.toggle('open');
+        if (criteriaIcon) {
+          criteriaIcon.style.transform = criteriaSection.classList.contains('open') 
+            ? 'rotate(0deg)' 
+            : 'rotate(-90deg)';
+        }
+      });
+    }
   }
   
   switchTab(tabName) {
