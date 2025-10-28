@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Review and manage trading summaries">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Review Trades - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  
+  <!-- Marked.js for Markdown Preview -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <style>
+    .preview-pane {
+      background: rgba(0, 20, 20, 0.8);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      min-height: 400px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    
+    .preview-pane h1 { font-size: 2em; margin-bottom: 0.5em; color: #00ff88; }
+    .preview-pane h2 { font-size: 1.5em; margin-top: 1em; margin-bottom: 0.5em; color: #00dd77; }
+    .preview-pane h3 { font-size: 1.2em; margin-top: 0.8em; margin-bottom: 0.4em; color: #00bb66; }
+    .preview-pane ul, .preview-pane ol { margin-left: 20px; margin-bottom: 1em; }
+    .preview-pane li { margin-bottom: 0.5em; }
+    .preview-pane p { margin-bottom: 1em; }
+    .preview-pane table { width: 100%; border-collapse: collapse; margin-bottom: 1em; }
+    .preview-pane th, .preview-pane td { border: 1px solid rgba(0, 255, 136, 0.3); padding: 8px; text-align: left; }
+    .preview-pane th { background: rgba(0, 255, 136, 0.1); }
+    .preview-pane code { background: rgba(0, 255, 136, 0.1); padding: 2px 4px; border-radius: 3px; }
+    .preview-pane pre { background: rgba(0, 20, 20, 0.5); padding: 10px; border-radius: 5px; overflow-x: auto; }
+    
+    .trade-item {
+      background: rgba(0, 30, 30, 0.6);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .trade-item:hover {
+      border-color: rgba(0, 255, 136, 0.5);
+      background: rgba(0, 30, 30, 0.8);
+    }
+    
+    .trade-item.selected {
+      border-color: #00ff88;
+      background: rgba(0, 255, 136, 0.1);
+    }
+    
+    .form-section {
+      background: rgba(0, 30, 30, 0.6);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .form-section h3 {
+      color: #00ff88;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+      padding-bottom: 10px;
+    }
+    
+    .form-field {
+      margin-bottom: 15px;
+    }
+    
+    .form-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #00dd77;
+      font-weight: 500;
+    }
+    
+    .form-field input,
+    .form-field textarea {
+      width: 100%;
+      background: rgba(0, 20, 20, 0.8);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .form-field input:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: #00ff88;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      margin-right: 10px;
+    }
+    
+    .btn-primary {
+      background: #00ff88;
+      color: #000;
+    }
+    
+    .btn-primary:hover {
+      background: #00dd77;
+    }
+    
+    .btn-secondary {
+      background: rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+      border: 1px solid #00ff88;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(0, 255, 136, 0.3);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0, 255, 136, 0.3);
+      border-top-color: #00ff88;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid rgba(0, 255, 136, 0.3);
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+    }
+    
+    .tab:hover {
+      color: #00ff88;
+    }
+    
+    .tab.active {
+      border-bottom-color: #00ff88;
+      color: #00ff88;
+    }
+    
+    .ai-consent {
+      background: rgba(255, 165, 0, 0.1);
+      border: 1px solid rgba(255, 165, 0, 0.5);
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trading</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="review.html" class="nav-link active">Review Trades</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Mentors</a>
+          <ul class="nav-submenu">
+            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
+            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item nav-buttons-group">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container" style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
+    <h1 style="text-align: center; margin-bottom: 30px; color: #00ff88;">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px; display: inline-block; vertical-align: middle; margin-right: 10px;">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      Review Trades
+    </h1>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="weekly">Weekly Summary</div>
+      <div class="tab" data-tab="monthly">Monthly Summary (AI)</div>
+      <div class="tab" data-tab="yearly">Yearly Summary (AI)</div>
+    </div>
+    
+    <!-- Weekly Summary Tab -->
+    <div id="weekly-tab" class="tab-content">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <!-- Left Column: Form -->
+        <div>
+          <div class="form-section">
+            <h3>Select Week</h3>
+            <div class="form-field">
+              <label for="week-select">Week</label>
+              <select id="week-select" style="width: 100%; background: rgba(0, 20, 20, 0.8); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; padding: 8px 12px; color: #fff;">
+                <option value="">Loading weeks...</option>
+              </select>
+            </div>
+          </div>
+          
+          <div id="trades-section" class="form-section" style="display: none;">
+            <h3>Trade Files <span id="trade-count"></span></h3>
+            <div id="trades-list"></div>
+          </div>
+          
+          <div id="summary-form" class="form-section" style="display: none;">
+            <h3>Weekly Summary Form</h3>
+            <p style="color: #aaa; font-size: 0.9em; margin-bottom: 15px;">
+              Edit the auto-generated statistics and add your analysis below.
+            </p>
+            <div id="form-fields"></div>
+          </div>
+          
+          <div id="actions-section" style="display: none; margin-top: 20px;">
+            <button id="save-draft-btn" class="btn btn-secondary">Save Draft</button>
+            <button id="publish-btn" class="btn btn-primary">Publish Weekly Summary</button>
+          </div>
+        </div>
+        
+        <!-- Right Column: Preview -->
+        <div>
+          <div class="form-section">
+            <h3>Live Preview</h3>
+            <div id="preview-pane" class="preview-pane">
+              <p style="color: #888;">Select a week to see the preview...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Monthly Summary Tab -->
+    <div id="monthly-tab" class="tab-content" style="display: none;">
+      <div class="ai-consent">
+        <h4 style="color: #ffa500; margin-bottom: 10px;">🤖 AI-Assisted Summary Generation</h4>
+        <p style="margin-bottom: 10px;">
+          This feature uses AI to analyze your trades and generate draft summaries. 
+          All generated content requires your review and approval before publishing.
+        </p>
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="ai-consent-monthly" style="width: auto;">
+          <span>I understand and consent to AI analysis of my trading data</span>
+        </label>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <div class="form-section">
+            <h3>Select Period</h3>
+            <div class="form-field">
+              <label for="monthly-year">Year</label>
+              <input type="number" id="monthly-year" min="2020" max="2030" value="2025">
+            </div>
+            <div class="form-field">
+              <label for="monthly-month">Month</label>
+              <select id="monthly-month" style="width: 100%; background: rgba(0, 20, 20, 0.8); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 4px; padding: 8px 12px; color: #fff;">
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10" selected>October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h3>AI Options</h3>
+            <div class="form-field">
+              <label>
+                <input type="checkbox" id="include-analysis" checked style="width: auto; margin-right: 8px;">
+                Include performance analysis
+              </label>
+            </div>
+            <div class="form-field">
+              <label>
+                <input type="checkbox" id="include-recommendations" checked style="width: auto; margin-right: 8px;">
+                Include recommendations
+              </label>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <button id="generate-monthly-btn" class="btn btn-primary" disabled>
+              Generate Monthly Draft
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <div class="form-section">
+            <h3>Generated Draft</h3>
+            <div id="monthly-preview" class="preview-pane">
+              <p style="color: #888;">Configure options and click "Generate Monthly Draft" to create an AI-assisted summary...</p>
+            </div>
+          </div>
+          
+          <div id="monthly-actions" style="display: none; margin-top: 20px;">
+            <button id="edit-monthly-btn" class="btn btn-secondary">Edit Draft</button>
+            <button id="publish-monthly-btn" class="btn btn-primary">Publish Monthly Summary</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Yearly Summary Tab -->
+    <div id="yearly-tab" class="tab-content" style="display: none;">
+      <div class="ai-consent">
+        <h4 style="color: #ffa500; margin-bottom: 10px;">🤖 AI-Assisted Summary Generation</h4>
+        <p style="margin-bottom: 10px;">
+          This feature uses AI to analyze your trades and generate draft summaries. 
+          All generated content requires your review and approval before publishing.
+        </p>
+        <label style="display: flex; align-items: center; gap: 10px;">
+          <input type="checkbox" id="ai-consent-yearly" style="width: auto;">
+          <span>I understand and consent to AI analysis of my trading data</span>
+        </label>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <div class="form-section">
+            <h3>Select Year</h3>
+            <div class="form-field">
+              <label for="yearly-year">Year</label>
+              <input type="number" id="yearly-year" min="2020" max="2030" value="2025">
+            </div>
+          </div>
+          
+          <div class="form-section">
+            <h3>AI Options</h3>
+            <div class="form-field">
+              <label>
+                <input type="checkbox" id="include-analysis-yearly" checked style="width: auto; margin-right: 8px;">
+                Include performance analysis
+              </label>
+            </div>
+            <div class="form-field">
+              <label>
+                <input type="checkbox" id="include-recommendations-yearly" checked style="width: auto; margin-right: 8px;">
+                Include recommendations
+              </label>
+            </div>
+          </div>
+          
+          <div style="margin-top: 20px;">
+            <button id="generate-yearly-btn" class="btn btn-primary" disabled>
+              Generate Yearly Draft
+            </button>
+          </div>
+        </div>
+        
+        <div>
+          <div class="form-section">
+            <h3>Generated Draft</h3>
+            <div id="yearly-preview" class="preview-pane">
+              <p style="color: #888;">Configure options and click "Generate Yearly Draft" to create an AI-assisted summary...</p>
+            </div>
+          </div>
+          
+          <div id="yearly-actions" style="display: none; margin-top: 20px;">
+            <button id="edit-yearly-btn" class="btn btn-secondary">Edit Draft</button>
+            <button id="publish-yearly-btn" class="btn btn-primary">Publish Yearly Summary</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Status Messages -->
+    <div id="status-message" style="margin-top: 20px;"></div>
+  </main>
+  
+  <!-- Scripts -->
+  <script src="assets/js/bundle.min.js"></script>
+  <script src="lib/templateMerge.js"></script>
+  <script src="assets/js/review-trades.js"></script>
+</body>
+</html>

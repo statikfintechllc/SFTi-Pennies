@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "node .github/scripts/build.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node tests/templateMerge.test.js && node tests/aiProvider.test.js",
+    "test:template": "node tests/templateMerge.test.js",
+    "test:ai": "node tests/aiProvider.test.js",
+    "server": "cd index.directory/server && npm start"
   },
   "keywords": [],
   "author": "",
