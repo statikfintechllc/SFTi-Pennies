@@ -200,10 +200,11 @@ class TradingInterface {
     
     console.log('🚀 Starting IBKR Client Portal authentication...');
     
+    // Open directly to the portal (not sso/Login) - IBKR will redirect to login if needed
     const popup = window.open(
-      'https://cdcdyn.interactivebrokers.com/sso/Login?forwardTo=22&RL=1&ip2loc=on',
-      'ibkr-auth',
-      'width=800,height=600,scrollbars=yes,resizable=yes'
+      'https://cdcdyn.interactivebrokers.com/portal/',
+      'ibkr-login',
+      'width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes'
     );
 
     if (!popup) {
@@ -211,96 +212,77 @@ class TradingInterface {
       return;
     }
 
-    let checkCount = 0;
-    const maxChecks = 120; // 10 minutes (5 second intervals)
+    let checkInterval;
+    let timeoutHandle;
     
     const checkAuth = async () => {
-      checkCount++;
-      console.log(`🔄 Auth check ${checkCount}/${maxChecks}...`);
-      
       try {
         // Check if popup was closed by user
         if (popup.closed) {
-          console.log('❌ Popup was closed by user');
+          console.log('🔍 Popup closed by user, checking if auth completed...');
+          clearInterval(checkInterval);
+          clearTimeout(timeoutHandle);
+          
+          // Wait 2 seconds for cookies to propagate, then check auth status
+          setTimeout(async () => {
+            const sessionValid = await this.checkIBKRSession();
+            if (sessionValid) {
+              console.log('✅ Authentication successful!');
+              this.isAuthenticated = true;
+              this.showTradingInterface();
+              this.updateConnectionStatus(true);
+              this.loadPortfolio();
+              this.runMarketScan();
+            } else {
+              console.log('❌ Authentication was cancelled or failed');
+              alert('Authentication was cancelled or failed. Please try again.');
+            }
+          }, 2000);
           return;
         }
         
-        // Try to detect successful login redirect by checking popup URL
-        try {
-          const currentUrl = popup.location.href;
-          console.log('🔍 Popup URL:', currentUrl);
-          
-          // Check if we're at the main portal (not the login page)
-          if (currentUrl.includes('portal.interactivebrokers.com') && 
-              !currentUrl.includes('sso/Login')) {
-            console.log('✅ Detected successful login redirect!');
-            popup.close();
-            
-            // Wait for cookies to be fully set, then check session
-            setTimeout(async () => {
-              const sessionValid = await this.checkIBKRSession();
-              if (sessionValid) {
-                this.isAuthenticated = true;
-                this.showTradingInterface();
-                this.updateConnectionStatus(true);
-                this.loadPortfolio();
-                this.runMarketScan();
-              } else {
-                console.log('❌ Session validation failed after successful login');
-                alert('Failed to establish session. Please try again.');
-              }
-            }, 2000);
-            return;
-          }
-        } catch (e) {
-          // Can't access popup.location due to cross-origin - this is expected
-          // Continue with session checks
-        }
-        
-        // Check session periodically (every 30 seconds)
-        if (checkCount % 6 === 0) {
-          const sessionValid = await this.checkIBKRSession();
-          if (sessionValid) {
-            console.log('✅ Session validation successful!');
-            popup.close();
-            this.isAuthenticated = true;
-            this.showTradingInterface();
-            this.updateConnectionStatus(true);
-            this.loadPortfolio();
-            this.runMarketScan();
-            return;
-          }
-        }
-        
-        // Continue checking if we haven't exceeded max attempts
-        if (checkCount < maxChecks) {
-          setTimeout(checkAuth, 5000); // Check every 5 seconds
-        } else {
-          console.log('❌ Authentication timeout after 10 minutes');
+        // Check if user is now authenticated (popup still open)
+        const sessionValid = await this.checkIBKRSession();
+        if (sessionValid) {
+          console.log('✅ Authentication detected while popup open!');
+          clearInterval(checkInterval);
+          clearTimeout(timeoutHandle);
           popup.close();
-          alert('Authentication timeout. Please try again.');
+          this.isAuthenticated = true;
+          this.showTradingInterface();
+          this.updateConnectionStatus(true);
+          this.loadPortfolio();
+          this.runMarketScan();
         }
         
       } catch (error) {
         console.error('❌ Error during auth check:', error);
-        if (checkCount < maxChecks) {
-          setTimeout(checkAuth, 5000);
-        } else {
-          popup.close();
-        }
       }
     };
 
-    // Start checking after a short delay
-    setTimeout(checkAuth, 3000);
+    // Check every 3 seconds (same as IB-G.Scanner)
+    checkInterval = setInterval(checkAuth, 3000);
+    
+    // Timeout after 5 minutes
+    timeoutHandle = setTimeout(() => {
+      clearInterval(checkInterval);
+      if (!popup.closed) {
+        popup.close();
+      }
+      console.log('❌ Authentication timeout after 5 minutes');
+      alert('Authentication timeout. Please try again.');
+    }, 300000);
+    
+    console.log('⏳ Waiting for IBKR authentication...');
   }
   
   async checkIBKRSession() {
     try {
-      console.log('🔍 Checking IBKR session...');
+      console.log('🔍 Checking IBKR session via auth/status endpoint...');
       
+      // Use the iserver/auth/status endpoint (matches IB-G.Scanner)
       const response = await fetch(
-        'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/portal/sso/validate',
+        'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/iserver/auth/status',
         {
           method: 'POST',
           credentials: 'include',
@@ -310,21 +292,17 @@ class TradingInterface {
         }
       );
 
-      console.log('✅ Session check response status:', response.status);
+      console.log('📊 Auth status response:', response.status);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Session check response data:', data);
+        console.log('📋 Auth status data:', data);
         
-        // Check for various indicators of valid session
-        const isValid = data.USER_ID || 
-                       data.USER_NAME || 
-                       data.AUTHENTICATED === true || 
-                       data.authenticated === true ||
-                       (data.features && Object.keys(data.features).length > 0);
+        // Check if authenticated (matches IB-G.Scanner logic)
+        const isAuthenticated = data.authenticated === true;
         
-        if (isValid) {
-          console.log('✅ Valid IBKR session found!');
+        if (isAuthenticated) {
+          console.log('✅ Valid IBKR session confirmed!');
           return true;
         }
       }
