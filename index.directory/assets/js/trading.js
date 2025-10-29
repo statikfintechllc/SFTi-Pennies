@@ -149,27 +149,34 @@ class TradingInterface {
   }
   
   handleOAuthCallback() {
-    // Check URL parameters for OAuth callback
+    // Check URL for OAuth callback - IBKR returns token in hash fragment or query params
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const state = urlParams.get('state');
-    const error = urlParams.get('error');
+    const hash = window.location.hash.substring(1);
+    const hashParams = new URLSearchParams(hash);
+    
+    // Check for token in hash (implicit flow) or query params
+    const accessToken = hashParams.get('access_token') || urlParams.get('access_token');
+    const tokenType = hashParams.get('token_type') || urlParams.get('token_type');
+    const expiresIn = hashParams.get('expires_in') || urlParams.get('expires_in');
+    const error = hashParams.get('error') || urlParams.get('error');
     
     if (error) {
       alert('Authentication failed: ' + error);
       return;
     }
     
-    if (code) {
-      // OAuth authorization code received from IBKR
-      console.log('IBKR OAuth code received, triggering GitHub Actions workflow...');
+    if (accessToken) {
+      // IBKR token received directly - store it
+      console.log('IBKR access token received, storing in browser...');
       
-      // Trigger GitHub Actions workflow via repository_dispatch
-      this.triggerOAuthWorkflow(code, state);
-      
-      // Store temporary authenticated state
-      this.ibkrToken = 'pending';
+      this.ibkrToken = accessToken;
       this.isAuthenticated = true;
+      
+      // Store in localStorage with expiry
+      const expiry = Date.now() + (parseInt(expiresIn || '3600') * 1000);
+      localStorage.setItem('ibkr_token', accessToken);
+      localStorage.setItem('ibkr_token_type', tokenType || 'Bearer');
+      localStorage.setItem('ibkr_token_expiry', expiry.toString());
       
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -178,75 +185,60 @@ class TradingInterface {
       this.showTradingInterface();
       this.updateConnectionStatus(true);
       
-      console.log('IBKR authentication in progress...');
+      console.log('IBKR authentication successful - token cached in browser');
+      
+      // Immediately start fetching real data
+      this.loadPortfolio();
+      this.runMarketScan();
     }
   }
   
-  async triggerOAuthWorkflow(code, state) {
-    // In a real implementation, this would trigger a GitHub Actions workflow
-    // via repository_dispatch to exchange the code for a token
-    console.log('OAuth workflow triggered with code:', code.substring(0, 10) + '...');
-    
-    // Simulate successful token exchange
-    setTimeout(() => {
-      localStorage.setItem('ibkr_token', 'token_' + code);
-      localStorage.setItem('ibkr_token_expiry', (Date.now() + (24 * 60 * 60 * 1000)).toString());
-      console.log('Token stored successfully');
-    }, 1000);
-  }
-  
   initiateIBKRAuth() {
-    // IBKR OAuth configuration
-    const IBKR_CLIENT_ID = 'YOUR_IBKR_CLIENT_ID'; // To be configured in GitHub Pages settings
+    // IBKR Web Authorization - Implicit Flow (token returned directly)
+    // Users configure their own IBKR OAuth app and use their Client ID
+    
+    // Try to get Client ID from localStorage (user can set this once)
+    let IBKR_CLIENT_ID = localStorage.getItem('ibkr_client_id');
+    
+    if (!IBKR_CLIENT_ID) {
+      // Prompt user for their IBKR Client ID on first use
+      IBKR_CLIENT_ID = prompt(
+        'Enter your IBKR OAuth Client ID:\n\n' +
+        'To get your Client ID:\n' +
+        '1. Log in to IBKR Account Management\n' +
+        '2. Go to Settings > API > Create OAuth App\n' +
+        '3. Set Redirect URI to: ' + window.location.origin + '/SFTi-Pennies/index.directory/trading.html\n' +
+        '4. Copy your Client ID and paste it here\n\n' +
+        'This will be saved in your browser for future use.'
+      );
+      
+      if (!IBKR_CLIENT_ID) {
+        alert('Client ID required to connect to IBKR');
+        return;
+      }
+      
+      // Save for future use
+      localStorage.setItem('ibkr_client_id', IBKR_CLIENT_ID.trim());
+    }
+    
     const REDIRECT_URI = `${window.location.origin}/SFTi-Pennies/index.directory/trading.html`;
     const STATE = Math.random().toString(36).substring(7);
     
     // Store state for verification
     sessionStorage.setItem('ibkr_oauth_state', STATE);
     
-    // IBKR OAuth endpoint
-    const authUrl = `https://api.ibkr.com/v1/oauth2/authorize?` +
-      `response_type=code&` +
-      `client_id=${IBKR_CLIENT_ID}&` +
+    // IBKR OAuth endpoint - using implicit flow (response_type=token)
+    // This returns the access token directly in the URL fragment
+    const authUrl = `https://api.ibkr.com/v1/api/oauth/authorize?` +
+      `response_type=token&` +
+      `client_id=${encodeURIComponent(IBKR_CLIENT_ID)}&` +
       `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
-      `state=${STATE}&` +
-      `scope=read_account read_trades execute_trades`;
+      `state=${STATE}`;
     
-    // Check if running in demo mode (no client ID configured)
-    if (IBKR_CLIENT_ID === 'YOUR_IBKR_CLIENT_ID') {
-      const useDemo = confirm(
-        'IBKR OAuth Flow:\n\n' +
-        '1. Redirect to IBKR login page\n' +
-        '2. Sign in with your IBKR credentials\n' +
-        '3. Authorize this application\n' +
-        '4. Redirect back with authorization code\n' +
-        '5. GitHub Actions exchanges code for token\n\n' +
-        'Note: IBKR Client ID not configured.\n' +
-        'Click OK to use demo mode, or Cancel to abort.'
-      );
-      
-      if (useDemo) {
-        this.simulateAuthentication();
-      }
-      return;
-    }
+    console.log('Redirecting to IBKR OAuth...');
     
     // Redirect to IBKR OAuth
     window.location.href = authUrl;
-  }
-  
-  simulateAuthentication() {
-    // Generate a fake authorization code for demo purposes
-    const fakeCode = 'demo_code_' + Math.random().toString(36).substr(2, 9);
-    
-    // Simulate OAuth redirect
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('code', fakeCode);
-    currentUrl.searchParams.set('state', 'demo');
-    
-    // Update browser history and trigger callback handler
-    window.history.pushState({}, '', currentUrl.toString());
-    this.handleOAuthCallback();
   }
   
   disconnect() {
@@ -255,6 +247,7 @@ class TradingInterface {
       this.ibkrToken = null;
       
       localStorage.removeItem('ibkr_token');
+      localStorage.removeItem('ibkr_token_type');
       localStorage.removeItem('ibkr_token_expiry');
       
       this.showAuthSection();
@@ -314,30 +307,72 @@ class TradingInterface {
     const sector = document.getElementById('sector').value;
     const exchange = document.getElementById('exchange').value;
     
-    try {
-      // Try to trigger GitHub Actions workflow to run scanner
-      // In production, this would call the GitHub API to trigger the workflow
-      console.log('Triggering scanner with criteria:', {marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
-      
-      // Try to load cached scan results
-      const response = await fetch('assets/data/scanner-results.json');
-      if (response.ok) {
-        const data = await response.json();
-        if (!data.demo && !data.error && data.results.length > 0) {
-          console.log('Loading real IBKR scan results');
-          this.displayScanResults(data.results);
-          return;
-        }
-      }
-    } catch (error) {
-      console.log('Real scan data not available, using demo data');
+    const token = localStorage.getItem('ibkr_token');
+    const tokenType = localStorage.getItem('ibkr_token_type') || 'Bearer';
+    
+    if (!token) {
+      console.log('No IBKR token, using demo data');
+      setTimeout(() => {
+        const demoResults = this.generateDemoScanResults();
+        this.displayScanResults(demoResults);
+      }, 1500);
+      return;
     }
     
-    // Fallback to demo data
-    setTimeout(() => {
-      const demoResults = this.generateDemoScanResults();
-      this.displayScanResults(demoResults);
-    }, 1500);
+    try {
+      // Make direct API call to IBKR scanner
+      console.log('Running IBKR scanner with criteria:', {marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
+      
+      const scannerParams = {
+        instrument: 'STK',
+        location: exchange || 'STK.US.MAJOR',
+        scanCode: 'TOP_PERC_GAIN',
+        filters: []
+      };
+      
+      // Add filters based on user input
+      if (priceMin) scannerParams.filters.push({code: 'priceAbove', value: parseFloat(priceMin)});
+      if (priceMax) scannerParams.filters.push({code: 'priceBelow', value: parseFloat(priceMax)});
+      if (volume) {
+        const volMap = {'100k': 100000, '500k': 500000, '1m': 1000000, '5m': 5000000};
+        scannerParams.filters.push({code: 'volumeAbove', value: volMap[volume] || 100000});
+      }
+      
+      const response = await fetch('https://api.ibkr.com/v1/api/iserver/scanner/run', {
+        method: 'POST',
+        headers: {
+          'Authorization': `${tokenType} ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(scannerParams)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Scanner API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const results = (data.Contracts || []).map(item => ({
+        symbol: item.symbol,
+        price: item.lastPrice?.toFixed(2) || '0.00',
+        change: item.changePercent?.toFixed(2) || '0.00',
+        volume: item.volume?.toFixed(0) || '0',
+        marketCap: item.marketCap ? (item.marketCap / 1000000000).toFixed(2) + 'B' : 'N/A'
+      }));
+      
+      this.displayScanResults(results);
+      console.log('✓ Real IBKR scan results loaded:', results.length, 'stocks');
+      
+    } catch (error) {
+      console.error('Error running IBKR scanner:', error);
+      console.log('Falling back to demo data');
+      
+      // Fallback to demo data
+      setTimeout(() => {
+        const demoResults = this.generateDemoScanResults();
+        this.displayScanResults(demoResults);
+      }, 500);
+    }
   }
   
   generateDemoScanResults() {
@@ -428,24 +463,84 @@ class TradingInterface {
       return;
     }
     
-    try {
-      // Try to load real data from GitHub Actions
-      const response = await fetch('assets/data/portfolio.json');
-      if (response.ok) {
-        const data = await response.json();
-        
-        if (!data.demo && !data.error) {
-          // Use real IBKR data
-          console.log('Loading real IBKR portfolio data');
-          this.displayPortfolioData(data.account, data.positions);
-          return;
-        }
-      }
-    } catch (error) {
-      console.log('Real data not available, using demo data');
+    const token = localStorage.getItem('ibkr_token');
+    const tokenType = localStorage.getItem('ibkr_token_type') || 'Bearer';
+    
+    if (!token) {
+      console.log('No IBKR token, using demo data');
+      this.loadDemoPortfolio();
+      return;
     }
     
-    // Fallback to demo data
+    try {
+      // Make direct API call to IBKR
+      console.log('Fetching portfolio from IBKR API...');
+      
+      // Get account list
+      const accountsResponse = await fetch('https://api.ibkr.com/v1/api/portfolio/accounts', {
+        headers: {
+          'Authorization': `${tokenType} ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!accountsResponse.ok) {
+        throw new Error(`API error: ${accountsResponse.status}`);
+      }
+      
+      const accounts = await accountsResponse.json();
+      const accountId = accounts[0]?.accountId;
+      
+      if (!accountId) {
+        throw new Error('No account found');
+      }
+      
+      // Fetch account summary and positions in parallel
+      const [summaryResponse, positionsResponse] = await Promise.all([
+        fetch(`https://api.ibkr.com/v1/api/portfolio/${accountId}/summary`, {
+          headers: {
+            'Authorization': `${tokenType} ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }),
+        fetch(`https://api.ibkr.com/v1/api/portfolio/${accountId}/positions/0`, {
+          headers: {
+            'Authorization': `${tokenType} ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      ]);
+      
+      const summary = await summaryResponse.json();
+      const positions = await positionsResponse.json();
+      
+      // Format data
+      const accountData = {
+        netLiquidation: summary.netliquidationvalue || 0,
+        cashBalance: summary.availablefunds || 0,
+        buyingPower: summary.buyingpower || 0,
+        dayPnL: summary.unrealizedpnl || 0
+      };
+      
+      const positionsData = positions.map(pos => ({
+        symbol: pos.contractDesc || pos.ticker,
+        quantity: pos.position,
+        avgCost: pos.avgCost,
+        currentPrice: pos.mktPrice,
+        pnl: pos.unrealizedPnL
+      }));
+      
+      this.displayPortfolioData(accountData, positionsData);
+      console.log('✓ Real IBKR portfolio data loaded');
+      
+    } catch (error) {
+      console.error('Error fetching IBKR portfolio:', error);
+      console.log('Falling back to demo data');
+      this.loadDemoPortfolio();
+    }
+  }
+  
+  loadDemoPortfolio() {
     const demoPortfolio = {
       netLiquidation: 125430.50,
       cashBalance: 45230.25,

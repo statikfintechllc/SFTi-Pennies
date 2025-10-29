@@ -1,16 +1,16 @@
-# IBKR Trading Integration Setup
+# IBKR Trading Integration - Client-Side Only
 
-This directory contains GitHub Actions workflows and scripts for integrating with Interactive Brokers (IBKR) Web API.
+This directory contains client-side integration with Interactive Brokers (IBKR) Web API using OAuth 2.0 Implicit Flow.
 
 ## Overview
 
-The integration uses:
-- **GitHub Actions** as the serverless backend
-- **OAuth 2.0** flow for authentication
-- **GitHub Secrets** for secure credential storage
-- **JSON data files** to serve real-time data to the frontend
+**No backend setup required!** The integration works entirely in the browser:
+- **OAuth 2.0 Implicit Flow** - Token returned directly to browser
+- **localStorage** - Token cached in browser for persistence
+- **Direct API Calls** - Frontend makes API calls directly to IBKR
+- **Clone and Publish** - Just publish GitHub Pages and connect
 
-## Setup Instructions
+## User Setup Instructions (One-Time)
 
 ### 1. Register IBKR OAuth Application
 
@@ -18,114 +18,110 @@ The integration uses:
 2. Navigate to Account Management > API Settings
 3. Create a new OAuth application:
    - **Application Name**: SFTi-Pennies Trading
+   - **Application Type**: Public Client / Single Page Application
    - **Redirect URI**: `https://[your-username].github.io/SFTi-Pennies/index.directory/trading.html`
-   - **Scopes**: `read_account`, `read_trades`, `execute_trades`
-4. Save your **Client ID** and **Client Secret**
+   - **Grant Type**: Implicit
+   - **Response Type**: token
+4. Save your **Client ID** (you'll enter this in the app)
 
-### 2. Configure GitHub Secrets
+### 2. Connect to IBKR (First Time)
 
-Go to your repository Settings > Secrets and variables > Actions, and add:
+1. Open your published GitHub Pages site
+2. Navigate to the Trading Interface
+3. Click "Connect IBKR"
+4. When prompted, enter your IBKR OAuth Client ID
+5. You'll be redirected to IBKR login page
+6. Sign in with your IBKR credentials
+7. Authorize the application
+8. You'll be redirected back with your access token automatically captured
 
-- `IBKR_CLIENT_ID`: Your IBKR OAuth Client ID
-- `IBKR_CLIENT_SECRET`: Your IBKR OAuth Client Secret
-- `IBKR_ACCESS_TOKEN`: (Will be populated by OAuth flow)
-- `IBKR_REFRESH_TOKEN`: (Will be populated by OAuth flow)
+### 3. Token Storage
 
-### 3. Update Trading Interface
+- Token is stored in browser `localStorage`
+- Token persists across browser sessions
+- Token expires per IBKR settings (typically 24 hours)
+- Re-authenticate when token expires
 
-Edit `index.directory/assets/js/trading.js` and replace:
-
-```javascript
-const IBKR_CLIENT_ID = 'YOUR_IBKR_CLIENT_ID';
-```
-
-With your actual Client ID, or configure it to read from a config file.
-
-### 4. OAuth Authentication Flow
-
-1. User clicks "Connect IBKR" button
-2. Redirects to IBKR OAuth authorization page
-3. User logs in and authorizes the application
-4. IBKR redirects back with authorization code
-5. Frontend triggers GitHub Actions workflow via `repository_dispatch`
-6. Workflow exchanges code for access token
-7. Token is stored as GitHub Secret
-
-### 5. Data Refresh
-
-The workflow runs:
-- **On-demand**: Manual trigger via GitHub Actions UI
-- **Scheduled**: Every 5 minutes during market hours (9:30 AM - 4:00 PM ET)
-- **On OAuth callback**: When new token is received
-
-### 6. API Endpoints
-
-The scripts fetch data from IBKR API:
-
-- **Portfolio**: `/portfolio/{accountId}/summary` and `/portfolio/{accountId}/positions`
-- **Market Data**: `/md/snapshot?symbols={symbol}`
-- **Scanner**: `/iserver/scanner/run`
-
-### 7. Data Files
-
-Fetched data is stored in `index.directory/assets/data/`:
-
-- `portfolio.json`: Account summary and positions
-- `market-data.json`: Real-time quotes
-- `scanner-results.json`: Stock scanner results
-- `ibkr-token-status.json`: OAuth token metadata
-
-## File Structure
+## How It Works
 
 ```
-.github/
-├── workflows/
-│   └── ibkr_integration.yml    # Main workflow
-└── scripts/
-    └── ibkr/
-        ├── store-oauth-token.mjs
-        ├── fetch-portfolio.mjs
-        ├── fetch-market-data.mjs
-        └── run-scanner.mjs
-
-index.directory/
-└── assets/
-    ├── data/                   # Generated data files
-    └── js/
-        └── trading.js          # Frontend integration
+1. User clicks "Connect IBKR"
+   ↓
+2. Prompted for Client ID (first time only)
+   ↓
+3. Redirect to IBKR OAuth:
+   https://api.ibkr.com/v1/api/oauth/authorize?response_type=token&client_id=...
+   ↓
+4. User logs in to IBKR
+   ↓
+5. IBKR redirects back with token in URL:
+   https://[your-site]/trading.html#access_token=xyz&token_type=Bearer&expires_in=3600
+   ↓
+6. Frontend captures token from URL fragment
+   ↓
+7. Token stored in localStorage
+   ↓
+8. Direct API calls to IBKR using token
 ```
+
+## API Endpoints Used
+
+All API calls are made directly from the browser to IBKR:
+
+- **Portfolio**: `GET /v1/api/portfolio/accounts` and `/v1/api/portfolio/{accountId}/summary`
+- **Positions**: `GET /v1/api/portfolio/{accountId}/positions/0`
+- **Scanner**: `POST /v1/api/iserver/scanner/run`
+- **Market Data**: `GET /v1/api/md/snapshot?symbols={symbol}`
 
 ## Security Notes
 
-- Never commit tokens or secrets to the repository
-- All sensitive credentials must be stored as GitHub Secrets
-- The frontend never directly accesses IBKR API (all calls through GitHub Actions)
-- OAuth tokens expire and must be refreshed
+- **Implicit Flow** is appropriate for Single Page Applications
+- No client secret is used (public client)
+- Token has limited lifetime (1-24 hours typically)
+- Token is stored only in user's browser
+- CORS handled by IBKR API
+- User must re-authenticate when token expires
+
+## Advantages
+
+✅ No backend server required  
+✅ No GitHub Actions setup needed  
+✅ No GitHub Secrets to configure  
+✅ Clone, publish, and use immediately  
+✅ Each user authenticates with their own IBKR account  
+✅ Tokens never leave the user's browser  
 
 ## Troubleshooting
 
-### Token Issues
-- Check GitHub Actions logs for OAuth exchange errors
-- Verify redirect URI matches exactly in IBKR settings
-- Ensure tokens are not expired (refresh if needed)
+### "Client ID required" prompt
+- You need to create an OAuth app in IBKR first
+- Copy your Client ID and paste it when prompted
+- Client ID is saved in browser for future use
 
-### Data Not Updating
-- Check workflow runs in GitHub Actions tab
-- Verify IBKR API credentials are valid
-- Check rate limiting (IBKR has API call limits)
+### Token expired
+- Click "Disconnect" then "Connect IBKR" again
+- You'll be redirected to IBKR to re-authenticate
 
-### Demo Mode
-If IBKR integration is not configured, the interface falls back to demo data for development/testing.
+### CORS errors
+- Ensure your redirect URI exactly matches what's configured in IBKR
+- Check that you're accessing via HTTPS (GitHub Pages)
 
-## Development
+### API errors
+- Verify your IBKR account has API access enabled
+- Check that your token hasn't expired
+- Ensure IBKR services are running
 
-To test locally:
-1. Run `npm install` to install dependencies
-2. Set environment variables: `IBKR_ACCESS_TOKEN=your_token`
-3. Run scripts: `node .github/scripts/ibkr/fetch-portfolio.mjs`
+## For Developers
+
+The implementation is in `index.directory/assets/js/trading.js`:
+
+- `initiateIBKRAuth()` - Starts OAuth flow
+- `handleOAuthCallback()` - Captures token from URL
+- `loadPortfolio()` - Fetches account data from IBKR API
+- `runMarketScan()` - Runs stock scanner via IBKR API
 
 ## API Documentation
 
 - [IBKR Web API Documentation](https://www.interactivebrokers.com/api/doc.html)
-- [OAuth 2.0 Specification](https://oauth.net/2/)
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [OAuth 2.0 Implicit Flow](https://oauth.net/2/grant-types/implicit/)
+
