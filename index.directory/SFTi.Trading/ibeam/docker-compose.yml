@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  ibeam:
+    build: .
+    container_name: ibeam
+    restart: unless-stopped
+    ports:
+      - "5000:5000"  # IBKR Client Portal Gateway
+      - "5001:5001"  # IBeam Health Check
+    environment:
+      # Required: Your IBKR credentials
+      - IBEAM_ACCOUNT=${IBKR_USERNAME}
+      - IBEAM_PASSWORD=${IBKR_PASSWORD}
+      
+      # Gateway Configuration
+      - IBEAM_GATEWAY_BASE_URL=https://localhost:5000
+      - IBEAM_GATEWAY_STARTUP=20
+      
+      # Authentication Settings
+      - IBEAM_MAX_FAILED_AUTH=5
+      - IBEAM_PAGE_LOAD_TIMEOUT=60
+      
+      # 2FA Configuration (optional)
+      - IBEAM_TWO_FA_TIMEOUT=180
+      - IBEAM_TWO_FA_SELECT_TARGET=GOOGLE_MSG
+      - IBEAM_TWO_FA_HANDLER=GOOGLE_MSG
+      
+      # Logging
+      - IBEAM_LOG_LEVEL=INFO
+      - IBEAM_LOG_TO_FILE=True
+      
+      # Session Maintenance
+      - IBEAM_HEALTH_SERVER_PORT=5001
+      - IBEAM_HEALTH_CHECK_INTERVAL=60
+      - IBEAM_REAUTHENTICATE_INTERVAL=28800  # 8 hours
+      
+      # Chrome/Selenium
+      - IBEAM_CHROME_DRIVER_PATH=/usr/bin/chromedriver
+      - IBEAM_HEADLESS=True
+    volumes:
+      - ibeam-logs:/srv/ibeam/logs
+      - ibeam-certs:/srv/clientportal.gw/root
+    networks:
+      - ibeam-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  ibeam-logs:
+  ibeam-certs:
+
+networks:
+  ibeam-network:
+    driver: bridge

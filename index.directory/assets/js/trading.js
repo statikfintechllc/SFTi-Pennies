@@ -7,9 +7,11 @@ class TradingInterface {
   constructor() {
     this.isAuthenticated = false;
     this.ibkrToken = null;
-    this.apiBaseUrl = 'https://localhost:5000/v1/api'; // IBKR Client Portal Gateway
+    // IBeam Gateway URL - connects to local IBeam instance
+    this.apiBaseUrl = 'https://localhost:5000/v1/api';
     this.currentSymbol = 'AAPL';
     this.tradingViewWidget = null;
+    this.authCheckInterval = null;
     
     this.init();
   }
@@ -212,133 +214,162 @@ class TradingInterface {
     }
   }
   
-  initiateIBKRAuth() {
-    // IBKR Client Portal Popup Authentication (matches IB-G.Scanner implementation)
-    // Opens popup → User signs in → Auto-closes on success
+  async initiateIBKRAuth() {
+    // IBeam Gateway Connection
+    // IBeam must be running locally (via Docker) and already authenticated
+    // IBeam handles IBKR authentication automatically using Selenium
     
-    console.log('🚀 Opening IBKR Client Portal login popup...');
+    console.log('🚀 Connecting to IBeam Gateway at localhost:5000...');
     
-    // Open IBKR Client Portal in popup (will redirect to login if needed)
-    const loginUrl = 'https://cdcdyn.interactivebrokers.com/portal/';
-    const popup = window.open(
-      loginUrl,
-      'ibkr-login',
-      'width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes'
-    );
+    const connectBtn = document.getElementById('connect-ibkr-btn');
+    const authBtn = document.getElementById('auth-toggle-btn');
     
-    if (!popup) {
-      alert('Popup blocked! Please allow popups for this site and try again.');
-      return;
+    if (connectBtn) {
+      connectBtn.textContent = 'Connecting...';
+      connectBtn.disabled = true;
+    }
+    if (authBtn) {
+      authBtn.textContent = 'Connecting...';
+      authBtn.disabled = true;
     }
     
-    console.log('✅ Popup opened, monitoring authentication...');
-    
-    // Monitor authentication status
-    const checkInterval = setInterval(async () => {
-      try {
-        // Check if user closed the popup
-        if (popup.closed) {
-          clearInterval(checkInterval);
-          console.log('🔍 Popup closed by user, checking authentication...');
-          
-          // Wait 2 seconds for cookies to propagate, then check
-          setTimeout(async () => {
-            const isValid = await this.checkIBKRSession();
-            if (isValid) {
-              console.log('✅ Authentication successful after popup close');
-              this.isAuthenticated = true;
-              this.showTradingInterface();
-              this.updateConnectionStatus(true);
-              this.loadPortfolio();
-              this.runMarketScan();
-            } else {
-              console.log('❌ Authentication failed or cancelled');
-              alert('Authentication was cancelled or failed. Please try again.');
-            }
-          }, 2000);
-          return;
-        }
+    try {
+      // Try to reach IBeam Gateway at localhost:5000
+      const authStatus = await this.checkIBeamAuth();
+      
+      if (authStatus.authenticated) {
+        console.log('✅ Connected to IBeam Gateway - authentication successful');
+        this.isAuthenticated = true;
+        this.ibeamConnected = true;
         
-        // Check if authenticated
-        const isValid = await this.checkIBKRSession();
-        if (isValid) {
-          console.log('✅ Authentication detected - closing popup');
-          clearInterval(checkInterval);
-          popup.close();
-          this.isAuthenticated = true;
-          this.showTradingInterface();
-          this.updateConnectionStatus(true);
-          this.loadPortfolio();
-          this.runMarketScan();
+        // Store connection info
+        localStorage.setItem('ibeam_connected', 'true');
+        localStorage.setItem('ibeam_connected_time', Date.now().toString());
+        
+        this.showTradingInterface();
+        this.updateConnectionStatus(true);
+        
+        // Start loading real data
+        this.loadPortfolio();
+        this.runMarketScan();
+        
+        // Start health check interval
+        this.startHealthCheck();
+      } else {
+        // IBeam not authenticated
+        this.showIBeamSetupGuide();
+        
+        if (connectBtn) {
+          connectBtn.textContent = 'Connect IBKR';
+          connectBtn.disabled = false;
         }
-      } catch (error) {
-        // Continue checking - auth might not be ready yet
-        console.log('⏳ Still checking...', error.message);
       }
-    }, 3000); // Check every 3 seconds (matches IB-G.Scanner)
-    
-    // Timeout after 5 minutes
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      if (!popup.closed) {
-        popup.close();
-        alert('Authentication timeout. Please try again.');
+    } catch (error) {
+      console.error('❌ Error connecting to IBeam:', error);
+      alert('Failed to connect to IBeam Gateway. Please ensure IBeam is running locally.');
+      
+      if (connectBtn) {
+        connectBtn.textContent = 'Connect IBKR';
+        connectBtn.disabled = false;
       }
-    }, 300000);
+    }
   }
   
-  async checkIBKRSession() {
+  async checkIBeamAuth() {
+    // Check if IBeam Gateway is running and authenticated at localhost:5000
     try {
-      console.log('🔍 Checking IBKR session via auth/status endpoint...');
-      
-      // Use the iserver/auth/status endpoint (matches IB-G.Scanner)
-      const response = await fetch(
-        'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/iserver/auth/status',
-        {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch('http://localhost:5000/v1/api/iserver/auth/status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include' // Include cookies
+      });
 
-      console.log('📊 Auth status response:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('📋 Auth status data:', data);
-        
-        // Check if authenticated (matches IB-G.Scanner logic)
-        const isAuthenticated = data.authenticated === true;
-        
-        if (isAuthenticated) {
-          console.log('✅ Valid IBKR session confirmed!');
-          return true;
-        }
+        return {
+          authenticated: data.authenticated === true,
+          connected: data.connected === true,
+          message: data.message || ''
+        };
       }
       
-      console.log('❌ No valid session found');
-      return false;
+      return { authenticated: false, connected: false };
     } catch (error) {
-      console.error('❌ Session check failed:', error);
-      return false;
+      console.error('❌ IBeam connection error:', error);
+      return { authenticated: false, connected: false, error: error.message };
     }
+  }
+  
+  showIBeamSetupGuide() {
+    const message = `❌ IBeam Gateway Not Running
+
+To use the trading interface, you need to run IBeam locally:
+
+**Quick Setup:**
+
+1. Install Docker: https://docker.com/products/docker-desktop
+
+2. Navigate to the IBeam directory:
+   cd index.directory/SFTi.Trading/ibeam/
+
+3. Create a .env file with your IBKR credentials:
+   IBEAM_ACCOUNT=your_username
+   IBEAM_PASSWORD=your_password
+
+4. Start IBeam:
+   docker-compose up -d
+
+5. Wait 30-60 seconds for authentication
+
+6. Refresh this page and click "Connect IBKR"
+
+**Documentation:**
+See index.directory/SFTi.Trading/IBEAM-INTEGRATION.md for complete setup instructions.`;
+    
+    alert(message);
+  }
+  
+  startHealthCheck() {
+    // Clear any existing interval
+    if (this.authCheckInterval) {
+      clearInterval(this.authCheckInterval);
+    }
+    
+    // Check IBeam status every 60 seconds
+    this.authCheckInterval = setInterval(async () => {
+      const status = await this.checkIBeamAuth();
+      
+      if (!status.authenticated) {
+        console.warn('⚠️ IBeam session lost - disconnecting');
+        this.disconnect();
+      }
+    }, 60000); // 60 seconds
   }
   
   disconnect() {
     if (confirm('Are you sure you want to disconnect from IBKR?')) {
       this.isAuthenticated = false;
+      this.ibeamConnected = false;
       
-      // Logout from IBKR Client Portal
-      fetch('https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/logout', {
+      // Clear health check interval
+      if (this.authCheckInterval) {
+        clearInterval(this.authCheckInterval);
+        this.authCheckInterval = null;
+      }
+      
+      localStorage.removeItem('ibeam_connected');
+      localStorage.removeItem('ibeam_connected_time');
+      
+      // Try to call logout endpoint
+      fetch(`${this.apiBaseUrl}/logout`, {
         method: 'POST',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         }
       }).catch(err => console.error('Logout error:', err));
-      localStorage.removeItem('ibkr_token_expiry');
       
       this.showAuthSection();
       this.updateConnectionStatus(false);
@@ -397,12 +428,49 @@ class TradingInterface {
     const sector = document.getElementById('sector').value;
     const exchange = document.getElementById('exchange').value;
     
-    const baseUrl = 'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api';
+    // IBeam Gateway URL (local)
+    const baseUrl = 'http://localhost:5000/v1/api';
     
     try {
-      // Make direct API call to IBKR Client Portal scanner
-      console.log('Running IBKR scanner with criteria:', {marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
+      // Call IBKR scanner API via IBeam Gateway
+      console.log('📡 Running IBKR scanner via IBeam Gateway...');
       
+      const scannerParams = {
+        instrument: 'STK',
+        type: 'TOP_PERC_GAIN',
+        filter: [
+          ...(marketCap !== 'All' ? [{code: 'marketCapFilter', value: marketCap}] : []),
+          ...(volume !== 'All' ? [{code: 'volumeFilter', value: volume}] : []),
+          ...(priceMin ? [{code: 'priceAbove', value: parseFloat(priceMin)}] : []),
+          ...(priceMax ? [{code: 'priceBelow', value: parseFloat(priceMax)}] : []),
+          ...(sector !== 'All Sectors' ? [{code: 'sectorFilter', value: sector}] : []),
+          ...(exchange !== 'All' ? [{code: 'exchangeFilter', value: exchange}] : [])
+        ],
+        location: 'STK.US.MAJOR',
+        size: 50
+      };
+      
+      const scanResponse = await fetch(`${baseUrl}/iserver/scanner/run`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(scannerParams)
+      });
+      
+      if (!scanResponse.ok) {
+        throw new Error(`Scanner API error: ${scanResponse.status}`);
+      }
+      
+      const scanData = await scanResponse.json();
+      console.log('✅ Scanner results received:', scanData);
+      
+      // Process and display results
+      if (scanData.contracts && scanData.contracts.length > 0) {
+        this.displayScanResults(scanData.contracts);
+      } else {
+        resultsDiv.innerHTML = '<div style="text-align: center; padding: 2rem; color: #888;">No results found matching your criteria</div>';
+      }
       const scannerParams = {
         instrument: 'STK',
         location: exchange || 'STK.US.MAJOR',
@@ -420,7 +488,6 @@ class TradingInterface {
       
       const response = await fetch(`${baseUrl}/iserver/scanner/run`, {
         method: 'POST',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -543,14 +610,13 @@ class TradingInterface {
       return;
     }
     
-    const baseUrl = 'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api';
+    const baseUrl = 'http://localhost:5000/v1/api';
     
     try {
-      // Get accounts from IBKR Client Portal
-      console.log('Fetching accounts from IBKR Client Portal...');
+      // Get accounts from IBeam Gateway (which proxies to IBKR)
+      console.log('📊 Fetching accounts from IBeam Gateway...');
       
       const accountsResponse = await fetch(`${baseUrl}/iserver/accounts`, {
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         }
@@ -567,21 +633,23 @@ class TradingInterface {
         throw new Error('No account found');
       }
       
-      // Fetch account summary and positions
+      // Fetch account summary and positions from IBeam
       const [summaryResponse, positionsResponse] = await Promise.all([
         fetch(`${baseUrl}/portfolio/${accountId}/summary`, {
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           }
         }),
         fetch(`${baseUrl}/portfolio/${accountId}/positions/0`, {
-          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           }
         })
       ]);
+      
+      if (!summaryResponse.ok || !positionsResponse.ok) {
+        throw new Error('Failed to fetch portfolio data');
+      }
       
       const summary = await summaryResponse.json();
       const positions = await positionsResponse.json();
@@ -603,11 +671,12 @@ class TradingInterface {
       }));
       
       this.displayPortfolioData(accountData, positionsData);
-      console.log('✓ Real IBKR portfolio data loaded');
+      console.log('✅ Real IBKR portfolio data loaded from IBeam Gateway');
       
     } catch (error) {
-      console.error('Error fetching IBKR portfolio:', error);
-      console.log('Falling back to demo data');
+      console.error('❌ Error fetching IBKR portfolio from IBeam:', error);
+      console.log('⚠️ Make sure IBeam is running: docker-compose up -d');
+      console.log('📋 Falling back to demo data');
       this.loadDemoPortfolio();
     }
   }
