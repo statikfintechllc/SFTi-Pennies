@@ -225,15 +225,49 @@ class TradingInterface {
           return;
         }
         
-        // Check session periodically
-        if (checkCount % 6 === 0) { // Every 30 seconds
+        // Try to detect successful login redirect by checking popup URL
+        try {
+          const currentUrl = popup.location.href;
+          console.log('🔍 Popup URL:', currentUrl);
+          
+          // Check if we're at the main portal (not the login page)
+          if (currentUrl.includes('portal.interactivebrokers.com') && 
+              !currentUrl.includes('sso/Login')) {
+            console.log('✅ Detected successful login redirect!');
+            popup.close();
+            
+            // Wait for cookies to be fully set, then check session
+            setTimeout(async () => {
+              const sessionValid = await this.checkIBKRSession();
+              if (sessionValid) {
+                this.isAuthenticated = true;
+                this.showTradingInterface();
+                this.updateConnectionStatus(true);
+                this.loadPortfolio();
+                this.runMarketScan();
+              } else {
+                console.log('❌ Session validation failed after successful login');
+                alert('Failed to establish session. Please try again.');
+              }
+            }, 2000);
+            return;
+          }
+        } catch (e) {
+          // Can't access popup.location due to cross-origin - this is expected
+          // Continue with session checks
+        }
+        
+        // Check session periodically (every 30 seconds)
+        if (checkCount % 6 === 0) {
           const sessionValid = await this.checkIBKRSession();
           if (sessionValid) {
             console.log('✅ Session validation successful!');
             popup.close();
             this.isAuthenticated = true;
-            this.showAuthStatus(true);
-            this.loadInitialData();
+            this.showTradingInterface();
+            this.updateConnectionStatus(true);
+            this.loadPortfolio();
+            this.runMarketScan();
             return;
           }
         }
