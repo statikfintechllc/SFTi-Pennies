@@ -1,127 +1,178 @@
-# IBKR Trading Integration - Client-Side Only
+# IBKR Trading Integration - Client Portal Cookie-Based Auth
 
-This directory contains client-side integration with Interactive Brokers (IBKR) Web API using OAuth 2.0 Implicit Flow.
+This directory contains client-side integration with Interactive Brokers (IBKR) Client Portal using cookie-based session authentication.
 
 ## Overview
 
-**No backend setup required!** The integration works entirely in the browser:
-- **OAuth 2.0 Implicit Flow** - Token returned directly to browser
-- **localStorage** - Token cached in browser for persistence
-- **Direct API Calls** - Frontend makes API calls directly to IBKR
-- **Clone and Publish** - Just publish GitHub Pages and connect
-
-## User Setup Instructions (One-Time)
-
-### 1. Register IBKR OAuth Application
-
-1. Log in to your IBKR account
-2. Navigate to Account Management > API Settings
-3. Create a new OAuth application:
-   - **Application Name**: SFTi-Pennies Trading
-   - **Application Type**: Public Client / Single Page Application
-   - **Redirect URI**: `https://[your-username].github.io/SFTi-Pennies/index.directory/trading.html`
-   - **Grant Type**: Implicit
-   - **Response Type**: token
-4. Save your **Client ID** (you'll enter this in the app)
-
-### 2. Connect to IBKR (First Time)
-
-1. Open your published GitHub Pages site
-2. Navigate to the Trading Interface
-3. Click "Connect IBKR"
-4. When prompted, enter your IBKR OAuth Client ID
-5. You'll be redirected to IBKR login page
-6. Sign in with your IBKR credentials
-7. Authorize the application
-8. You'll be redirected back with your access token automatically captured
-
-### 3. Token Storage
-
-- Token is stored in browser `localStorage`
-- Token persists across browser sessions
-- Token expires per IBKR settings (typically 24 hours)
-- Re-authenticate when token expires
+**Ultra-simple clone and publish workflow:**
+- **No OAuth app registration** - Uses IBKR Client Portal login directly
+- **Cookie-based session** - No tokens to manage
+- **Popup login** - User signs in via popup window
+- **Session validation** - Frontend checks for active IBKR session
+- **Direct API Calls** - Browser makes API calls to IBKR Client Portal
+- **Clone and Go** - Works immediately after cloning and publishing
 
 ## How It Works
 
 ```
 1. User clicks "Connect IBKR"
    ↓
-2. Prompted for Client ID (first time only)
+2. Popup opens to IBKR Client Portal login:
+   https://cdcdyn.interactivebrokers.com/sso/Login
    ↓
-3. Redirect to IBKR OAuth:
-   https://api.ibkr.com/v1/api/oauth/authorize?response_type=token&client_id=...
+3. User logs in with their IBKR credentials
    ↓
-4. User logs in to IBKR
+4. IBKR sets session cookies in browser
    ↓
-5. IBKR redirects back with token in URL:
-   https://[your-site]/trading.html#access_token=xyz&token_type=Bearer&expires_in=3600
+5. Frontend detects successful login by checking session
    ↓
-6. Frontend captures token from URL fragment
+6. Popup closes automatically
    ↓
-7. Token stored in localStorage
-   ↓
-8. Direct API calls to IBKR using token
+7. Direct API calls to IBKR Client Portal using cookies
 ```
 
-## API Endpoints Used
+## User Experience (Zero Setup!)
 
-All API calls are made directly from the browser to IBKR:
+1. Clone the repository
+2. Publish GitHub Pages
+3. Open the trading interface
+4. Click "Connect IBKR"
+5. Sign in to IBKR in the popup window
+6. Start trading immediately!
 
-- **Portfolio**: `GET /v1/api/portfolio/accounts` and `/v1/api/portfolio/{accountId}/summary`
-- **Positions**: `GET /v1/api/portfolio/{accountId}/positions/0`
-- **Scanner**: `POST /v1/api/iserver/scanner/run`
-- **Market Data**: `GET /v1/api/md/snapshot?symbols={symbol}`
+**No OAuth app registration. No Client IDs. No configuration.**
 
-## Security Notes
+## IBKR Client Portal API
 
-- **Implicit Flow** is appropriate for Single Page Applications
-- No client secret is used (public client)
-- Token has limited lifetime (1-24 hours typically)
-- Token is stored only in user's browser
-- CORS handled by IBKR API
-- User must re-authenticate when token expires
+Base URL: `https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api`
+
+All API calls use:
+- **Method**: GET/POST as appropriate
+- **Credentials**: `include` (sends cookies)
+- **Headers**: `Content-Type: application/json`
+
+### Session Validation
+
+```javascript
+POST /portal/sso/validate
+```
+
+Returns session info including user ID and authentication status.
+
+### Key Endpoints
+
+- **Accounts**: `GET /iserver/accounts`
+- **Portfolio Summary**: `GET /portfolio/{accountId}/summary`
+- **Positions**: `GET /portfolio/{accountId}/positions/0`
+- **Market Data Scanner**: `POST /iserver/scanner/run`
+- **Contract Search**: `GET /iserver/secdef/search?symbol={symbol}`
+- **Market Data Snapshot**: `GET /iserver/marketdata/snapshot?conids={conids}&fields=...`
+- **Logout**: `POST /logout`
+
+## Security Model
+
+- **Session Cookies**: Authentication via HTTP-only cookies set by IBKR
+- **Same-Origin**: All API calls go directly to IBKR's domain
+- **CORS**: IBKR Client Portal API supports cross-origin requests with credentials
+- **Session Lifetime**: Typically 24 hours, user must re-login when expired
+- **No Tokens**: No access tokens stored in browser storage
+
+## Implementation Details
+
+The implementation is in `index.directory/assets/js/trading.js`:
+
+### Authentication Flow
+
+```javascript
+initiateIBKRAuth() {
+  // Opens popup to IBKR login
+  const popup = window.open(
+    'https://cdcdyn.interactivebrokers.com/sso/Login?forwardTo=22&RL=1&ip2loc=on',
+    'ibkr-auth',
+    'width=800,height=600'
+  );
+  
+  // Periodically checks if login completed
+  setInterval(async () => {
+    const valid = await checkIBKRSession();
+    if (valid) {
+      popup.close();
+      // Ready to make API calls
+    }
+  }, 5000);
+}
+```
+
+### Session Validation
+
+```javascript
+async checkIBKRSession() {
+  const response = await fetch(
+    'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/portal/sso/validate',
+    {
+      method: 'POST',
+      credentials: 'include'
+    }
+  );
+  const data = await response.json();
+  return data.USER_ID || data.AUTHENTICATED === true;
+}
+```
+
+### API Calls
+
+```javascript
+async loadPortfolio() {
+  const response = await fetch(
+    'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/iserver/accounts',
+    {
+      credentials: 'include',  // Send cookies
+      headers: {'Content-Type': 'application/json'}
+    }
+  );
+  const accounts = await response.json();
+  // Process accounts...
+}
+```
 
 ## Advantages
 
 ✅ No backend server required  
 ✅ No GitHub Actions setup needed  
 ✅ No GitHub Secrets to configure  
-✅ Clone, publish, and use immediately  
-✅ Each user authenticates with their own IBKR account  
-✅ Tokens never leave the user's browser  
+✅ No OAuth app registration with IBKR  
+✅ No Client IDs to manage  
+✅ Clone, publish GitHub Pages, and use immediately  
+✅ Each user authenticates with their own IBKR credentials  
+✅ Sessions managed entirely by IBKR  
+✅ Industry-standard cookie-based authentication  
 
 ## Troubleshooting
 
-### "Client ID required" prompt
-- You need to create an OAuth app in IBKR first
-- Copy your Client ID and paste it when prompted
-- Client ID is saved in browser for future use
+### Popup blocked
+- Browser may block popups - allow popups for the site
+- Click "Connect IBKR" again after allowing popups
 
-### Token expired
+### Session expired
 - Click "Disconnect" then "Connect IBKR" again
-- You'll be redirected to IBKR to re-authenticate
+- You'll be prompted to sign in to IBKR again
 
 ### CORS errors
-- Ensure your redirect URI exactly matches what's configured in IBKR
-- Check that you're accessing via HTTPS (GitHub Pages)
+- IBKR Client Portal API supports CORS with credentials
+- Ensure you're accessing via HTTPS (GitHub Pages)
+- Check browser console for specific error messages
 
 ### API errors
-- Verify your IBKR account has API access enabled
-- Check that your token hasn't expired
-- Ensure IBKR services are running
+- Verify your IBKR account has Client Portal access enabled
+- Check that IBKR Client Portal is online
+- Try logging in directly at https://www.interactivebrokers.com/portal
 
-## For Developers
-
-The implementation is in `index.directory/assets/js/trading.js`:
-
-- `initiateIBKRAuth()` - Starts OAuth flow
-- `handleOAuthCallback()` - Captures token from URL
-- `loadPortfolio()` - Fetches account data from IBKR API
-- `runMarketScan()` - Runs stock scanner via IBKR API
+### Authentication timeout
+- Login process times out after 10 minutes
+- Complete login within 10 minutes or restart process
 
 ## API Documentation
 
-- [IBKR Web API Documentation](https://www.interactivebrokers.com/api/doc.html)
-- [OAuth 2.0 Implicit Flow](https://oauth.net/2/grant-types/implicit/)
-
+- [IBKR Client Portal API Documentation](https://www.interactivebrokers.com/api/doc.html)
+- [IBKR Client Portal Web API](https://ndcdyn.interactivebrokers.com/api/doc.html)
+- [Cookie-Based Authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies)

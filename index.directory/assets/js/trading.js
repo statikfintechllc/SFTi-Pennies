@@ -194,60 +194,127 @@ class TradingInterface {
   }
   
   initiateIBKRAuth() {
-    // IBKR Web Authorization - Implicit Flow (token returned directly)
-    // Users configure their own IBKR OAuth app and use their Client ID
+    // IBKR Client Portal Web Authentication
+    // Opens popup window for IBKR login - no OAuth app registration needed
+    // Session established via cookies, works immediately after repo clone
     
-    // Try to get Client ID from localStorage (user can set this once)
-    let IBKR_CLIENT_ID = localStorage.getItem('ibkr_client_id');
+    console.log('🚀 Starting IBKR Client Portal authentication...');
     
-    if (!IBKR_CLIENT_ID) {
-      // Prompt user for their IBKR Client ID on first use
-      IBKR_CLIENT_ID = prompt(
-        'Enter your IBKR OAuth Client ID:\n\n' +
-        'To get your Client ID:\n' +
-        '1. Log in to IBKR Account Management\n' +
-        '2. Go to Settings > API > Create OAuth App\n' +
-        '3. Set Redirect URI to: ' + window.location.origin + '/SFTi-Pennies/index.directory/trading.html\n' +
-        '4. Copy your Client ID and paste it here\n\n' +
-        'This will be saved in your browser for future use.'
-      );
+    const popup = window.open(
+      'https://cdcdyn.interactivebrokers.com/sso/Login?forwardTo=22&RL=1&ip2loc=on',
+      'ibkr-auth',
+      'width=800,height=600,scrollbars=yes,resizable=yes'
+    );
+
+    if (!popup) {
+      alert('Popup blocked! Please allow popups for this site to connect to IBKR.');
+      return;
+    }
+
+    let checkCount = 0;
+    const maxChecks = 120; // 10 minutes (5 second intervals)
+    
+    const checkAuth = async () => {
+      checkCount++;
+      console.log(`🔄 Auth check ${checkCount}/${maxChecks}...`);
       
-      if (!IBKR_CLIENT_ID) {
-        alert('Client ID required to connect to IBKR');
-        return;
+      try {
+        // Check if popup was closed by user
+        if (popup.closed) {
+          console.log('❌ Popup was closed by user');
+          return;
+        }
+        
+        // Check session periodically
+        if (checkCount % 6 === 0) { // Every 30 seconds
+          const sessionValid = await this.checkIBKRSession();
+          if (sessionValid) {
+            console.log('✅ Session validation successful!');
+            popup.close();
+            this.isAuthenticated = true;
+            this.showAuthStatus(true);
+            this.loadInitialData();
+            return;
+          }
+        }
+        
+        // Continue checking if we haven't exceeded max attempts
+        if (checkCount < maxChecks) {
+          setTimeout(checkAuth, 5000); // Check every 5 seconds
+        } else {
+          console.log('❌ Authentication timeout after 10 minutes');
+          popup.close();
+          alert('Authentication timeout. Please try again.');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error during auth check:', error);
+        if (checkCount < maxChecks) {
+          setTimeout(checkAuth, 5000);
+        } else {
+          popup.close();
+        }
+      }
+    };
+
+    // Start checking after a short delay
+    setTimeout(checkAuth, 3000);
+  }
+  
+  async checkIBKRSession() {
+    try {
+      console.log('🔍 Checking IBKR session...');
+      
+      const response = await fetch(
+        'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/portal/sso/validate',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log('✅ Session check response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Session check response data:', data);
+        
+        // Check for various indicators of valid session
+        const isValid = data.USER_ID || 
+                       data.USER_NAME || 
+                       data.AUTHENTICATED === true || 
+                       data.authenticated === true ||
+                       (data.features && Object.keys(data.features).length > 0);
+        
+        if (isValid) {
+          console.log('✅ Valid IBKR session found!');
+          return true;
+        }
       }
       
-      // Save for future use
-      localStorage.setItem('ibkr_client_id', IBKR_CLIENT_ID.trim());
+      console.log('❌ No valid session found');
+      return false;
+    } catch (error) {
+      console.error('❌ Session check failed:', error);
+      return false;
     }
-    
-    const REDIRECT_URI = `${window.location.origin}/SFTi-Pennies/index.directory/trading.html`;
-    const STATE = Math.random().toString(36).substring(7);
-    
-    // Store state for verification
-    sessionStorage.setItem('ibkr_oauth_state', STATE);
-    
-    // IBKR OAuth endpoint - using implicit flow (response_type=token)
-    // This returns the access token directly in the URL fragment
-    const authUrl = `https://api.ibkr.com/v1/api/oauth/authorize?` +
-      `response_type=token&` +
-      `client_id=${encodeURIComponent(IBKR_CLIENT_ID)}&` +
-      `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
-      `state=${STATE}`;
-    
-    console.log('Redirecting to IBKR OAuth...');
-    
-    // Redirect to IBKR OAuth
-    window.location.href = authUrl;
   }
   
   disconnect() {
     if (confirm('Are you sure you want to disconnect from IBKR?')) {
       this.isAuthenticated = false;
-      this.ibkrToken = null;
       
-      localStorage.removeItem('ibkr_token');
-      localStorage.removeItem('ibkr_token_type');
+      // Logout from IBKR Client Portal
+      fetch('https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }).catch(err => console.error('Logout error:', err));
       localStorage.removeItem('ibkr_token_expiry');
       
       this.showAuthSection();
@@ -307,20 +374,10 @@ class TradingInterface {
     const sector = document.getElementById('sector').value;
     const exchange = document.getElementById('exchange').value;
     
-    const token = localStorage.getItem('ibkr_token');
-    const tokenType = localStorage.getItem('ibkr_token_type') || 'Bearer';
-    
-    if (!token) {
-      console.log('No IBKR token, using demo data');
-      setTimeout(() => {
-        const demoResults = this.generateDemoScanResults();
-        this.displayScanResults(demoResults);
-      }, 1500);
-      return;
-    }
+    const baseUrl = 'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api';
     
     try {
-      // Make direct API call to IBKR scanner
+      // Make direct API call to IBKR Client Portal scanner
       console.log('Running IBKR scanner with criteria:', {marketCap, volume, priceMin, priceMax, percentChange, sector, exchange});
       
       const scannerParams = {
@@ -338,11 +395,11 @@ class TradingInterface {
         scannerParams.filters.push({code: 'volumeAbove', value: volMap[volume] || 100000});
       }
       
-      const response = await fetch('https://api.ibkr.com/v1/api/iserver/scanner/run', {
+      const response = await fetch(`${baseUrl}/iserver/scanner/run`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
-          'Authorization': `${tokenType} ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(scannerParams)
       });
@@ -352,11 +409,11 @@ class TradingInterface {
       }
       
       const data = await response.json();
-      const results = (data.Contracts || []).map(item => ({
-        symbol: item.symbol,
-        price: item.lastPrice?.toFixed(2) || '0.00',
-        change: item.changePercent?.toFixed(2) || '0.00',
-        volume: item.volume?.toFixed(0) || '0',
+      const results = (data.Contracts || data.contracts || []).map(item => ({
+        symbol: item.symbol || item.Symbol,
+        price: (item.lastPrice || item.last_price ||0).toFixed(2),
+        change: (item.changePercent || item.change_percent || 0).toFixed(2),
+        volume: (item.volume || item.Volume || 0).toFixed(0),
         marketCap: item.marketCap ? (item.marketCap / 1000000000).toFixed(2) + 'B' : 'N/A'
       }));
       
@@ -463,24 +520,16 @@ class TradingInterface {
       return;
     }
     
-    const token = localStorage.getItem('ibkr_token');
-    const tokenType = localStorage.getItem('ibkr_token_type') || 'Bearer';
-    
-    if (!token) {
-      console.log('No IBKR token, using demo data');
-      this.loadDemoPortfolio();
-      return;
-    }
+    const baseUrl = 'https://cdcdyn.interactivebrokers.com/portal.proxy/v1/api';
     
     try {
-      // Make direct API call to IBKR
-      console.log('Fetching portfolio from IBKR API...');
+      // Get accounts from IBKR Client Portal
+      console.log('Fetching accounts from IBKR Client Portal...');
       
-      // Get account list
-      const accountsResponse = await fetch('https://api.ibkr.com/v1/api/portfolio/accounts', {
+      const accountsResponse = await fetch(`${baseUrl}/iserver/accounts`, {
+        credentials: 'include',
         headers: {
-          'Authorization': `${tokenType} ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         }
       });
       
@@ -489,24 +538,24 @@ class TradingInterface {
       }
       
       const accounts = await accountsResponse.json();
-      const accountId = accounts[0]?.accountId;
+      const accountId = Array.isArray(accounts) ? accounts[0] : accounts.accountId || accounts.id;
       
       if (!accountId) {
         throw new Error('No account found');
       }
       
-      // Fetch account summary and positions in parallel
+      // Fetch account summary and positions
       const [summaryResponse, positionsResponse] = await Promise.all([
-        fetch(`https://api.ibkr.com/v1/api/portfolio/${accountId}/summary`, {
+        fetch(`${baseUrl}/portfolio/${accountId}/summary`, {
+          credentials: 'include',
           headers: {
-            'Authorization': `${tokenType} ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           }
         }),
-        fetch(`https://api.ibkr.com/v1/api/portfolio/${accountId}/positions/0`, {
+        fetch(`${baseUrl}/portfolio/${accountId}/positions/0`, {
+          credentials: 'include',
           headers: {
-            'Authorization': `${tokenType} ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           }
         })
       ]);
@@ -522,12 +571,12 @@ class TradingInterface {
         dayPnL: summary.unrealizedpnl || 0
       };
       
-      const positionsData = positions.map(pos => ({
-        symbol: pos.contractDesc || pos.ticker,
-        quantity: pos.position,
-        avgCost: pos.avgCost,
-        currentPrice: pos.mktPrice,
-        pnl: pos.unrealizedPnL
+      const positionsData = (Array.isArray(positions) ? positions : [positions]).map(pos => ({
+        symbol: pos.contractDesc || pos.ticker || 'N/A',
+        quantity: pos.position || 0,
+        avgCost: pos.avgCost || 0,
+        currentPrice: pos.mktPrice || 0,
+        pnl: pos.unrealizedPnL || 0
       }));
       
       this.displayPortfolioData(accountData, positionsData);
