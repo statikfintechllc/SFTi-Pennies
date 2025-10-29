@@ -17,14 +17,41 @@ class TradingInterface {
   init() {
     console.log('Trading Interface initialized');
     
+    // Check if returning from auth callback
+    this.handleAuthReturn();
+    
     // Check for existing session
     this.checkExistingSession();
     
     // Setup event listeners
     this.setupEventListeners();
     
-    // Check for OAuth callback
+    // Check for OAuth callback (legacy support)
     this.handleOAuthCallback();
+  }
+  
+  handleAuthReturn() {
+    // Check if we just came back from IBKR authentication
+    const authSuccess = localStorage.getItem('ibkr_authenticated');
+    
+    if (authSuccess === 'true') {
+      console.log('✅ Returned from successful IBKR authentication');
+      
+      // Validate the session is still active
+      this.checkIBKRSession().then(valid => {
+        if (valid) {
+          this.isAuthenticated = true;
+          this.showTradingInterface();
+          this.updateConnectionStatus(true);
+          this.loadPortfolio();
+          this.runMarketScan();
+        } else {
+          console.log('⚠️ Session expired after callback');
+          localStorage.removeItem('ibkr_authenticated');
+          localStorage.removeItem('ibkr_auth_time');
+        }
+      });
+    }
   }
   
   setupEventListeners() {
@@ -194,86 +221,27 @@ class TradingInterface {
   }
   
   initiateIBKRAuth() {
-    // IBKR Client Portal Web Authentication
-    // Opens popup window for IBKR login - no OAuth app registration needed
-    // Session established via cookies, works immediately after repo clone
+    // IBKR Client Portal Redirect-Based Authentication
+    // User clicks → Redirects to IBKR → Signs in → Automatically redirects back with session cookies
+    // No popup windows, no manual closing needed
     
-    console.log('🚀 Starting IBKR Client Portal authentication...');
+    console.log('🚀 Starting IBKR Client Portal redirect authentication...');
     
-    // Open directly to the portal (not sso/Login) - IBKR will redirect to login if needed
-    const popup = window.open(
-      'https://cdcdyn.interactivebrokers.com/portal/',
-      'ibkr-login',
-      'width=800,height=600,scrollbars=yes,resizable=yes,status=yes,location=yes'
-    );
-
-    if (!popup) {
-      alert('Popup blocked! Please allow popups for this site to connect to IBKR.');
-      return;
-    }
-
-    let checkInterval;
-    let timeoutHandle;
+    // Get the current page's full URL to use as the callback
+    const currentOrigin = window.location.origin;
+    const callbackUrl = `${currentOrigin}/index.directory/auth-callback.html`;
     
-    const checkAuth = async () => {
-      try {
-        // Check if popup was closed by user
-        if (popup.closed) {
-          console.log('🔍 Popup closed by user, checking if auth completed...');
-          clearInterval(checkInterval);
-          clearTimeout(timeoutHandle);
-          
-          // Wait 2 seconds for cookies to propagate, then check auth status
-          setTimeout(async () => {
-            const sessionValid = await this.checkIBKRSession();
-            if (sessionValid) {
-              console.log('✅ Authentication successful!');
-              this.isAuthenticated = true;
-              this.showTradingInterface();
-              this.updateConnectionStatus(true);
-              this.loadPortfolio();
-              this.runMarketScan();
-            } else {
-              console.log('❌ Authentication was cancelled or failed');
-              alert('Authentication was cancelled or failed. Please try again.');
-            }
-          }, 2000);
-          return;
-        }
-        
-        // Check if user is now authenticated (popup still open)
-        const sessionValid = await this.checkIBKRSession();
-        if (sessionValid) {
-          console.log('✅ Authentication detected while popup open!');
-          clearInterval(checkInterval);
-          clearTimeout(timeoutHandle);
-          popup.close();
-          this.isAuthenticated = true;
-          this.showTradingInterface();
-          this.updateConnectionStatus(true);
-          this.loadPortfolio();
-          this.runMarketScan();
-        }
-        
-      } catch (error) {
-        console.error('❌ Error during auth check:', error);
-      }
-    };
-
-    // Check every 3 seconds (same as IB-G.Scanner)
-    checkInterval = setInterval(checkAuth, 3000);
+    // IBKR SSO Login with redirect back to our callback
+    const ibkrLoginUrl = `https://cdcdyn.interactivebrokers.com/sso/Login?RL=1&ip2loc=on&forwardTo=${encodeURIComponent(callbackUrl)}`;
     
-    // Timeout after 5 minutes
-    timeoutHandle = setTimeout(() => {
-      clearInterval(checkInterval);
-      if (!popup.closed) {
-        popup.close();
-      }
-      console.log('❌ Authentication timeout after 5 minutes');
-      alert('Authentication timeout. Please try again.');
-    }, 300000);
+    console.log('🔄 Redirecting to IBKR login...');
+    console.log('📍 Callback URL:', callbackUrl);
     
-    console.log('⏳ Waiting for IBKR authentication...');
+    // Store where we came from so callback can redirect back
+    sessionStorage.setItem('ibkr_auth_return', window.location.href);
+    
+    // Redirect to IBKR login - user will automatically come back after auth
+    window.location.href = ibkrLoginUrl;
   }
   
   async checkIBKRSession() {
