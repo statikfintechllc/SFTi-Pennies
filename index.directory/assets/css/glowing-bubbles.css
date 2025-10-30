@@ -273,7 +273,7 @@ body {
   }
 }
 
-/* Extra small screens - stack bubbles in 2 rows */
+/* Extra small screens - reduce bubble sizes */
 @media (max-width: 480px) {
   .glowing-bubbles-container {
     gap: 0.75rem;

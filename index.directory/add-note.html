@@ -39,7 +39,7 @@
   <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="add-note.html" class="nav-brand">
+      <a href="../index.html" class="nav-brand">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
         SFTi-Pennies
       </a>
@@ -474,29 +474,28 @@ You can reference uploaded images like this:
     
     // Save note function
     async function saveNote(title, content, images) {
-      // Create filename from title
-      const filename = title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '.') + '.md';
+      // Create filename from title (using underscores for better compatibility)
+      const filename = title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '.md';
       const folderName = filename.replace('.md', '').toLowerCase();
       
-      // Process images
+      // Process images in parallel for better performance
       const imageData = [];
       if (images && images.length > 0) {
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          const reader = new FileReader();
-          await new Promise((resolve, reject) => {
+        const imagePromises = Array.from(images).map(image => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
             reader.onload = function(e) {
-              imageData.push({
+              resolve({
                 name: image.name,
                 content: e.target.result.split(',')[1],
                 type: image.type
               });
-              resolve();
             };
             reader.onerror = reject;
             reader.readAsDataURL(image);
           });
-        }
+        });
+        imageData.push(...await Promise.all(imagePromises));
       }
       
       // Create note object
