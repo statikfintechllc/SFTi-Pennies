@@ -153,6 +153,134 @@
       color: var(--accent-red);
     }
     
+    /* Trade Screenshots Gallery */
+    .screenshots-gallery {
+      margin-bottom: 2rem;
+    }
+    
+    .day-gallery {
+      margin-bottom: 2rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .day-title {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-green);
+      font-size: 1rem;
+    }
+    
+    .day-trade-count {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+    }
+    
+    .images-scroll-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-green) var(--bg-secondary);
+      padding-bottom: 0.5rem;
+    }
+    
+    .images-scroll-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .images-scroll-container::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+    
+    .images-scroll-container::-webkit-scrollbar-thumb {
+      background: var(--accent-green);
+      border-radius: 4px;
+    }
+    
+    .images-scroll-container::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-green-hover, #00cc6a);
+    }
+    
+    .images-grid {
+      display: flex;
+      gap: 1rem;
+      width: max-content;
+    }
+    
+    .image-card {
+      flex: 0 0 auto;
+      width: 250px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .image-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+      border-color: var(--accent-green);
+    }
+    
+    .image-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .image-info {
+      padding: 0.75rem;
+    }
+    
+    .image-ticker {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-green);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .image-time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .no-images-message {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    
+    @media (max-width: 768px) {
+      .image-card {
+        width: 200px;
+      }
+      
+      .image-card img {
+        height: 160px;
+      }
+    }
+    
     .form-group {
       margin-bottom: 1.5rem;
     }
@@ -418,6 +546,19 @@
             </h3>
             <div id="strategy-breakdown" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem;">
               <!-- Strategy breakdown will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <!-- Trade Screenshots Gallery -->
+          <div class="screenshots-gallery" id="screenshots-gallery">
+            <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; font-weight: 600;">
+              📸 Trade Screenshots by Day
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+              Review your charts and order executions for each trading day
+            </p>
+            <div id="daily-galleries">
+              <!-- Daily image galleries will be populated by JavaScript -->
             </div>
           </div>
           
@@ -709,6 +850,109 @@
             <span class="trade-pnl ${pnlClass}">
               ${pnlSign}$${data.pnl.toFixed(2)}
             </span>
+          </div>
+        `;
+      }).join('');
+      
+      // Update screenshots gallery
+      displayScreenshotsGallery(weekData);
+    }
+    
+    // Display screenshots gallery grouped by day
+    function displayScreenshotsGallery(weekData) {
+      const galleryContainer = document.getElementById('daily-galleries');
+      
+      // Group trades by entry date
+      const tradesByDay = {};
+      weekData.trades.forEach(trade => {
+        const date = trade.entry_date || 'Unknown';
+        if (!tradesByDay[date]) {
+          tradesByDay[date] = [];
+        }
+        tradesByDay[date].push(trade);
+      });
+      
+      // Sort dates in descending order (most recent first)
+      const sortedDates = Object.keys(tradesByDay).sort((a, b) => b.localeCompare(a));
+      
+      if (sortedDates.length === 0 || sortedDates.every(date => {
+        return tradesByDay[date].every(trade => !trade.screenshots || trade.screenshots.length === 0);
+      })) {
+        galleryContainer.innerHTML = `
+          <div class="no-images-message">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p>No screenshots available for this week</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Create galleries for each day
+      galleryContainer.innerHTML = sortedDates.map(date => {
+        const dayTrades = tradesByDay[date];
+        const allScreenshots = [];
+        
+        // Collect all screenshots from trades on this day
+        dayTrades.forEach(trade => {
+          if (trade.screenshots && trade.screenshots.length > 0) {
+            trade.screenshots.forEach(screenshot => {
+              allScreenshots.push({
+                path: screenshot,
+                ticker: trade.ticker,
+                tradeNumber: trade.trade_number,
+                time: trade.entry_time || 'N/A'
+              });
+            });
+          }
+        });
+        
+        if (allScreenshots.length === 0) {
+          return '';
+        }
+        
+        // Format date for display
+        let displayDate = date;
+        try {
+          const dateObj = new Date(date);
+          displayDate = dateObj.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        } catch (e) {
+          displayDate = date;
+        }
+        
+        const tradeCount = dayTrades.length;
+        
+        return `
+          <div class="day-gallery">
+            <div class="day-header">
+              <div class="day-title">${displayDate}</div>
+              <div class="day-trade-count">${tradeCount} ${tradeCount === 1 ? 'trade' : 'trades'} • ${allScreenshots.length} ${allScreenshots.length === 1 ? 'screenshot' : 'screenshots'}</div>
+            </div>
+            <div class="images-scroll-container">
+              <div class="images-grid">
+                ${allScreenshots.map((screenshot, idx) => {
+                  // Adjust the image path - screenshots have paths like "../../assets/..."
+                  // We need to convert to relative path from review.html
+                  let imgPath = screenshot.path.replace('../../assets/', '../assets/');
+                  
+                  return `
+                    <div class="image-card" onclick="window.open('${imgPath}', '_blank')">
+                      <img src="${imgPath}" alt="Trade ${screenshot.tradeNumber} - ${screenshot.ticker}" loading="lazy" onerror="this.parentElement.style.display='none'">
+                      <div class="image-info">
+                        <div class="image-ticker">Trade #${screenshot.tradeNumber} - ${screenshot.ticker}</div>
+                        <div class="image-time">Entry: ${screenshot.time}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
           </div>
         `;
       }).join('');
