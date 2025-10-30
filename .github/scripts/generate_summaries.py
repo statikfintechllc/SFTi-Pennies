@@ -363,6 +363,52 @@ def main():
     print("Summary generation complete!")
 
 
+def aggregate_section(reviews, section_key, prefix_format):
+    """
+    Helper function to aggregate a specific section from multiple reviews
+    
+    Args:
+        reviews (list): List of tuples containing (identifier, review_dict)
+        section_key (str): Key of the section to aggregate
+        prefix_format (str): Format string for the prefix (e.g., "**Week {}**")
+        
+    Returns:
+        str: Aggregated content or empty string
+    """
+    sections = []
+    for identifier, review in reviews:
+        if review.get(section_key):
+            prefix = prefix_format.format(identifier)
+            sections.append(f"{prefix}: {review[section_key]}")
+    
+    return "\n\n".join(sections) if sections else ""
+
+
+def get_week_month(week_number, year):
+    """
+    Determine which month a given ISO week falls into
+    
+    Args:
+        week_number (int): ISO week number (1-53)
+        year (int): Year
+        
+    Returns:
+        int: Month number (1-12) or None if cannot determine
+    """
+    try:
+        # Get the first day of the ISO week
+        # ISO week 1 is the week containing the first Thursday of the year
+        jan_4 = datetime(year, 1, 4)
+        week_1_start = jan_4 - timedelta(days=jan_4.weekday())
+        target_week_start = week_1_start + timedelta(weeks=week_number - 1)
+        
+        # Use the middle of the week (Wednesday) to determine the month
+        mid_week = target_week_start + timedelta(days=2)
+        return mid_week.month
+    except (ValueError, OverflowError):
+        return None
+
+
 def aggregate_weekly_insights(year, month):
     """
     Aggregate insights from weekly summaries for a given month
@@ -383,43 +429,41 @@ def aggregate_weekly_insights(year, month):
     }
     
     # Find all weekly summaries for this month
-    weekly_files = []
+    weekly_reviews = []
     if os.path.exists(summaries_dir):
         for filename in os.listdir(summaries_dir):
             if filename.startswith(f"weekly-{year}-W") and filename.endswith(".md"):
-                # Check if week belongs to this month
-                filepath = os.path.join(summaries_dir, filename)
-                review = load_existing_summary(filepath)
-                if review and any(review.values()):
-                    weekly_files.append(review)
+                # Extract week number from filename
+                try:
+                    week_match = re.match(r'weekly-\d{4}-W(\d{2})\.md', filename)
+                    if week_match:
+                        week_num = int(week_match.group(1))
+                        # Check if this week belongs to the target month
+                        week_month = get_week_month(week_num, int(year))
+                        if week_month == int(month):
+                            filepath = os.path.join(summaries_dir, filename)
+                            review = load_existing_summary(filepath)
+                            if review and any(review.values()):
+                                weekly_reviews.append((week_num, review))
+                except (ValueError, AttributeError):
+                    continue
     
-    if not weekly_files:
+    if not weekly_reviews:
         return None
     
-    # Aggregate insights (simple concatenation for now)
-    sections = []
-    for i, review in enumerate(weekly_files, 1):
-        if review.get("what_went_well"):
-            sections.append(f"**Week {i}**: {review['what_went_well']}")
+    # Sort by week number
+    weekly_reviews.sort(key=lambda x: x[0])
     
-    if sections:
-        aggregated["what_went_well"] = "\n\n".join(sections)
-    
-    sections = []
-    for i, review in enumerate(weekly_files, 1):
-        if review.get("needs_improvement"):
-            sections.append(f"**Week {i}**: {review['needs_improvement']}")
-    
-    if sections:
-        aggregated["needs_improvement"] = "\n\n".join(sections)
-    
-    sections = []
-    for i, review in enumerate(weekly_files, 1):
-        if review.get("key_lessons"):
-            sections.append(f"**Week {i}**: {review['key_lessons']}")
-    
-    if sections:
-        aggregated["key_lessons"] = "\n\n".join(sections)
+    # Aggregate each section using the helper function
+    aggregated["what_went_well"] = aggregate_section(
+        weekly_reviews, "what_went_well", "**Week {}"
+    )
+    aggregated["needs_improvement"] = aggregate_section(
+        weekly_reviews, "needs_improvement", "**Week {}"
+    )
+    aggregated["key_lessons"] = aggregate_section(
+        weekly_reviews, "key_lessons", "**Week {}"
+    )
     
     return aggregated if any(aggregated.values()) else None
 
@@ -443,61 +487,36 @@ def aggregate_monthly_insights(year):
     }
     
     # Find all monthly summaries for this year
-    monthly_files = []
+    monthly_reviews = []
     if os.path.exists(summaries_dir):
-        for filename in os.listdir(summaries_dir):
+        for filename in sorted(os.listdir(summaries_dir)):
             if filename.startswith(f"monthly-{year}-") and filename.endswith(".md"):
-                filepath = os.path.join(summaries_dir, filename)
-                review = load_existing_summary(filepath)
-                if review and any(review.values()):
-                    monthly_files.append((filename, review))
+                # Extract month number from filename
+                try:
+                    month_match = re.match(r'monthly-\d{4}-(\d{2})\.md', filename)
+                    if month_match:
+                        month_num = int(month_match.group(1))
+                        month_name = datetime(int(year), month_num, 1).strftime("%B")
+                        filepath = os.path.join(summaries_dir, filename)
+                        review = load_existing_summary(filepath)
+                        if review and any(review.values()):
+                            monthly_reviews.append((month_name, review))
+                except (ValueError, AttributeError):
+                    continue
     
-    if not monthly_files:
+    if not monthly_reviews:
         return None
     
-    # Aggregate insights
-    sections = []
-    for filename, review in monthly_files:
-        # Extract month name from filename
-        month_num = filename.split("-")[-1].replace(".md", "")
-        try:
-            month_name = datetime(int(year), int(month_num), 1).strftime("%B")
-        except:
-            month_name = f"Month {month_num}"
-        
-        if review.get("what_went_well"):
-            sections.append(f"**{month_name}**: {review['what_went_well']}")
-    
-    if sections:
-        aggregated["what_went_well"] = "\n\n".join(sections)
-    
-    sections = []
-    for filename, review in monthly_files:
-        month_num = filename.split("-")[-1].replace(".md", "")
-        try:
-            month_name = datetime(int(year), int(month_num), 1).strftime("%B")
-        except:
-            month_name = f"Month {month_num}"
-        
-        if review.get("needs_improvement"):
-            sections.append(f"**{month_name}**: {review['needs_improvement']}")
-    
-    if sections:
-        aggregated["needs_improvement"] = "\n\n".join(sections)
-    
-    sections = []
-    for filename, review in monthly_files:
-        month_num = filename.split("-")[-1].replace(".md", "")
-        try:
-            month_name = datetime(int(year), int(month_num), 1).strftime("%B")
-        except:
-            month_name = f"Month {month_num}"
-        
-        if review.get("key_lessons"):
-            sections.append(f"**{month_name}**: {review['key_lessons']}")
-    
-    if sections:
-        aggregated["key_lessons"] = "\n\n".join(sections)
+    # Aggregate each section using the helper function
+    aggregated["what_went_well"] = aggregate_section(
+        monthly_reviews, "what_went_well", "**{}**"
+    )
+    aggregated["needs_improvement"] = aggregate_section(
+        monthly_reviews, "needs_improvement", "**{}**"
+    )
+    aggregated["key_lessons"] = aggregate_section(
+        monthly_reviews, "key_lessons", "**{}**"
+    )
     
     return aggregated if any(aggregated.values()) else None
 
