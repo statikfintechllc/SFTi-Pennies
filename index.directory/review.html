@@ -904,9 +904,15 @@
       allWeeks.forEach(week => {
         const option = document.createElement('option');
         option.value = week.key;
-        option.textContent = `Week ${parseInt(week.week)}, ${week.year} - ${week.trades.length} trades (${week.totalPnL >= 0 ? '+' : ''}$${week.totalPnL.toFixed(2)})`;
+        option.textContent = `Week ${parseInt(week.week)}, ${week.year} - ${week.trades.length} trades (${formatCurrency(week.totalPnL)})`;
         weekSelect.appendChild(option);
       });
+    }
+    
+    // Helper function to format currency
+    function formatCurrency(amount) {
+      const sign = amount >= 0 ? '+' : '';
+      return `${sign}$${Math.abs(amount).toFixed(2)}`;
     }
     
     // Handle week selection
@@ -972,13 +978,13 @@
         <div class="stat-card">
           <div class="stat-label">Total P&L</div>
           <div class="stat-value ${weekData.totalPnL >= 0 ? 'positive' : 'negative'}">
-            ${weekData.totalPnL >= 0 ? '+' : ''}$${weekData.totalPnL.toFixed(2)}
+            ${formatCurrency(weekData.totalPnL)}
           </div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Avg P&L</div>
           <div class="stat-value ${parseFloat(avgPnL) >= 0 ? 'positive' : 'negative'}">
-            ${parseFloat(avgPnL) >= 0 ? '+' : ''}$${avgPnL}
+            ${formatCurrency(parseFloat(avgPnL))}
           </div>
         </div>
       `;
@@ -988,7 +994,6 @@
       tradesList.innerHTML = weekData.trades.map(trade => {
         const pnl = parseFloat(trade.pnl_usd) || 0;
         const pnlClass = pnl >= 0 ? 'positive' : 'negative';
-        const pnlSign = pnl >= 0 ? '+' : '';
         
         return `
           <div class="trade-item">
@@ -999,7 +1004,7 @@
               </span>
             </div>
             <div class="trade-pnl ${pnlClass}">
-              ${pnlSign}$${Math.abs(pnl).toFixed(2)}
+              ${formatCurrency(pnl)}
             </div>
           </div>
         `;
@@ -1019,7 +1024,6 @@
       const strategyBreakdown = document.getElementById('strategy-breakdown');
       strategyBreakdown.innerHTML = Object.entries(strategies).map(([strategy, data]) => {
         const pnlClass = data.pnl >= 0 ? 'positive' : 'negative';
-        const pnlSign = data.pnl >= 0 ? '+' : '';
         
         return `
           <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
@@ -1027,7 +1031,7 @@
               <strong>${strategy}</strong> (${data.count} ${data.count === 1 ? 'trade' : 'trades'})
             </span>
             <span class="trade-pnl ${pnlClass}">
-              ${pnlSign}$${data.pnl.toFixed(2)}
+              ${formatCurrency(data.pnl)}
             </span>
           </div>
         `;

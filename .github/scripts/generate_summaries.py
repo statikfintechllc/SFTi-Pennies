@@ -11,6 +11,10 @@ import re
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+# Regex patterns for file matching
+WEEKLY_PATTERN = r'weekly-\d{4}-W(\d{2})\.md'
+MONTHLY_PATTERN = r'monthly-\d{4}-(\d{2})\.md'
+
 
 def load_trades_index():
     """Load the trades index JSON file"""
@@ -49,17 +53,17 @@ def load_existing_summary(filepath):
         
         # Extract "What Went Well" section
         match = re.search(r'### What Went Well\s*\n\s*\n(.*?)(?=\n###|\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled'):
+        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
             review["what_went_well"] = match.group(1).strip()
         
         # Extract "What Needs Improvement" section
         match = re.search(r'### What Needs Improvement\s*\n\s*\n(.*?)(?=\n###|\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled'):
+        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
             review["needs_improvement"] = match.group(1).strip()
         
         # Extract "Key Lessons Learned" section
         match = re.search(r'### Key Lessons Learned\s*\n\s*\n(.*?)(?=\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled'):
+        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
             review["key_lessons"] = match.group(1).strip()
         
         # Extract "Next Period Goals" section
@@ -398,7 +402,7 @@ def get_week_month(week_number, year):
     try:
         # Get the first day of the ISO week
         # ISO week 1 is the week containing the first Thursday of the year
-        jan_4 = datetime(year, 1, 4)
+        jan_4 = datetime(int(year), 1, 4)
         week_1_start = jan_4 - timedelta(days=jan_4.weekday())
         target_week_start = week_1_start + timedelta(weeks=week_number - 1)
         
@@ -435,7 +439,7 @@ def aggregate_weekly_insights(year, month):
             if filename.startswith(f"weekly-{year}-W") and filename.endswith(".md"):
                 # Extract week number from filename
                 try:
-                    week_match = re.match(r'weekly-\d{4}-W(\d{2})\.md', filename)
+                    week_match = re.match(WEEKLY_PATTERN, filename)
                     if week_match:
                         week_num = int(week_match.group(1))
                         # Check if this week belongs to the target month
@@ -492,7 +496,7 @@ def aggregate_monthly_insights(year):
         for filename in sorted(os.listdir(summaries_dir)):
             if filename.startswith(f"monthly-{year}-") and filename.endswith(".md"):
                 # Extract month number from filename
-                month_match = re.match(r'monthly-\d{4}-(\d{2})\.md', filename)
+                month_match = re.match(MONTHLY_PATTERN, filename)
                 if not month_match:
                     # Optionally log or print a warning about filename format
                     # print(f"Warning: Filename {filename} does not match expected pattern.")
