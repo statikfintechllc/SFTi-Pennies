@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add new trading note">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Add Note - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  <link rel="stylesheet" href="assets/css/review-trades.css">
+  <link rel="stylesheet" href="assets/css/glowing-bubbles.css">
+  <link rel="stylesheet" href="styles/markdown.css">
+  
+  <!-- Marked.js for markdown preview -->
+  <script src="assets/js/bundle.min.js"></script>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="review.html" class="nav-link">Review Trades</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Mentors</a>
+          <ul class="nav-submenu">
+            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
+            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item nav-buttons-group">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Add New Trading Note
+      </h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Create a new trading note in Markdown format or upload an existing Markdown file.
+      </p>
+      
+      <!-- Alert Container -->
+      <div id="alert-container" style="margin-bottom: 1.5rem;"></div>
+      
+      <!-- Input Mode Selector -->
+      <div class="glass-card" style="max-width: 800px; margin: 0 auto 1.5rem;">
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button type="button" id="write-mode-btn" class="btn btn-primary">
+            ✍️ Write Note
+          </button>
+          <button type="button" id="upload-mode-btn" class="btn btn-secondary">
+            📤 Upload Markdown
+          </button>
+        </div>
+      </div>
+      
+      <!-- Write Mode Form -->
+      <form id="note-write-form" class="glass-card" style="max-width: 1200px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="note-title" class="form-label">
+            Note Title <span style="color: var(--accent-red);">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="note-title" 
+            name="note-title" 
+            class="form-input"
+            placeholder="Enter note title (e.g., Dip and Rip Strategy)"
+            required
+          >
+          <p class="form-help">Enter a descriptive title for your trading note</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="note-images" class="form-label">
+            Images (Optional)
+          </label>
+          <input 
+            type="file" 
+            id="note-images" 
+            name="note-images" 
+            class="form-input"
+            accept="image/*"
+            multiple
+            style="padding: 1rem;"
+          >
+          <div id="images-info" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"></div>
+          <p class="form-help">Select images to include in your note (optional, multiple files supported)</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="note-content" class="form-label">
+            Note Content (Markdown) <span style="color: var(--accent-red);">*</span>
+          </label>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <button type="button" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;" onclick="showPreview()">
+              👁️ Preview
+            </button>
+            <button type="button" class="btn btn-secondary" style="padding: 0.25rem 0.75rem; font-size: 0.875rem;" onclick="hidePreview()">
+              ✏️ Edit
+            </button>
+          </div>
+          <textarea 
+            id="note-content" 
+            name="note-content" 
+            class="form-input"
+            rows="15"
+            placeholder="# Your Note Title
+
+Write your note here using **Markdown** formatting...
+
+## Key Points
+- Point 1
+- Point 2
+
+## Images
+You can reference uploaded images like this:
+![Image Description](./image-name.png)"
+            required
+            style="font-family: var(--font-mono); font-size: 0.875rem;"
+          ></textarea>
+          <div id="preview-container" class="markdown-body" style="display: none; padding: 1.5rem; background: var(--bg-tertiary); border-radius: 0.5rem; min-height: 200px; max-height: 500px; overflow-y: auto;"></div>
+          <p class="form-help">Write your note using Markdown syntax. <a href="https://www.markdownguide.org/cheat-sheet/" target="_blank" style="color: var(--accent-green);">Markdown Guide</a></p>
+        </div>
+        
+        <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <a href="notes.html" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="write-submit-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Save Note
+          </button>
+        </div>
+      </form>
+      
+      <!-- Upload Mode Form -->
+      <form id="note-upload-form" class="glass-card" style="max-width: 800px; margin: 0 auto; display: none;">
+        <div class="form-group">
+          <label for="upload-note-title" class="form-label">
+            Note Title <span style="color: var(--accent-red);">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="upload-note-title" 
+            name="upload-note-title" 
+            class="form-input"
+            placeholder="Enter note title (e.g., Dip and Rip Strategy)"
+            required
+          >
+          <p class="form-help">Enter a descriptive title for your trading note</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="markdown-file" class="form-label">
+            Markdown File <span style="color: var(--accent-red);">*</span>
+          </label>
+          <input 
+            type="file" 
+            id="markdown-file" 
+            name="markdown-file" 
+            class="form-input"
+            accept=".md,.markdown,text/markdown"
+            required
+            style="padding: 1rem;"
+          >
+          <div id="md-file-info" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"></div>
+          <p class="form-help">Select a Markdown file (.md) to upload</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="upload-note-images" class="form-label">
+            Images (Optional)
+          </label>
+          <input 
+            type="file" 
+            id="upload-note-images" 
+            name="upload-note-images" 
+            class="form-input"
+            accept="image/*"
+            multiple
+            style="padding: 1rem;"
+          >
+          <div id="upload-images-info" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"></div>
+          <p class="form-help">Select images referenced in your markdown file (optional, multiple files supported)</p>
+        </div>
+        
+        <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <a href="notes.html" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="upload-submit-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Upload Note
+          </button>
+        </div>
+      </form>
+      
+      <!-- Instructions Section -->
+      <section class="glass-card" style="max-width: 1200px; margin: 2rem auto;">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-green);">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          How it works
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+          <div>
+            <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">✍️ Write Mode</h4>
+            <ol style="padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+              <li>Enter a descriptive title</li>
+              <li>Optionally upload images</li>
+              <li>Write your note in Markdown</li>
+              <li>Use Preview to see rendered output</li>
+              <li>Click "Save Note" to save</li>
+            </ol>
+          </div>
+          <div>
+            <h4 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">📤 Upload Mode</h4>
+            <ol style="padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+              <li>Enter a descriptive title</li>
+              <li>Select your .md file</li>
+              <li>Optionally upload images</li>
+              <li>Click "Upload Note" to save</li>
+            </ol>
+          </div>
+        </div>
+        <p style="color: var(--text-secondary); margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+          Notes are saved to <code style="background: var(--bg-tertiary); padding: 0.125rem 0.375rem; border-radius: 0.25rem;">SFTi.Notez/</code> and 
+          images to <code style="background: var(--bg-tertiary); padding: 0.125rem 0.375rem; border-radius: 0.25rem;">assets/sfti.notez.assets/{note-name}/</code>
+        </p>
+      </section>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    <p>
+      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
+      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
+    </p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="render/markdownRenderer.js"></script>
+  
+  <!-- Note Upload Script -->
+  <script>
+    let currentMode = 'write';
+    let markdownRenderer = null;
+    
+    // Helper function to escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
+    // Initialize markdown renderer
+    document.addEventListener('DOMContentLoaded', () => {
+      markdownRenderer = new MarkdownRenderer();
+    });
+    
+    // Mode switching
+    document.getElementById('write-mode-btn').addEventListener('click', function() {
+      currentMode = 'write';
+      document.getElementById('note-write-form').style.display = 'block';
+      document.getElementById('note-upload-form').style.display = 'none';
+      this.classList.remove('btn-secondary');
+      this.classList.add('btn-primary');
+      document.getElementById('upload-mode-btn').classList.remove('btn-primary');
+      document.getElementById('upload-mode-btn').classList.add('btn-secondary');
+    });
+    
+    document.getElementById('upload-mode-btn').addEventListener('click', function() {
+      currentMode = 'upload';
+      document.getElementById('note-write-form').style.display = 'none';
+      document.getElementById('note-upload-form').style.display = 'block';
+      this.classList.remove('btn-secondary');
+      this.classList.add('btn-primary');
+      document.getElementById('write-mode-btn').classList.remove('btn-primary');
+      document.getElementById('write-mode-btn').classList.add('btn-secondary');
+    });
+    
+    // Preview functions
+    function showPreview() {
+      const content = document.getElementById('note-content').value;
+      const preview = document.getElementById('preview-container');
+      const textarea = document.getElementById('note-content');
+      
+      if (markdownRenderer && content) {
+        // MarkdownRenderer uses marked.js in GFM mode which does not render raw HTML by default,
+        // providing XSS protection for user-generated markdown content
+        preview.innerHTML = markdownRenderer.render(content);
+        preview.style.display = 'block';
+        textarea.style.display = 'none';
+      }
+    }
+    
+    function hidePreview() {
+      const preview = document.getElementById('preview-container');
+      const textarea = document.getElementById('note-content');
+      preview.style.display = 'none';
+      textarea.style.display = 'block';
+    }
+    
+    // Show file info for images (write mode)
+    document.getElementById('note-images').addEventListener('change', function(e) {
+      const files = e.target.files;
+      const imagesInfo = document.getElementById('images-info');
+      
+      if (files.length > 0) {
+        const fileList = Array.from(files).map(f => escapeHtml(f.name)).join(', ');
+        imagesInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected ${files.length} image(s): <strong>${fileList}</strong>`;
+      } else {
+        imagesInfo.innerHTML = '';
+      }
+    });
+    
+    // Show file info for markdown file
+    document.getElementById('markdown-file').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const fileInfo = document.getElementById('md-file-info');
+      
+      if (file) {
+        const fileName = escapeHtml(file.name);
+        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${fileName}</strong>`;
+      } else {
+        fileInfo.innerHTML = '';
+      }
+    });
+    
+    // Show file info for images (upload mode)
+    document.getElementById('upload-note-images').addEventListener('change', function(e) {
+      const files = e.target.files;
+      const imagesInfo = document.getElementById('upload-images-info');
+      
+      if (files.length > 0) {
+        const fileList = Array.from(files).map(f => escapeHtml(f.name)).join(', ');
+        imagesInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected ${files.length} image(s): <strong>${fileList}</strong>`;
+      } else {
+        imagesInfo.innerHTML = '';
+      }
+    });
+    
+    // Handle write mode form submission
+    document.getElementById('note-write-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('note-title').value.trim();
+      const content = document.getElementById('note-content').value.trim();
+      const imagesInput = document.getElementById('note-images');
+      const images = imagesInput.files;
+      
+      if (!title || !content) {
+        showAlert('Please fill in all required fields.', 'error');
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('write-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Saving...';
+      
+      try {
+        await saveNote(title, content, images);
+      } catch (error) {
+        console.error('Save error:', error);
+        showAlert('Error saving note. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Save Note';
+      }
+    });
+    
+    // Handle upload mode form submission
+    document.getElementById('note-upload-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('upload-note-title').value.trim();
+      const markdownFile = document.getElementById('markdown-file').files[0];
+      const imagesInput = document.getElementById('upload-note-images');
+      const images = imagesInput.files;
+      
+      if (!title || !markdownFile) {
+        showAlert('Please fill in all required fields.', 'error');
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('upload-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Uploading...';
+      
+      try {
+        // Read markdown file
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          const content = event.target.result;
+          await saveNote(title, content, images);
+        };
+        reader.onerror = function() {
+          showAlert('Error reading markdown file. Please try again.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Upload Note';
+        };
+        reader.readAsText(markdownFile);
+      } catch (error) {
+        console.error('Upload error:', error);
+        showAlert('Error uploading note. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Upload Note';
+      }
+    });
+    
+    // Save note function
+    async function saveNote(title, content, images) {
+      // Create filename from title (using underscores for better compatibility)
+      const filename = title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '.md';
+      const folderName = filename.replace('.md', '').toLowerCase();
+      
+      // Process images in parallel for better performance
+      const imageData = [];
+      if (images && images.length > 0) {
+        const imagePromises = Array.from(images).map(image => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              resolve({
+                name: image.name,
+                content: e.target.result.split(',')[1],
+                type: image.type
+              });
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(image);
+          });
+        });
+        imageData.push(...await Promise.all(imagePromises));
+      }
+      
+      // Create note object
+      const noteData = {
+        title: title,
+        filename: filename,
+        content: content,
+        images: imageData,
+        folder: folderName,
+        created_at: new Date().toISOString()
+      };
+      
+      // Store in localStorage (in production, this would be sent to backend)
+      const existingNotes = JSON.parse(localStorage.getItem('uploaded_notes') || '[]');
+      existingNotes.push(noteData);
+      localStorage.setItem('uploaded_notes', JSON.stringify(existingNotes));
+      
+      showAlert('Note saved successfully! Redirecting to Notes page...', 'success');
+      
+      // Reset forms
+      document.getElementById('note-write-form').reset();
+      document.getElementById('note-upload-form').reset();
+      document.getElementById('images-info').innerHTML = '';
+      document.getElementById('md-file-info').innerHTML = '';
+      document.getElementById('upload-images-info').innerHTML = '';
+      
+      // Redirect to notes page after 2 seconds
+      setTimeout(() => {
+        window.location.href = 'notes.html';
+      }, 2000);
+    }
+    
+    // Show alert message
+    function showAlert(message, type = 'info') {
+      const container = document.getElementById('alert-container');
+      const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-warning';
+      
+      // Escape message to prevent XSS
+      const escapedMessage = escapeHtml(message);
+      
+      container.innerHTML = `
+        <div class="alert ${alertClass}">
+          <p>${escapedMessage}</p>
+        </div>
+      `;
+      
+      // Auto-hide after 5 seconds for non-error messages
+      if (type !== 'error') {
+        setTimeout(() => {
+          container.innerHTML = '';
+        }, 5000);
+      }
+    }
+    
+    // Setup auth button
+    document.addEventListener('DOMContentLoaded', () => {
+      const authButton = document.getElementById('auth-button');
+      if (authButton) {
+        const auth = new GitHubAuth();
+        if (auth.isAuthenticated()) {
+          authButton.textContent = 'Logout';
+          authButton.addEventListener('click', () => {
+            auth.clearAuth();
+            window.location.reload();
+          });
+        } else {
+          authButton.textContent = 'Login';
+          authButton.addEventListener('click', () => {
+            showAuthPrompt();
+          });
+        }
+      }
+    });
+  </script>
+  
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+      background: rgba(0, 255, 136, 0.1);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+    
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+    
+    .alert-warning {
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 1);
+      color: rgba(251, 191, 36, 1);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  
+  <!-- Navigation dropdown handlers -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/glowing-bubbles.js"></script>
+</body>
+</html>

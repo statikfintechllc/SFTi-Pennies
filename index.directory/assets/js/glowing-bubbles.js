@@ -24,19 +24,31 @@
 
     // Find the index of 'index.directory' in the path
     const indexDirIdx = pathParts.indexOf('index.directory');
+    
     if (indexDirIdx !== -1) {
-      // Number of segments after 'index.directory'
-      const afterIndexDir = pathParts.length - (indexDirIdx + 1);
-      if (afterIndexDir === 0) {
-        // We are at the root of index.directory
+      // We are inside index.directory
+      // Count how many levels deep we are AFTER index.directory (excluding the HTML file)
+      const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
+      
+      if (afterIndexDir <= 0) {
+        // We are at the root of index.directory (e.g., /index.directory/books.html)
         basePath = '';
       } else {
-        // We are in a subdirectory of index.directory
+        // We are in a subdirectory of index.directory (e.g., /index.directory/trades/trade.html)
         basePath = '../'.repeat(afterIndexDir);
       }
     } else {
-      // Not in index.directory, assume site root
-      basePath = 'index.directory/';
+      // Not in index.directory - we're at site root
+      // Need to check if index.html is in the path parts
+      const hasIndexHtml = pathParts.some(part => part.endsWith('.html'));
+      
+      if (hasIndexHtml) {
+        // We have an HTML file, so we're at root level (e.g., /SFTi-Pennies/index.html or just /index.html)
+        basePath = 'index.directory/';
+      } else {
+        // Just a directory path, assume root
+        basePath = 'index.directory/';
+      }
     }
     
     // Define bubble configurations
@@ -58,11 +70,33 @@
         </svg>`
       },
       {
+        href: `${basePath}add-pdf.html`,
+        class: 'bubble-add-pdf',
+        tooltip: 'Add PDF',
+        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <g>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 2l3 3m0 0l-3 3m3-3H9" transform="translate(1, 1) scale(0.6)"/>
+          </g>
+        </svg>`
+      },
+      {
         href: `${basePath}notes.html`,
         class: 'bubble-notes',
         tooltip: 'Notes',
         icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>`
+      },
+      {
+        href: `${basePath}add-note.html`,
+        class: 'bubble-add-note',
+        tooltip: 'Add Note',
+        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <g>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 2l3 3m0 0l-3 3m3-3H9" transform="translate(1, 1) scale(0.6)"/>
+          </g>
         </svg>`
       },
       {
