@@ -38,6 +38,9 @@ body {
   color: var(--accent-green);
   box-shadow: 0 4px 24px rgba(0, 255, 136, 0.2),
               0 0 40px rgba(0, 255, 136, 0.15);
+  /* Ensure button elements are perfectly circular */
+  padding: 0;
+  outline: none;
 }
 
 .glowing-bubble:hover {
@@ -46,6 +49,8 @@ body {
   border-color: rgba(0, 255, 136, 0.6);
   box-shadow: 0 6px 32px rgba(0, 255, 136, 0.4),
               0 0 60px rgba(0, 255, 136, 0.3);
+  /* Remove any default button outline on hover */
+  outline: none;
 }
 
 .glowing-bubble svg {
@@ -485,7 +490,19 @@ body {
     justify-content: flex-end;
   }
   
-  /* Hide ALL traditional nav items on mobile - only show Mentors bubble */
+  /* Reduce navbar brand size on mobile */
+  .nav-brand {
+    font-size: 0.9rem !important;
+    white-space: nowrap;
+  }
+  
+  .nav-brand img {
+    width: 20px !important;
+    height: 20px !important;
+    margin-right: 4px !important;
+  }
+  
+  /* Hide ALL traditional nav items on mobile - only show auth bubble */
   .nav-item:not(.navbar-bubble-item) {
     display: none !important;
   }
@@ -495,14 +512,15 @@ body {
     display: flex !important;
   }
   
-  .navbar-bubble-wrapper .glowing-bubble {
-    width: 40px;
-    height: 40px;
+  /* Navbar bubble sizing */
+  .navbar-bubble-item .glowing-bubble {
+    width: 36px;
+    height: 36px;
   }
   
-  .navbar-bubble-wrapper .glowing-bubble svg {
-    width: 20px;
-    height: 20px;
+  .navbar-bubble-item .glowing-bubble svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

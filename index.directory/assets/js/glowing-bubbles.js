@@ -59,6 +59,18 @@
     // Define bubble configurations with new structure
     const bubbles = [
       {
+        type: 'dropdown',
+        class: 'bubble-mentors',
+        tooltip: 'Mentors',
+        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>`,
+        dropdownItems: [
+          { label: 'Timothy Sykes', href: 'https://www.timothysykes.com/', external: true },
+          { label: 'Tim Bohen', href: 'https://www.stockstotrade.com/', external: true }
+        ]
+      },
+      {
         type: 'link',
         href: `${rootPath}index.html`,
         class: 'bubble-home',
@@ -254,77 +266,60 @@
   }
   
   /**
-   * Initialize navbar mentors bubble (mobile only)
+   * Initialize navbar auth bubble (mobile only)
    */
-  function initNavbarMentorsBubble() {
+  function initNavbarAuthBubble() {
     const container = document.getElementById('navbar-mentors-bubble');
     if (!container) return;
     
-    // Create wrapper for the bubble
-    const wrapper = document.createElement('div');
-    wrapper.className = 'glowing-bubble-wrapper navbar-bubble-wrapper has-dropdown';
-    
-    // Create the bubble element
-    const bubble = document.createElement('div');
-    bubble.className = 'glowing-bubble bubble-mentors';
-    bubble.setAttribute('data-tooltip', 'Mentors');
-    bubble.setAttribute('aria-label', 'Mentors');
-    bubble.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+    // Create the bubble button element
+    const button = document.createElement('button');
+    button.className = 'glowing-bubble bubble-login';
+    button.id = 'navbar-auth-button';
+    button.setAttribute('data-tooltip', 'Login');
+    button.setAttribute('aria-label', 'Login');
+    button.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
     </svg>`;
     
-    // Create dropdown
-    const dropdown = document.createElement('div');
-    dropdown.className = 'bubble-dropdown';
+    container.appendChild(button);
     
-    const mentors = [
-      { label: 'Timothy Sykes', href: 'https://www.timothysykes.com/' },
-      { label: 'Tim Bohen', href: 'https://www.stockstotrade.com/' }
-    ];
-    
-    mentors.forEach(mentor => {
-      const link = document.createElement('a');
-      link.href = mentor.href;
-      link.textContent = mentor.label;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      dropdown.appendChild(link);
-    });
-    
-    wrapper.appendChild(bubble);
-    wrapper.appendChild(dropdown);
-    container.appendChild(wrapper);
-    
-    // Toggle dropdown on click
-    bubble.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    // Set up authentication functionality
+    if (typeof GitHubAuth !== 'undefined') {
+      const auth = new GitHubAuth();
       
-      const isActive = wrapper.classList.contains('active');
-      
-      // Close all other dropdowns (including bottom bubbles)
-      document.querySelectorAll('.glowing-bubble-wrapper').forEach(w => {
-        if (w !== wrapper) w.classList.remove('active');
-      });
-      
-      // Toggle this dropdown
-      wrapper.classList.toggle('active', !isActive);
-    });
-    
-    // Prevent dropdown from closing when clicking inside it
-    dropdown.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
+      if (auth.isAuthenticated()) {
+        button.setAttribute('data-tooltip', 'Logout');
+        button.addEventListener('click', () => {
+          auth.clearAuth();
+          window.location.reload();
+        });
+      } else {
+        button.setAttribute('data-tooltip', 'Login');
+        button.addEventListener('click', () => {
+          if (typeof showAuthPrompt !== 'undefined') {
+            showAuthPrompt();
+          } else {
+            alert('Authentication system not available. Please refresh the page.');
+          }
+        });
+      }
+    } else {
+      // GitHubAuth not available, disable button
+      button.setAttribute('data-tooltip', 'Auth Not Available');
+      button.style.opacity = '0.5';
+      button.style.cursor = 'not-allowed';
+    }
   }
   
   // Initialize on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       initGlowingBubbles();
-      initNavbarMentorsBubble();
+      initNavbarAuthBubble();
     });
   } else {
     initGlowingBubbles();
-    initNavbarMentorsBubble();
+    initNavbarAuthBubble();
   }
 })();
