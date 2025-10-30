@@ -404,8 +404,14 @@ body {
     display: none;
   }
   
-  /* On mobile, make bubbles clickable to go to main page */
+  /* Show dropdown when active on mobile */
+  .glowing-bubble-wrapper.active .bubble-dropdown {
+    display: block;
+  }
+  
+  /* On mobile, make bubbles clickable */
   .glowing-bubble-wrapper.has-dropdown > .glowing-bubble {
     pointer-events: auto;
+    cursor: pointer;
   }
 }

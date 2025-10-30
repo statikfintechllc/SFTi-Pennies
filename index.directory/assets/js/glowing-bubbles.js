@@ -166,16 +166,25 @@
         wrapper.appendChild(dropdown);
         container.appendChild(wrapper);
         
-        // Toggle dropdown on click for mobile
+        // Toggle dropdown on click/touch
         bubbleElement.addEventListener('click', (e) => {
-          if (window.innerWidth <= 768) {
-            e.preventDefault();
-            wrapper.classList.toggle('active');
-            // Close other dropdowns
-            document.querySelectorAll('.glowing-bubble-wrapper').forEach(w => {
-              if (w !== wrapper) w.classList.remove('active');
-            });
-          }
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const isActive = wrapper.classList.contains('active');
+          
+          // Close all other dropdowns
+          document.querySelectorAll('.glowing-bubble-wrapper').forEach(w => {
+            if (w !== wrapper) w.classList.remove('active');
+          });
+          
+          // Toggle this dropdown
+          wrapper.classList.toggle('active', !isActive);
+        });
+        
+        // Prevent dropdown from closing when clicking inside it
+        dropdown.addEventListener('click', (e) => {
+          e.stopPropagation();
         });
       } else if (bubble.type === 'button') {
         // Button bubble (for auth)
@@ -191,6 +200,15 @@
     
     // Append to body
     document.body.appendChild(container);
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.glowing-bubble-wrapper')) {
+        document.querySelectorAll('.glowing-bubble-wrapper').forEach(w => {
+          w.classList.remove('active');
+        });
+      }
+    });
     
     // Set up authentication button if it exists
     setupBubbleAuth();
