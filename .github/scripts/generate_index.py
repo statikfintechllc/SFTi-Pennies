@@ -158,16 +158,8 @@ def create_trade_list_html(trades):
     <div class="nav-container">
       <a href="all-weeks.html" class="nav-brand">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
-        SFTi-Pennies
+        SFTi-Pennies Trading Journal
       </a>
-      
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <div class="hamburger">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-      </button>
       
       <ul class="nav-menu">
         <li class="nav-item">
@@ -186,7 +178,7 @@ def create_trade_list_html(trades):
           <a href="#" class="nav-link">Trades</a>
           <ul class="nav-submenu">
             <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
             <li><a href="analytics.html" class="nav-link">Analytics</a></li>
             <li><a href="import.html" class="nav-link">Import CSV</a></li>
             <li><a href="review.html" class="nav-link">Review Trades</a></li>
@@ -204,6 +196,11 @@ def create_trade_list_html(trades):
         <li class="nav-item nav-buttons-group">
           <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
           <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+        
+        <!-- Mentors Bubble in Navbar (shows on mobile, aligned right) -->
+        <li class="nav-item navbar-bubble-item">
+          <div id="navbar-mentors-bubble"></div>
         </li>
       </ul>
     </div>

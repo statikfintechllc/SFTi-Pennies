@@ -10,7 +10,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
+  display: none; /* Hidden by default on desktop */
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -38,6 +38,9 @@ body {
   color: var(--accent-green);
   box-shadow: 0 4px 24px rgba(0, 255, 136, 0.2),
               0 0 40px rgba(0, 255, 136, 0.15);
+  /* Ensure button elements are perfectly circular */
+  padding: 0;
+  outline: none;
 }
 
 .glowing-bubble:hover {
@@ -46,6 +49,8 @@ body {
   border-color: rgba(0, 255, 136, 0.6);
   box-shadow: 0 6px 32px rgba(0, 255, 136, 0.4),
               0 0 60px rgba(0, 255, 136, 0.3);
+  /* Remove any default button outline on hover */
+  outline: none;
 }
 
 .glowing-bubble svg {
@@ -252,6 +257,11 @@ body {
     padding-bottom: 55px;
   }
   
+  /* Show bubbles on mobile */
+  .glowing-bubbles-container {
+    display: flex;
+  }
+  
   .glowing-bubbles-container {
     padding: 1rem;
     gap: 1rem;
@@ -299,5 +309,249 @@ body {
   
   .glowing-bubbles-container {
     padding: 0.75rem;
+  }
+}
+
+/* Dropdown menu styles for bubbles */
+.glowing-bubble-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bubble-dropdown {
+  position: absolute;
+  bottom: calc(100% + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  min-width: 160px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  transform: translateX(-50%) translateY(10px);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.glowing-bubble-wrapper:hover .bubble-dropdown,
+.glowing-bubble-wrapper.active .bubble-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.bubble-dropdown a {
+  display: block;
+  color: var(--text-primary, #ffffff);
+  text-decoration: none;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.bubble-dropdown a:hover {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--accent-green, #00ff88);
+  transform: translateX(4px);
+}
+
+/* Additional bubble styles for new buttons */
+.glowing-bubble.bubble-home {
+  border-color: rgba(0, 255, 136, 0.3);
+  color: var(--accent-green);
+  animation: bubbleGlowGreen 3s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.glowing-bubble.bubble-home:hover {
+  border-color: rgba(0, 255, 136, 0.6);
+  background: rgba(0, 255, 136, 0.25);
+  box-shadow: 0 6px 32px rgba(0, 255, 136, 0.4),
+              0 0 60px rgba(0, 255, 136, 0.3);
+}
+
+.glowing-bubble.bubble-trades {
+  border-color: rgba(251, 191, 36, 0.3);
+  color: rgba(251, 191, 36, 1);
+  animation: bubbleGlowYellow 3s ease-in-out infinite;
+  animation-delay: 1.0s;
+}
+
+.glowing-bubble.bubble-trades:hover {
+  background: rgba(251, 191, 36, 0.25);
+  border-color: rgba(251, 191, 36, 0.6);
+  box-shadow: 0 6px 32px rgba(251, 191, 36, 0.4),
+              0 0 60px rgba(251, 191, 36, 0.3);
+}
+
+.glowing-bubble.bubble-login {
+  border-color: rgba(147, 51, 234, 0.3);
+  color: rgba(147, 51, 234, 1);
+  animation: bubbleGlowPurple 3s ease-in-out infinite;
+  animation-delay: 1.2s;
+}
+
+.glowing-bubble.bubble-login:hover {
+  background: rgba(147, 51, 234, 0.25);
+  border-color: rgba(147, 51, 234, 0.6);
+  box-shadow: 0 6px 32px rgba(147, 51, 234, 0.4),
+              0 0 60px rgba(147, 51, 234, 0.3);
+}
+
+.glowing-bubble.bubble-mentors {
+  border-color: rgba(236, 72, 153, 0.3);
+  color: rgba(236, 72, 153, 1);
+  animation: bubbleGlowPink 3s ease-in-out infinite;
+  animation-delay: 1.4s;
+}
+
+.glowing-bubble.bubble-mentors:hover {
+  background: rgba(236, 72, 153, 0.25);
+  border-color: rgba(236, 72, 153, 0.6);
+  box-shadow: 0 6px 32px rgba(236, 72, 153, 0.4),
+              0 0 60px rgba(236, 72, 153, 0.3);
+}
+
+/* Navbar Bubble Styles - for Mentors bubble in navbar */
+.navbar-bubble-item {
+  display: none; /* Hidden on desktop - only shows on mobile */
+  align-items: center;
+  margin-left: auto;
+}
+
+.navbar-bubble-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.navbar-bubble-wrapper .glowing-bubble {
+  width: 45px;
+  height: 45px;
+}
+
+.navbar-bubble-wrapper .glowing-bubble svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Navbar bubble dropdown appears below */
+.navbar-bubble-wrapper .bubble-dropdown {
+  bottom: auto;
+  top: calc(100% + 0.75rem);
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.navbar-bubble-wrapper:hover .bubble-dropdown,
+.navbar-bubble-wrapper.active .bubble-dropdown {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Remove hamburger menu - always show nav */
+.nav-toggle {
+  display: none !important;
+}
+
+.nav-menu {
+  display: flex !important;
+}
+
+/* Desktop - ensure no bubbles visible */
+@media (min-width: 769px) {
+  .glowing-bubbles-container {
+    display: none !important; /* NO bottom bubbles on desktop */
+  }
+  
+  .navbar-bubble-item {
+    display: none !important; /* NO navbar bubble on desktop */
+  }
+}
+
+/* Mobile adjustments for navbar */
+@media (max-width: 768px) {
+  .nav-menu {
+    position: relative !important;
+    top: auto !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    gap: 0.5rem !important;
+    justify-content: flex-end;
+  }
+  
+  /* Increase navbar brand size on mobile (slightly larger) */
+  .nav-brand {
+    font-size: 1.1rem !important;
+    white-space: nowrap;
+  }
+  
+  .nav-brand img {
+    width: 28px !important;
+    height: 28px !important;
+    margin-right: 6px !important;
+  }
+  
+  /* Hide ALL traditional nav items on mobile - only show home bubble */
+  .nav-item:not(.navbar-bubble-item) {
+    display: none !important;
+  }
+  
+  /* Show ONLY navbar bubble on mobile - REMOVE ALL DEFAULT STYLES */
+  .navbar-bubble-item {
+    display: flex !important;
+    background: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: auto !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  
+  .navbar-bubble-item::before,
+  .navbar-bubble-item::after {
+    display: none !important;
+  }
+  
+  /* Navbar bubble sizing - remove any wrapper backgrounds */
+  .navbar-bubble-item .glowing-bubble {
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 255, 136, 0.15) !important;
+    border: 2px solid rgba(0, 255, 136, 0.3) !important;
+  }
+  
+  .navbar-bubble-item .glowing-bubble svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Hide dropdown on mobile - show tooltips instead */
+@media (max-width: 768px) {
+  .bubble-dropdown {
+    display: none;
+  }
+  
+  /* Show dropdown when active on mobile */
+  .glowing-bubble-wrapper.active .bubble-dropdown {
+    display: block;
+  }
+  
+  /* On mobile, make bubbles clickable */
+  .glowing-bubble-wrapper.has-dropdown > .glowing-bubble {
+    pointer-events: auto;
+    cursor: pointer;
   }
 }
