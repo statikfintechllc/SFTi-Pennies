@@ -163,7 +163,7 @@ body {
 /* Mobile responsive */
 @media (max-width: 768px) {
   body {
-    padding-bottom: 85px;
+    padding-bottom: 10px;
   }
   
   .glowing-bubbles-container {
