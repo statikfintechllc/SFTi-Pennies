@@ -490,19 +490,19 @@ body {
     justify-content: flex-end;
   }
   
-  /* Reduce navbar brand size on mobile */
+  /* Increase navbar brand size on mobile (slightly larger) */
   .nav-brand {
-    font-size: 0.9rem !important;
+    font-size: 1rem !important;
     white-space: nowrap;
   }
   
   .nav-brand img {
-    width: 20px !important;
-    height: 20px !important;
-    margin-right: 4px !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-right: 6px !important;
   }
   
-  /* Hide ALL traditional nav items on mobile - only show auth bubble */
+  /* Hide ALL traditional nav items on mobile - only show home bubble */
   .nav-item:not(.navbar-bubble-item) {
     display: none !important;
   }
@@ -510,17 +510,22 @@ body {
   /* Show ONLY navbar bubble on mobile */
   .navbar-bubble-item {
     display: flex !important;
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
-  /* Navbar bubble sizing */
+  /* Navbar bubble sizing - remove any wrapper backgrounds */
   .navbar-bubble-item .glowing-bubble {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 255, 136, 0.15) !important;
+    border: 2px solid rgba(0, 255, 136, 0.3) !important;
   }
   
   .navbar-bubble-item .glowing-bubble svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
   }
 }
 
