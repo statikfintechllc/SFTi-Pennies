@@ -488,9 +488,14 @@ body {
     margin-right: 6px !important;
   }
   
-  /* Hide ALL traditional nav items on mobile - only show home bubble */
-  .nav-item:not(.navbar-bubble-item) {
+  /* Hide ALL traditional nav items on mobile except home icon */
+  .nav-item:not(.navbar-bubble-item):not(.nav-home-icon) {
     display: none !important;
+  }
+  
+  /* Show home icon on mobile */
+  .nav-item.nav-home-icon {
+    display: flex !important;
   }
   
   /* Show ONLY navbar bubble on mobile - REMOVE ALL DEFAULT STYLES */
