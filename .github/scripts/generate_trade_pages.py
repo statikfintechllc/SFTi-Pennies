@@ -211,6 +211,11 @@ def generate_trade_html(trade):
           <a href="../add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
           <button id="auth-button" class="btn btn-secondary">Login</button>
         </li>
+        
+        <!-- Mentors Bubble in Navbar (shows on mobile, aligned right) -->
+        <li class="nav-item navbar-bubble-item">
+          <div id="navbar-mentors-bubble"></div>
+        </li>
       </ul>
     </div>
   </nav>
