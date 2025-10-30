@@ -1,6 +1,6 @@
 /**
  * Glowing Bubbles Navigation
- * Creates fixed navigation bubbles at the bottom-right of the viewport
+ * Creates fixed navigation bubbles centered at the bottom of the viewport
  * for quick access to key pages: Add Trade, Books, Notes, and All Trades
  */
 
