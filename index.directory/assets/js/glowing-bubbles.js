@@ -22,23 +22,44 @@
     const pathParts = window.location.pathname.split('/').filter(part => part !== '');
     let basePath = '';
 
+    // Debug logging
+    console.log('[Glowing Bubbles] Initializing...');
+    console.log('[Glowing Bubbles] Full pathname:', window.location.pathname);
+    console.log('[Glowing Bubbles] Path parts:', pathParts);
+
     // Find the index of 'index.directory' in the path
     const indexDirIdx = pathParts.indexOf('index.directory');
+    console.log('[Glowing Bubbles] index.directory index:', indexDirIdx);
+    
     if (indexDirIdx !== -1) {
-      // Number of directory segments after 'index.directory' (excluding the HTML file itself)
-      // We subtract 1 more to exclude the current HTML file from the count
+      // We are inside index.directory
+      // Count how many levels deep we are AFTER index.directory (excluding the HTML file)
       const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
+      console.log('[Glowing Bubbles] Segments after index.directory:', afterIndexDir);
+      
       if (afterIndexDir <= 0) {
-        // We are at the root of index.directory or directly in it
+        // We are at the root of index.directory (e.g., /index.directory/books.html)
         basePath = '';
       } else {
-        // We are in a subdirectory of index.directory
+        // We are in a subdirectory of index.directory (e.g., /index.directory/trades/trade.html)
         basePath = '../'.repeat(afterIndexDir);
       }
     } else {
-      // Not in index.directory, assume site root
-      basePath = 'index.directory/';
+      // Not in index.directory - we're at site root
+      // Need to check if index.html is in the path parts
+      const hasIndexHtml = pathParts.some(part => part.endsWith('.html'));
+      
+      if (hasIndexHtml) {
+        // We have an HTML file, so we're at root level (e.g., /SFTi-Pennies/index.html or just /index.html)
+        basePath = 'index.directory/';
+      } else {
+        // Just a directory path, assume root
+        basePath = 'index.directory/';
+      }
     }
+    
+    console.log('[Glowing Bubbles] Calculated basePath:', basePath);
+    console.log('[Glowing Bubbles] Example link will be:', basePath + 'books.html');
     
     // Define bubble configurations
     const bubbles = [
