@@ -2,7 +2,7 @@
 
 /* Add bottom padding to body to prevent content from being covered by bubbles */
 body {
-  padding-bottom: 120px;
+  padding-bottom: 100px;
 }
 
 .glowing-bubbles-container {
@@ -163,7 +163,7 @@ body {
 /* Mobile responsive */
 @media (max-width: 768px) {
   body {
-    padding-bottom: 100px;
+    padding-bottom: 85px;
   }
   
   .glowing-bubbles-container {
@@ -190,7 +190,7 @@ body {
 /* Ensure bubbles don't overlap with footer */
 @media (max-height: 600px) {
   body {
-    padding-bottom: 90px;
+    padding-bottom: 75px;
   }
   
   .glowing-bubbles-container {
