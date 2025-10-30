@@ -524,6 +524,24 @@ body {
     display: none !important;
   }
   
+  /* Remove any background from the container div */
+  #navbar-mentors-bubble {
+    display: inline-flex !important;
+    background: none !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto !important;
+    height: auto !important;
+  }
+  
+  #navbar-mentors-bubble::before,
+  #navbar-mentors-bubble::after {
+    display: none !important;
+  }
+  
   /* Navbar bubble sizing - remove any wrapper backgrounds */
   .navbar-bubble-item .glowing-bubble {
     width: 40px;
