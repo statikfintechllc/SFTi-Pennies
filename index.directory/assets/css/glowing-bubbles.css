@@ -1,5 +1,10 @@
 /* Glowing Bubbles Navigation - Fixed to bottom of viewport */
 
+/* Add bottom padding to body to prevent content from being covered by bubbles */
+body {
+  padding-bottom: 120px;
+}
+
 .glowing-bubbles-container {
   position: fixed;
   bottom: 0;
@@ -13,8 +18,6 @@
   padding: 1.5rem;
   z-index: 9999;
   pointer-events: none;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
-  backdrop-filter: blur(10px);
 }
 
 .glowing-bubble {
@@ -159,6 +162,10 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  body {
+    padding-bottom: 100px;
+  }
+  
   .glowing-bubbles-container {
     padding: 1rem;
     gap: 1.5rem;
@@ -182,6 +189,10 @@
 
 /* Ensure bubbles don't overlap with footer */
 @media (max-height: 600px) {
+  body {
+    padding-bottom: 90px;
+  }
+  
   .glowing-bubbles-container {
     padding: 0.75rem;
   }
