@@ -256,49 +256,14 @@
     }
   }
   
-  /**
-   * Initialize navbar home bubble (mobile only)
-   */
-  function initNavbarHomeBubble() {
-    const container = document.getElementById('navbar-mentors-bubble');
-    if (!container) return;
-    
-    // Determine path to home
-    const pathParts = window.location.pathname.split('/').filter(part => part !== '');
-    const indexDirIdx = pathParts.indexOf('index.directory');
-    let homePath = 'index.html';
-    
-    if (indexDirIdx !== -1) {
-      // We are inside index.directory, need to go up
-      const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
-      if (afterIndexDir <= 0) {
-        homePath = '../index.html';
-      } else {
-        homePath = '../'.repeat(afterIndexDir) + '../index.html';
-      }
-    }
-    
-    // Create the bubble link element
-    const link = document.createElement('a');
-    link.href = homePath;
-    link.className = 'glowing-bubble bubble-home';
-    link.setAttribute('data-tooltip', 'Home');
-    link.setAttribute('aria-label', 'Home');
-    link.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-    </svg>`;
-    
-    container.appendChild(link);
-  }
+
   
   // Initialize on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       initGlowingBubbles();
-      initNavbarHomeBubble();
     });
   } else {
     initGlowingBubbles();
-    initNavbarHomeBubble();
   }
 })();
