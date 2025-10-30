@@ -456,13 +456,13 @@ def aggregate_weekly_insights(year, month):
     
     # Aggregate each section using the helper function
     aggregated["what_went_well"] = aggregate_section(
-        weekly_reviews, "what_went_well", "**Week {}"
+        weekly_reviews, "what_went_well", "**Week {}**"
     )
     aggregated["needs_improvement"] = aggregate_section(
-        weekly_reviews, "needs_improvement", "**Week {}"
+        weekly_reviews, "needs_improvement", "**Week {}**"
     )
     aggregated["key_lessons"] = aggregate_section(
-        weekly_reviews, "key_lessons", "**Week {}"
+        weekly_reviews, "key_lessons", "**Week {}**"
     )
     
     return aggregated if any(aggregated.values()) else None
