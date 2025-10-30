@@ -89,7 +89,7 @@ body {
   border-color: rgba(100, 255, 218, 0.3);
   color: rgba(100, 255, 218, 1);
   animation: bubbleGlowCyan 3s ease-in-out infinite;
-  animation-delay: 0.3s;
+  animation-delay: 0.2s;
 }
 
 .glowing-bubble.bubble-books:hover {
@@ -97,6 +97,20 @@ body {
   border-color: rgba(100, 255, 218, 0.6);
   box-shadow: 0 6px 32px rgba(100, 255, 218, 0.4),
               0 0 60px rgba(100, 255, 218, 0.3);
+}
+
+.glowing-bubble.bubble-add-pdf {
+  border-color: rgba(59, 130, 246, 0.3);
+  color: rgba(59, 130, 246, 1);
+  animation: bubbleGlowBlue 3s ease-in-out infinite;
+  animation-delay: 0.4s;
+}
+
+.glowing-bubble.bubble-add-pdf:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 6px 32px rgba(59, 130, 246, 0.4),
+              0 0 60px rgba(59, 130, 246, 0.3);
 }
 
 .glowing-bubble.bubble-notes {
@@ -113,11 +127,25 @@ body {
               0 0 60px rgba(147, 51, 234, 0.3);
 }
 
+.glowing-bubble.bubble-add-note {
+  border-color: rgba(236, 72, 153, 0.3);
+  color: rgba(236, 72, 153, 1);
+  animation: bubbleGlowPink 3s ease-in-out infinite;
+  animation-delay: 0.8s;
+}
+
+.glowing-bubble.bubble-add-note:hover {
+  background: rgba(236, 72, 153, 0.25);
+  border-color: rgba(236, 72, 153, 0.6);
+  box-shadow: 0 6px 32px rgba(236, 72, 153, 0.4),
+              0 0 60px rgba(236, 72, 153, 0.3);
+}
+
 .glowing-bubble.bubble-all-trades {
   border-color: rgba(251, 191, 36, 0.3);
   color: rgba(251, 191, 36, 1);
   animation: bubbleGlowYellow 3s ease-in-out infinite;
-  animation-delay: 0.9s;
+  animation-delay: 1.0s;
 }
 
 .glowing-bubble.bubble-all-trades:hover {
@@ -196,6 +224,28 @@ body {
   }
 }
 
+@keyframes bubbleGlowBlue {
+  0%, 100% {
+    box-shadow: 0 4px 24px rgba(59, 130, 246, 0.2),
+                0 0 40px rgba(59, 130, 246, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 32px rgba(59, 130, 246, 0.3),
+                0 0 60px rgba(59, 130, 246, 0.25);
+  }
+}
+
+@keyframes bubbleGlowPink {
+  0%, 100% {
+    box-shadow: 0 4px 24px rgba(236, 72, 153, 0.2),
+                0 0 40px rgba(236, 72, 153, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 32px rgba(236, 72, 153, 0.3),
+                0 0 60px rgba(236, 72, 153, 0.25);
+  }
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   body {
@@ -204,7 +254,7 @@ body {
   
   .glowing-bubbles-container {
     padding: 1rem;
-    gap: 1.5rem;
+    gap: 1rem;
   }
   
   .glowing-bubble {
@@ -220,6 +270,24 @@ body {
   /* Hide tooltip on mobile */
   .glowing-bubble::after {
     display: none;
+  }
+}
+
+/* Extra small screens - stack bubbles in 2 rows */
+@media (max-width: 480px) {
+  .glowing-bubbles-container {
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  
+  .glowing-bubble {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .glowing-bubble svg {
+    width: 22px;
+    height: 22px;
   }
 }
 

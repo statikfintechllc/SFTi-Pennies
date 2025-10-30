@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Add new PDF book to your library">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Add PDF - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  <link rel="stylesheet" href="assets/css/review-trades.css">
+  <link rel="stylesheet" href="assets/css/glowing-bubbles.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="add-pdf.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="review.html" class="nav-link">Review Trades</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Mentors</a>
+          <ul class="nav-submenu">
+            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
+            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item nav-buttons-group">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <section>
+      <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        Add New PDF Book
+      </h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        Upload a new PDF book to your library. Supported file size up to 50MB.
+      </p>
+      
+      <!-- Alert Container -->
+      <div id="alert-container" style="margin-bottom: 1.5rem;"></div>
+      
+      <!-- Upload Form -->
+      <form id="pdf-upload-form" class="glass-card" style="max-width: 800px; margin: 0 auto;">
+        <div class="form-group">
+          <label for="book-title" class="form-label">
+            Book Title <span style="color: var(--accent-red);">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="book-title" 
+            name="book-title" 
+            class="form-input"
+            placeholder="Enter book title (e.g., Advanced Trading Strategies)"
+            required
+          >
+          <p class="form-help">Enter a descriptive title for the book</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="pdf-file" class="form-label">
+            PDF File <span style="color: var(--accent-red);">*</span>
+          </label>
+          <div style="position: relative;">
+            <input 
+              type="file" 
+              id="pdf-file" 
+              name="pdf-file" 
+              class="form-input"
+              accept=".pdf,application/pdf"
+              required
+              style="padding: 1rem;"
+            >
+            <div id="file-info" style="margin-top: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);"></div>
+          </div>
+          <p class="form-help">Select a PDF file to upload (max 50MB)</p>
+        </div>
+        
+        <div class="form-group">
+          <label for="book-description" class="form-label">
+            Description (Optional)
+          </label>
+          <textarea 
+            id="book-description" 
+            name="book-description" 
+            class="form-input"
+            rows="4"
+            placeholder="Enter a brief description of the book..."
+          ></textarea>
+          <p class="form-help">Optional description to help you remember what this book is about</p>
+        </div>
+        
+        <div class="form-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <a href="books.html" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Upload PDF
+          </button>
+        </div>
+      </form>
+      
+      <!-- Instructions Section -->
+      <section class="glass-card" style="max-width: 800px; margin: 2rem auto;">
+        <h3 style="margin-bottom: 1rem; color: var(--accent-green);">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          How it works
+        </h3>
+        <ol style="padding-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+          <li>Enter a descriptive title for your PDF book</li>
+          <li>Select the PDF file from your computer (max 50MB)</li>
+          <li>Optionally add a description to help categorize the book</li>
+          <li>Click "Upload PDF" to save it to your library</li>
+          <li>The PDF will be stored in <code style="background: var(--bg-tertiary); padding: 0.125rem 0.375rem; border-radius: 0.25rem;">Informational.Bookz/</code></li>
+          <li>After upload, the book will appear on your Books page</li>
+        </ol>
+      </section>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    <p>
+      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
+      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
+    </p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  
+  <!-- PDF Upload Script -->
+  <script>
+    // Show file info when file is selected
+    document.getElementById('pdf-file').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      const fileInfo = document.getElementById('file-info');
+      
+      if (file) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${file.name}</strong> (${sizeMB} MB)`;
+        
+        // Check file size
+        if (file.size > 50 * 1024 * 1024) {
+          fileInfo.innerHTML = `<span style="color: var(--accent-red);">✗</span> File too large: <strong>${file.name}</strong> (${sizeMB} MB). Maximum size is 50MB.`;
+          e.target.value = '';
+        }
+      } else {
+        fileInfo.innerHTML = '';
+      }
+    });
+    
+    // Handle form submission
+    document.getElementById('pdf-upload-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const title = document.getElementById('book-title').value.trim();
+      const description = document.getElementById('book-description').value.trim();
+      const fileInput = document.getElementById('pdf-file');
+      const file = fileInput.files[0];
+      
+      if (!file) {
+        showAlert('Please select a PDF file to upload.', 'error');
+        return;
+      }
+      
+      // Disable submit button
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Uploading...';
+      
+      try {
+        // Create filename from title
+        const filename = title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') + '.pdf';
+        
+        // Read file as base64
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+          const base64Content = event.target.result.split(',')[1];
+          
+          try {
+            // For now, store in localStorage as a demo
+            // In production, this would be sent to a backend API
+            const bookData = {
+              title: title,
+              filename: filename,
+              description: description,
+              size: file.size,
+              size_mb: (file.size / (1024 * 1024)).toFixed(2),
+              uploaded_at: new Date().toISOString(),
+              content: base64Content
+            };
+            
+            // Get existing books from localStorage
+            const existingBooks = JSON.parse(localStorage.getItem('uploaded_books') || '[]');
+            existingBooks.push(bookData);
+            localStorage.setItem('uploaded_books', JSON.stringify(existingBooks));
+            
+            showAlert('PDF uploaded successfully! Redirecting to Books page...', 'success');
+            
+            // Reset form
+            document.getElementById('pdf-upload-form').reset();
+            document.getElementById('file-info').innerHTML = '';
+            
+            // Redirect to books page after 2 seconds
+            setTimeout(() => {
+              window.location.href = 'books.html';
+            }, 2000);
+            
+          } catch (error) {
+            console.error('Upload error:', error);
+            showAlert('Error uploading PDF. Please try again.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Upload PDF';
+          }
+        };
+        
+        reader.onerror = function() {
+          showAlert('Error reading file. Please try again.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Upload PDF';
+        };
+        
+        reader.readAsDataURL(file);
+        
+      } catch (error) {
+        console.error('Form submission error:', error);
+        showAlert('Error submitting form. Please try again.', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>Upload PDF';
+      }
+    });
+    
+    // Show alert message
+    function showAlert(message, type = 'info') {
+      const container = document.getElementById('alert-container');
+      const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-warning';
+      
+      container.innerHTML = `
+        <div class="alert ${alertClass}">
+          <p>${message}</p>
+        </div>
+      `;
+      
+      // Auto-hide after 5 seconds for non-error messages
+      if (type !== 'error') {
+        setTimeout(() => {
+          container.innerHTML = '';
+        }, 5000);
+      }
+    }
+    
+    // Setup auth button
+    document.addEventListener('DOMContentLoaded', () => {
+      const authButton = document.getElementById('auth-button');
+      if (authButton) {
+        const auth = new GitHubAuth();
+        if (auth.isAuthenticated()) {
+          authButton.textContent = 'Logout';
+          authButton.addEventListener('click', () => {
+            auth.clearAuth();
+            window.location.reload();
+          });
+        } else {
+          authButton.textContent = 'Login';
+          authButton.addEventListener('click', () => {
+            showAuthPrompt();
+          });
+        }
+      }
+    });
+  </script>
+  
+  <style>
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      border-left: 4px solid;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .alert-success {
+      background: rgba(0, 255, 136, 0.1);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+    
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+    
+    .alert-warning {
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 1);
+      color: rgba(251, 191, 36, 1);
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  
+  <!-- Navigation dropdown handlers -->
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/glowing-bubbles.js"></script>
+</body>
+</html>
