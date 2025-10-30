@@ -18,16 +18,24 @@
       return;
     }
     
-    // Determine base path based on current location using directory depth
+    // Determine base path robustly based on current location and directory depth
     const pathParts = window.location.pathname.split('/').filter(part => part !== '');
     let basePath = '';
-    
-    // Determine if we're in root, index.directory, or trades subdirectory
-    if (pathParts.includes('trades')) {
-      basePath = '../';
-    } else if (pathParts.includes('index.directory')) {
-      basePath = '';
+
+    // Find the index of 'index.directory' in the path
+    const indexDirIdx = pathParts.indexOf('index.directory');
+    if (indexDirIdx !== -1) {
+      // Number of segments after 'index.directory'
+      const afterIndexDir = pathParts.length - (indexDirIdx + 1);
+      if (afterIndexDir === 0) {
+        // We are at the root of index.directory
+        basePath = '';
+      } else {
+        // We are in a subdirectory of index.directory
+        basePath = '../'.repeat(afterIndexDir);
+      }
     } else {
+      // Not in index.directory, assume site root
       basePath = 'index.directory/';
     }
     
