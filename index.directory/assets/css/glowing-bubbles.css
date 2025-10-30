@@ -477,24 +477,20 @@ body {
     position: relative !important;
     top: auto !important;
     flex-direction: row !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     background-color: transparent !important;
     padding: 0 !important;
     box-shadow: none !important;
     gap: 0.5rem !important;
-    font-size: 0.85rem;
+    justify-content: flex-end;
   }
   
-  .nav-item {
-    font-size: 0.85rem;
+  /* Hide ALL traditional nav items on mobile - only show Mentors bubble */
+  .nav-item:not(.navbar-bubble-item) {
+    display: none !important;
   }
   
-  /* Hide traditional nav items on mobile (bubbles handle navigation) */
-  .nav-item:not(.nav-buttons-group):not(.navbar-bubble-item) {
-    display: none;
-  }
-  
-  /* Show navbar bubble on mobile */
+  /* Show ONLY navbar bubble on mobile */
   .navbar-bubble-item {
     display: flex !important;
   }
