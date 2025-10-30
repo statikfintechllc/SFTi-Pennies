@@ -156,6 +156,7 @@ def generate_trade_html(trade):
   <!-- Custom Styles -->
   <link rel="stylesheet" href="../assets/css/main.css">
   <link rel="stylesheet" href="../assets/css/glass-effects.css">
+  <link rel="stylesheet" href="../assets/css/glowing-bubbles.css">
   
   <!-- PWA Manifest -->
   <link rel="manifest" href="../../manifest.json">
@@ -394,6 +395,7 @@ def generate_trade_html(trade):
   <script src="../assets/js/background.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/app.js"></script>
+  <script src="../assets/js/glowing-bubbles.js"></script>
 </body>
 </html>
 """
