@@ -498,19 +498,13 @@ def aggregate_monthly_insights(year):
                 # Extract month number from filename
                 month_match = re.match(MONTHLY_PATTERN, filename)
                 if not month_match:
-                    # Optionally log or print a warning about filename format
-                    # print(f"Warning: Filename {filename} does not match expected pattern.")
                     continue
                 month_num = int(month_match.group(1))
                 if not (1 <= month_num <= 12):
-                    # Optionally log or print a warning about invalid month
-                    # print(f"Warning: Invalid month {month_num} in filename {filename}.")
                     continue
                 try:
                     month_name = datetime(int(year), month_num, 1).strftime("%B")
                 except ValueError:
-                    # This should not happen due to the above check, but just in case
-                    # print(f"Warning: Could not create datetime for year {year}, month {month_num}.")
                     continue
                 filepath = os.path.join(summaries_dir, filename)
                 review = load_existing_summary(filepath)
