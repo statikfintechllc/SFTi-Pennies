@@ -417,6 +417,40 @@ body {
               0 0 60px rgba(236, 72, 153, 0.3);
 }
 
+/* Navbar Bubble Styles - for Mentors bubble in navbar */
+.navbar-bubble-item {
+  display: none; /* Hidden on desktop - only shows on mobile */
+  align-items: center;
+  margin-left: auto;
+}
+
+.navbar-bubble-wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.navbar-bubble-wrapper .glowing-bubble {
+  width: 45px;
+  height: 45px;
+}
+
+.navbar-bubble-wrapper .glowing-bubble svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Navbar bubble dropdown appears below */
+.navbar-bubble-wrapper .bubble-dropdown {
+  bottom: auto;
+  top: calc(100% + 0.75rem);
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.navbar-bubble-wrapper:hover .bubble-dropdown,
+.navbar-bubble-wrapper.active .bubble-dropdown {
+  transform: translateX(-50%) translateY(0);
+}
+
 /* Remove hamburger menu - always show nav */
 .nav-toggle {
   display: none !important;
@@ -424,6 +458,17 @@ body {
 
 .nav-menu {
   display: flex !important;
+}
+
+/* Desktop - ensure no bubbles visible */
+@media (min-width: 769px) {
+  .glowing-bubbles-container {
+    display: none !important; /* NO bottom bubbles on desktop */
+  }
+  
+  .navbar-bubble-item {
+    display: none !important; /* NO navbar bubble on desktop */
+  }
 }
 
 /* Mobile adjustments for navbar */
@@ -444,9 +489,24 @@ body {
     font-size: 0.85rem;
   }
   
-  /* Hide some nav items on mobile to save space - bubbles will handle navigation */
-  .nav-item:not(.nav-buttons-group):not(:first-child) {
+  /* Hide traditional nav items on mobile (bubbles handle navigation) */
+  .nav-item:not(.nav-buttons-group):not(.navbar-bubble-item) {
     display: none;
+  }
+  
+  /* Show navbar bubble on mobile */
+  .navbar-bubble-item {
+    display: flex !important;
+  }
+  
+  .navbar-bubble-wrapper .glowing-bubble {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .navbar-bubble-wrapper .glowing-bubble svg {
+    width: 20px;
+    height: 20px;
   }
 }
 
