@@ -38,7 +38,6 @@
   color: var(--accent-green);
   box-shadow: 0 4px 24px rgba(0, 255, 136, 0.2),
               0 0 40px rgba(0, 255, 136, 0.15);
-  animation: bubbleGlow 3s ease-in-out infinite;
 }
 
 .glowing-bubble:hover {
@@ -78,6 +77,7 @@
 .glowing-bubble.bubble-add-trade {
   border-color: rgba(0, 255, 136, 0.3);
   color: var(--accent-green);
+  animation: bubbleGlowGreen 3s ease-in-out infinite;
   animation-delay: 0s;
 }
 
@@ -88,6 +88,7 @@
 .glowing-bubble.bubble-books {
   border-color: rgba(100, 255, 218, 0.3);
   color: rgba(100, 255, 218, 1);
+  animation: bubbleGlowCyan 3s ease-in-out infinite;
   animation-delay: 0.3s;
 }
 
@@ -101,6 +102,7 @@
 .glowing-bubble.bubble-notes {
   border-color: rgba(147, 51, 234, 0.3);
   color: rgba(147, 51, 234, 1);
+  animation: bubbleGlowPurple 3s ease-in-out infinite;
   animation-delay: 0.6s;
 }
 
@@ -114,6 +116,7 @@
 .glowing-bubble.bubble-all-trades {
   border-color: rgba(251, 191, 36, 0.3);
   color: rgba(251, 191, 36, 1);
+  animation: bubbleGlowYellow 3s ease-in-out infinite;
   animation-delay: 0.9s;
 }
 
@@ -148,8 +151,8 @@
   opacity: 1;
 }
 
-/* Glowing animation */
-@keyframes bubbleGlow {
+/* Glowing animations - color-specific for each bubble */
+@keyframes bubbleGlowGreen {
   0%, 100% {
     box-shadow: 0 4px 24px rgba(0, 255, 136, 0.2),
                 0 0 40px rgba(0, 255, 136, 0.15);
@@ -157,6 +160,39 @@
   50% {
     box-shadow: 0 4px 32px rgba(0, 255, 136, 0.3),
                 0 0 60px rgba(0, 255, 136, 0.25);
+  }
+}
+
+@keyframes bubbleGlowCyan {
+  0%, 100% {
+    box-shadow: 0 4px 24px rgba(100, 255, 218, 0.2),
+                0 0 40px rgba(100, 255, 218, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 32px rgba(100, 255, 218, 0.3),
+                0 0 60px rgba(100, 255, 218, 0.25);
+  }
+}
+
+@keyframes bubbleGlowPurple {
+  0%, 100% {
+    box-shadow: 0 4px 24px rgba(147, 51, 234, 0.2),
+                0 0 40px rgba(147, 51, 234, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 32px rgba(147, 51, 234, 0.3),
+                0 0 60px rgba(147, 51, 234, 0.25);
+  }
+}
+
+@keyframes bubbleGlowYellow {
+  0%, 100% {
+    box-shadow: 0 4px 24px rgba(251, 191, 36, 0.2),
+                0 0 40px rgba(251, 191, 36, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 32px rgba(251, 191, 36, 0.3),
+                0 0 60px rgba(251, 191, 36, 0.25);
   }
 }
 
