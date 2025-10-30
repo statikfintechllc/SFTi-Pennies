@@ -13,20 +13,21 @@
    */
   function initGlowingBubbles() {
     // Check if bubbles already exist to prevent duplicates
-    if (document.querySelector('.glowing-bubbles-container')) {
+    const existingContainer = document.querySelector('.glowing-bubbles-container');
+    if (existingContainer) {
       return;
     }
     
-    // Determine base path based on current location
-    const currentPath = window.location.pathname;
+    // Determine base path based on current location using directory depth
+    const pathParts = window.location.pathname.split('/').filter(part => part !== '');
     let basePath = '';
     
     // Determine if we're in root, index.directory, or trades subdirectory
-    if (currentPath.includes('/trades/')) {
+    if (pathParts.includes('trades')) {
       basePath = '../';
-    } else if (currentPath.includes('/index.directory/')) {
+    } else if (pathParts.includes('index.directory')) {
       basePath = '';
-    } else if (currentPath === '/' || currentPath.endsWith('index.html')) {
+    } else {
       basePath = 'index.directory/';
     }
     
