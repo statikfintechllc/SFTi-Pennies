@@ -202,6 +202,7 @@ def generate_trade_html(trade):
             <li><a href="../all-weeks.html" class="nav-link">All Weeks</a></li>
             <li><a href="../analytics.html" class="nav-link">Analytics</a></li>
             <li><a href="../import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="../review.html" class="nav-link">Review Trades</a></li>
           </ul>
         </li>
         
