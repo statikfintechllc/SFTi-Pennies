@@ -101,7 +101,7 @@ def create_trade_list_html(trades):
     <!-- Custom Styles -->
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/glass-effects.css">
-    <link rel="stylesheet" href="assets/css/copilot-chat.css">
+    <link rel="stylesheet" href="assets/css/review-trades.css">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="../manifest.json">
@@ -188,6 +188,7 @@ def create_trade_list_html(trades):
             <li><a href="all-weeks.html" class="nav-link">All Weeks</a></li>
             <li><a href="analytics.html" class="nav-link">Analytics</a></li>
             <li><a href="import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="review.html" class="nav-link">Review Trades</a></li>
           </ul>
         </li>
         
@@ -241,7 +242,6 @@ def create_trade_list_html(trades):
     
     <script src="assets/js/background.js"></script>
     <script src="assets/js/auth.js"></script>
-    <script src="assets/js/copilot-chat.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>
