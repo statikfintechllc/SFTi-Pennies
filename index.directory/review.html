@@ -153,131 +153,284 @@
       color: var(--accent-red);
     }
     
-    /* Trade Screenshots Gallery */
+    /* Trade Screenshots Gallery - Carousel */
     .screenshots-gallery {
       margin-bottom: 2rem;
     }
     
-    .day-gallery {
-      margin-bottom: 2rem;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 1.5rem;
+    .carousel-container {
+      position: relative;
+      overflow: hidden;
+      padding: 1rem 0;
     }
     
-    .day-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-    
-    .day-title {
-      font-family: var(--font-mono);
-      font-weight: 600;
-      color: var(--accent-green);
-      font-size: 1rem;
-    }
-    
-    .day-trade-count {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      background: var(--bg-secondary);
-      padding: 0.25rem 0.75rem;
-      border-radius: 4px;
-    }
-    
-    .images-scroll-container {
+    .carousel-wrapper {
       overflow-x: auto;
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: var(--accent-green) var(--bg-secondary);
-      padding-bottom: 0.5rem;
+      padding-bottom: 1rem;
     }
     
-    .images-scroll-container::-webkit-scrollbar {
+    .carousel-wrapper::-webkit-scrollbar {
       height: 8px;
     }
     
-    .images-scroll-container::-webkit-scrollbar-track {
+    .carousel-wrapper::-webkit-scrollbar-track {
       background: var(--bg-secondary);
       border-radius: 4px;
     }
     
-    .images-scroll-container::-webkit-scrollbar-thumb {
+    .carousel-wrapper::-webkit-scrollbar-thumb {
       background: var(--accent-green);
       border-radius: 4px;
     }
     
-    .images-scroll-container::-webkit-scrollbar-thumb:hover {
-      background: var(--accent-green-hover, #00cc6a);
-    }
-    
-    .images-grid {
+    .carousel-track {
       display: flex;
-      gap: 1rem;
+      gap: 1.5rem;
       width: max-content;
     }
     
-    .image-card {
+    .day-card {
       flex: 0 0 auto;
-      width: 250px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+      width: 300px;
+      background: var(--bg-tertiary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
       overflow: hidden;
       transition: all 0.3s ease;
       cursor: pointer;
     }
     
-    .image-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 255, 136, 0.2);
+    .day-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(0, 255, 136, 0.3);
       border-color: var(--accent-green);
     }
     
-    .image-card img {
+    .day-card-image {
       width: 100%;
-      height: 200px;
+      height: 220px;
       object-fit: cover;
-      display: block;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 3rem;
     }
     
-    .image-info {
-      padding: 0.75rem;
+    .day-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
-    .image-ticker {
+    .day-card-content {
+      padding: 1rem;
+    }
+    
+    .day-card-date {
       font-family: var(--font-mono);
       font-weight: 700;
       color: var(--accent-green);
-      font-size: 0.875rem;
-      margin-bottom: 0.25rem;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
     }
     
-    .image-time {
-      font-size: 0.75rem;
+    .day-card-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .day-card-badge {
+      background: var(--bg-secondary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    /* Modal Styles */
+    .screenshots-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 10000;
+      overflow-y: auto;
+      padding: 2rem 1rem;
+    }
+    
+    .screenshots-modal.active {
+      display: block;
+    }
+    
+    .modal-content {
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--accent-green);
+    }
+    
+    .modal-title {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 2rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: all 0.2s ease;
+    }
+    
+    .modal-close:hover {
+      color: var(--accent-red);
+      transform: scale(1.2);
+    }
+    
+    .modal-images {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .modal-image-wrapper {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal-image-wrapper:hover {
+      border-color: var(--accent-green);
+      box-shadow: 0 4px 16px rgba(0, 255, 136, 0.2);
+    }
+    
+    .modal-image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      max-height: 600px;
+      object-fit: contain;
+      background: var(--bg-secondary);
+    }
+    
+    .modal-image-caption {
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-secondary);
+    }
+    
+    .modal-image-ticker {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+    
+    .modal-image-info {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      padding: 1rem;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(to top, rgba(10, 15, 30, 0.98) 80%, transparent);
+      backdrop-filter: blur(10px);
+    }
+    
+    .modal-btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .modal-btn-continue {
+      background: var(--accent-green);
+      color: var(--bg-primary);
+    }
+    
+    .modal-btn-continue:hover {
+      background: var(--accent-green-hover, #00cc6a);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.4);
+    }
+    
+    .modal-btn-close {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .modal-btn-close:hover {
+      background: var(--bg-secondary);
+      border-color: var(--accent-red);
     }
     
     .no-images-message {
       text-align: center;
-      padding: 2rem;
+      padding: 3rem;
       color: var(--text-secondary);
       font-style: italic;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
     }
     
     @media (max-width: 768px) {
-      .image-card {
-        width: 200px;
+      .day-card {
+        width: 250px;
       }
       
-      .image-card img {
-        height: 160px;
+      .day-card-image {
+        height: 180px;
+      }
+      
+      .screenshots-modal {
+        padding: 1rem 0.5rem;
+      }
+      
+      .modal-btn {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.875rem;
       }
     }
     
@@ -554,11 +707,37 @@
             <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; font-weight: 600;">
               📸 Trade Screenshots by Day
             </h3>
-            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
-              Review your charts and order executions for each trading day
+            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+              Click on any day card to view all charts and order screenshots
             </p>
-            <div id="daily-galleries">
-              <!-- Daily image galleries will be populated by JavaScript -->
+            <div class="carousel-container">
+              <div class="carousel-wrapper">
+                <div class="carousel-track" id="carousel-track">
+                  <!-- Day cards will be populated by JavaScript -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Screenshots Modal -->
+          <div class="screenshots-modal" id="screenshots-modal">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Trading Day Screenshots</h2>
+                <button class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
+              </div>
+              <div class="modal-images" id="modal-images">
+                <!-- Images will be populated by JavaScript -->
+              </div>
+              <div class="modal-actions">
+                <button class="modal-btn modal-btn-continue" id="modal-continue">
+                  <span>Continue</span>
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                  </svg>
+                </button>
+                <button class="modal-btn modal-btn-close" id="modal-close-btn">Close</button>
+              </div>
             </div>
           </div>
           
@@ -858,9 +1037,13 @@
       displayScreenshotsGallery(weekData);
     }
     
-    // Display screenshots gallery grouped by day
+    // Global variables for modal navigation
+    let allDaysData = [];
+    let currentDayIndex = 0;
+    
+    // Display screenshots gallery as carousel with modal
     function displayScreenshotsGallery(weekData) {
-      const galleryContainer = document.getElementById('daily-galleries');
+      const carouselTrack = document.getElementById('carousel-track');
       
       // Group trades by entry date
       const tradesByDay = {};
@@ -875,22 +1058,8 @@
       // Sort dates in descending order (most recent first)
       const sortedDates = Object.keys(tradesByDay).sort((a, b) => b.localeCompare(a));
       
-      if (sortedDates.length === 0 || sortedDates.every(date => {
-        return tradesByDay[date].every(trade => !trade.screenshots || trade.screenshots.length === 0);
-      })) {
-        galleryContainer.innerHTML = `
-          <div class="no-images-message">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-            </svg>
-            <p>No screenshots available for this week</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Create galleries for each day
-      galleryContainer.innerHTML = sortedDates.map(date => {
+      // Prepare all days data for modal navigation
+      allDaysData = sortedDates.map(date => {
         const dayTrades = tradesByDay[date];
         const allScreenshots = [];
         
@@ -902,15 +1071,12 @@
                 path: screenshot,
                 ticker: trade.ticker,
                 tradeNumber: trade.trade_number,
-                time: trade.entry_time || 'N/A'
+                time: trade.entry_time || 'N/A',
+                strategy: trade.strategy || 'N/A'
               });
             });
           }
         });
-        
-        if (allScreenshots.length === 0) {
-          return '';
-        }
         
         // Format date for display
         let displayDate = date;
@@ -926,36 +1092,148 @@
           displayDate = date;
         }
         
-        const tradeCount = dayTrades.length;
+        return {
+          date: date,
+          displayDate: displayDate,
+          trades: dayTrades,
+          screenshots: allScreenshots
+        };
+      }).filter(day => day.screenshots.length > 0);
+      
+      if (allDaysData.length === 0) {
+        carouselTrack.innerHTML = `
+          <div class="no-images-message">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.5;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p>No screenshots available for this week</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Create carousel cards for each day
+      carouselTrack.innerHTML = allDaysData.map((dayData, index) => {
+        // Get first screenshot as preview
+        const previewImg = dayData.screenshots[0];
+        const imgPath = previewImg.path.replace('../../', '');
         
         return `
-          <div class="day-gallery">
-            <div class="day-header">
-              <div class="day-title">${displayDate}</div>
-              <div class="day-trade-count">${tradeCount} ${tradeCount === 1 ? 'trade' : 'trades'} • ${allScreenshots.length} ${allScreenshots.length === 1 ? 'screenshot' : 'screenshots'}</div>
+          <div class="day-card" onclick="openDayModal(${index})">
+            <div class="day-card-image">
+              <img src="${imgPath}" alt="${dayData.displayDate}" loading="lazy" onerror="this.parentElement.innerHTML='<span>📸</span>'">
             </div>
-            <div class="images-scroll-container">
-              <div class="images-grid">
-                ${allScreenshots.map((screenshot, idx) => {
-                  // Adjust the image path - screenshots have paths like "../../assets/..."
-                  // We need to convert to relative path from review.html
-                  let imgPath = screenshot.path.replace('../../assets/', '../assets/');
-                  
-                  return `
-                    <div class="image-card" onclick="window.open('${imgPath}', '_blank')">
-                      <img src="${imgPath}" alt="Trade ${screenshot.tradeNumber} - ${screenshot.ticker}" loading="lazy" onerror="this.parentElement.style.display='none'">
-                      <div class="image-info">
-                        <div class="image-ticker">Trade #${screenshot.tradeNumber} - ${screenshot.ticker}</div>
-                        <div class="image-time">Entry: ${screenshot.time}</div>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
+            <div class="day-card-content">
+              <div class="day-card-date">${dayData.displayDate}</div>
+              <div class="day-card-info">
+                <span>${dayData.trades.length} ${dayData.trades.length === 1 ? 'trade' : 'trades'}</span>
+                <span class="day-card-badge">${dayData.screenshots.length} ${dayData.screenshots.length === 1 ? 'image' : 'images'}</span>
               </div>
             </div>
           </div>
         `;
       }).join('');
+      
+      // Setup modal event listeners
+      setupModalEvents();
+    }
+    
+    // Open modal for specific day
+    function openDayModal(dayIndex) {
+      currentDayIndex = dayIndex;
+      showModalForCurrentDay();
+    }
+    
+    // Show modal for current day
+    function showModalForCurrentDay() {
+      const modal = document.getElementById('screenshots-modal');
+      const modalTitle = document.getElementById('modal-title');
+      const modalImages = document.getElementById('modal-images');
+      const continueBtn = document.getElementById('modal-continue');
+      
+      const dayData = allDaysData[currentDayIndex];
+      
+      // Update modal title
+      modalTitle.textContent = dayData.displayDate;
+      
+      // Populate images
+      modalImages.innerHTML = dayData.screenshots.map((screenshot, idx) => {
+        const imgPath = screenshot.path.replace('../../', '');
+        
+        return `
+          <div class="modal-image-wrapper">
+            <img src="${imgPath}" alt="Trade ${screenshot.tradeNumber} - ${screenshot.ticker}" loading="lazy">
+            <div class="modal-image-caption">
+              <div class="modal-image-ticker">Trade #${screenshot.tradeNumber} - ${screenshot.ticker}</div>
+              <div class="modal-image-info">${screenshot.strategy} • ${screenshot.time}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Update continue button
+      if (currentDayIndex < allDaysData.length - 1) {
+        continueBtn.innerHTML = `
+          <span>Next Day</span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+          </svg>
+        `;
+        continueBtn.onclick = () => {
+          currentDayIndex++;
+          showModalForCurrentDay();
+        };
+      } else {
+        continueBtn.innerHTML = `
+          <span>Finish Review</span>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        `;
+        continueBtn.onclick = closeModal;
+      }
+      
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Close modal
+    function closeModal() {
+      const modal = document.getElementById('screenshots-modal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    
+    // Setup modal event listeners
+    function setupModalEvents() {
+      const modalClose = document.getElementById('modal-close');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+      const modal = document.getElementById('screenshots-modal');
+      
+      if (modalClose) {
+        modalClose.onclick = closeModal;
+      }
+      
+      if (modalCloseBtn) {
+        modalCloseBtn.onclick = closeModal;
+      }
+      
+      // Close on backdrop click
+      if (modal) {
+        modal.onclick = (e) => {
+          if (e.target === modal) {
+            closeModal();
+          }
+        };
+      }
+      
+      // Close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+          closeModal();
+        }
+      });
     }
     
     // Load existing summary if available
