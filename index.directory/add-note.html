@@ -319,6 +319,13 @@ You can reference uploaded images like this:
     let currentMode = 'write';
     let markdownRenderer = null;
     
+    // Helper function to escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
     // Initialize markdown renderer
     document.addEventListener('DOMContentLoaded', () => {
       markdownRenderer = new MarkdownRenderer();
@@ -371,7 +378,7 @@ You can reference uploaded images like this:
       const imagesInfo = document.getElementById('images-info');
       
       if (files.length > 0) {
-        const fileList = Array.from(files).map(f => f.name).join(', ');
+        const fileList = Array.from(files).map(f => escapeHtml(f.name)).join(', ');
         imagesInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected ${files.length} image(s): <strong>${fileList}</strong>`;
       } else {
         imagesInfo.innerHTML = '';
@@ -384,7 +391,8 @@ You can reference uploaded images like this:
       const fileInfo = document.getElementById('md-file-info');
       
       if (file) {
-        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${file.name}</strong>`;
+        const fileName = escapeHtml(file.name);
+        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${fileName}</strong>`;
       } else {
         fileInfo.innerHTML = '';
       }
@@ -396,7 +404,7 @@ You can reference uploaded images like this:
       const imagesInfo = document.getElementById('upload-images-info');
       
       if (files.length > 0) {
-        const fileList = Array.from(files).map(f => f.name).join(', ');
+        const fileList = Array.from(files).map(f => escapeHtml(f.name)).join(', ');
         imagesInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected ${files.length} image(s): <strong>${fileList}</strong>`;
       } else {
         imagesInfo.innerHTML = '';

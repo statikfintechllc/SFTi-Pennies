@@ -201,6 +201,13 @@
   
   <!-- PDF Upload Script -->
   <script>
+    // Helper function to escape HTML to prevent XSS
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+    
     // Show file info when file is selected
     document.getElementById('pdf-file').addEventListener('change', function(e) {
       const file = e.target.files[0];
@@ -208,11 +215,12 @@
       
       if (file) {
         const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${file.name}</strong> (${sizeMB} MB)`;
+        const fileName = escapeHtml(file.name);
+        fileInfo.innerHTML = `<span style="color: var(--accent-green);">✓</span> Selected: <strong>${fileName}</strong> (${sizeMB} MB)`;
         
         // Check file size
         if (file.size > 50 * 1024 * 1024) {
-          fileInfo.innerHTML = `<span style="color: var(--accent-red);">✗</span> File too large: <strong>${file.name}</strong> (${sizeMB} MB). Maximum size is 50MB.`;
+          fileInfo.innerHTML = `<span style="color: var(--accent-red);">✗</span> File too large: <strong>${fileName}</strong> (${sizeMB} MB). Maximum size is 50MB.`;
           e.target.value = '';
         }
       } else {
