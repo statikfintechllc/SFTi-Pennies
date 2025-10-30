@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Review and complete weekly trade summaries">
+  <meta name="theme-color" content="#00ff88">
+  
+  <title>Review Trades - SFTi-Pennies</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/glass-effects.css">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="../manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  
+  <style>
+    .review-container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .week-selector {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .week-selector:hover {
+      border-color: var(--accent-green);
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.1);
+    }
+    
+    .week-dropdown {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .week-dropdown:hover {
+      border-color: var(--accent-green);
+    }
+    
+    .week-dropdown:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+    }
+    
+    .week-dropdown option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 0.5rem;
+    }
+    
+    .loading-container {
+      display: none;
+      text-align: center;
+      padding: 3rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    
+    .loading-container.active {
+      display: block;
+    }
+    
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--accent-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .trade-summary-section {
+      display: none;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .trade-summary-section.active {
+      display: block;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: var(--bg-tertiary);
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+    
+    .stat-value.positive {
+      color: var(--accent-green);
+    }
+    
+    .stat-value.negative {
+      color: var(--accent-red);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--accent-green);
+      box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+    }
+    
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: var(--font-mono);
+    }
+    
+    .form-help {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+    
+    .btn-submit {
+      background: var(--accent-green);
+      color: var(--bg-primary);
+      padding: 0.875rem 2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-submit:hover {
+      background: var(--accent-green-hover, #00cc6a);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+    }
+    
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+    
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .trades-list {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .trade-item {
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .trade-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .trade-ticker {
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--accent-green);
+    }
+    
+    .trade-pnl {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+    
+    .alert {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid;
+    }
+    
+    .alert-info {
+      background: rgba(0, 127, 255, 0.1);
+      border-color: #007fff;
+      color: #4da3ff;
+    }
+    
+    .alert-success {
+      background: rgba(0, 255, 136, 0.1);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+    
+    .alert-warning {
+      background: rgba(255, 193, 7, 0.1);
+      border-color: #ffc107;
+      color: #ffdb4d;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <canvas id="bg-canvas"></canvas>
+  
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="review.html" class="nav-brand">
+        <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
+        SFTi-Pennies
+      </a>
+      
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <div class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </button>
+      
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="../index.html" class="nav-link">Home</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="books.html" class="nav-link">Books</a>
+        </li>
+        
+        <li class="nav-item">
+          <a href="notes.html" class="nav-link">Notes</a>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Trades</a>
+          <ul class="nav-submenu">
+            <li><a href="all-trades.html" class="nav-link">All Trades</a></li>
+            <li><a href="all-weeks.html" class="nav-link">All Summaries</a></li>
+            <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+            <li><a href="import.html" class="nav-link">Import CSV</a></li>
+            <li><a href="review.html" class="nav-link">Review Trades</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item has-submenu">
+          <a href="#" class="nav-link">Mentors</a>
+          <ul class="nav-submenu">
+            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
+            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
+          </ul>
+        </li>
+        
+        <li class="nav-item nav-buttons-group">
+          <a href="add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
+          <button id="auth-button" class="btn btn-secondary">Login</button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <!-- Main Content -->
+  <main class="container">
+    <div class="review-container">
+      <section>
+        <h1 style="display: flex; align-items: center; gap: 0.75rem;">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Review Trades
+        </h1>
+        <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+          Complete your weekly trade summaries with reflection and analysis
+        </p>
+        
+        <!-- Week Selection -->
+        <div class="week-selector">
+          <label class="form-label" for="week-select">
+            📅 Select Week to Review
+          </label>
+          <select id="week-select" class="week-dropdown">
+            <option value="">Loading weeks...</option>
+          </select>
+          <p class="form-help">
+            Choose a trading week to review and complete the summary
+          </p>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loading-container" class="loading-container">
+          <div class="loading-spinner"></div>
+          <p style="color: var(--text-secondary); font-size: 0.875rem;">
+            Loading trade data for selected week...
+          </p>
+        </div>
+        
+        <!-- Trade Summary Section -->
+        <div id="summary-section" class="trade-summary-section">
+          <!-- Week Header -->
+          <div style="margin-bottom: 2rem;">
+            <h2 id="week-title" style="color: var(--accent-green); font-family: var(--font-mono); margin-bottom: 0.5rem;">
+              Week Details
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+              Review your performance and complete the reflection sections below
+            </p>
+          </div>
+          
+          <!-- Statistics Overview -->
+          <div class="stats-grid" id="stats-grid">
+            <!-- Stats will be populated by JavaScript -->
+          </div>
+          
+          <!-- Trades List -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; font-weight: 600;">
+              Trades This Week
+            </h3>
+            <div id="trades-list" class="trades-list">
+              <!-- Trades will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <!-- Strategy Breakdown -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--text-secondary); font-size: 1rem; font-weight: 600;">
+              Strategy Breakdown
+            </h3>
+            <div id="strategy-breakdown" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 6px; padding: 1rem;">
+              <!-- Strategy breakdown will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <!-- Review Form -->
+          <form id="review-form">
+            <div class="alert alert-info">
+              <strong>💡 Tip:</strong> Take time to reflect on your trading decisions, emotions, and market conditions. Honest self-assessment leads to improvement.
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="what-went-well">
+                ✅ What Went Well
+              </label>
+              <textarea 
+                id="what-went-well" 
+                name="what-went-well" 
+                class="form-textarea"
+                placeholder="Describe your successful trades, good decisions, and positive patterns you noticed..."
+                required
+              ></textarea>
+              <p class="form-help">
+                Focus on specific wins, good discipline, and successful strategies
+              </p>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="what-needs-improvement">
+                🔄 What Needs Improvement
+              </label>
+              <textarea 
+                id="what-needs-improvement" 
+                name="what-needs-improvement" 
+                class="form-textarea"
+                placeholder="Identify mistakes, missed opportunities, and areas where you can improve..."
+                required
+              ></textarea>
+              <p class="form-help">
+                Be honest about mistakes and emotional trading decisions
+              </p>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="key-lessons">
+                💡 Key Lessons Learned
+              </label>
+              <textarea 
+                id="key-lessons" 
+                name="key-lessons" 
+                class="form-textarea"
+                placeholder="Summarize the most important lessons from this week's trading..."
+                required
+              ></textarea>
+              <p class="form-help">
+                What will you remember and apply going forward?
+              </p>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="next-week-goals">
+                🎯 Next Week Goals
+              </label>
+              <textarea 
+                id="next-week-goals" 
+                name="next-week-goals" 
+                class="form-textarea"
+                placeholder="Set 2-3 specific, actionable goals for next week's trading..."
+                required
+              ></textarea>
+              <p class="form-help">
+                Make goals specific, measurable, and achievable
+              </p>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; align-items: center;">
+              <button type="submit" class="btn-submit">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Save Summary
+              </button>
+              <span id="save-status" style="color: var(--text-secondary); font-size: 0.875rem;"></span>
+            </div>
+          </form>
+        </div>
+        
+      </section>
+    </div>
+  </main>
+  
+  <footer class="footer">
+    <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
+    <p>
+      <a href="https://www.linkedin.com/in/statikfintech-llc-780804368" target="_blank" style="color: var(--accent-green, #00ff88);">LinkedIn</a> |
+      <a href="https://github.com/statikfintechllc" target="_blank" style="color: var(--accent-green, #00ff88);">Builds</a> |
+      <a href="https://github.com/statikfintechllc/SFTi-Pennies/blob/master/LICENSE.md" target="_blank" style="color: var(--accent-green, #00ff88);">License</a>
+    </p>
+  </footer>
+  
+  <script src="assets/js/background.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+  
+  <script>
+    let allWeeks = [];
+    let currentWeekData = null;
+    
+    // Load weeks data from trades-index.json
+    async function loadWeeks() {
+      try {
+        const response = await fetch('./trades-index.json');
+        const data = await response.json();
+        const trades = data.trades || [];
+        
+        // Group trades by week
+        const weekMap = {};
+        
+        trades.forEach(trade => {
+          // Extract week from file path (e.g., "SFTi.Tradez/week.2025.43/...")
+          const weekMatch = trade.file_path?.match(/week\.(\d{4})\.(\d{2})/);
+          if (weekMatch) {
+            const weekKey = `${weekMatch[1]}-W${weekMatch[2]}`;
+            if (!weekMap[weekKey]) {
+              weekMap[weekKey] = {
+                year: weekMatch[1],
+                week: weekMatch[2],
+                key: weekKey,
+                trades: [],
+                totalPnL: 0,
+                wins: 0,
+                losses: 0
+              };
+            }
+            
+            weekMap[weekKey].trades.push(trade);
+            const pnl = parseFloat(trade.pnl_usd) || 0;
+            weekMap[weekKey].totalPnL += pnl;
+            if (pnl > 0) weekMap[weekKey].wins++;
+            else if (pnl < 0) weekMap[weekKey].losses++;
+          }
+        });
+        
+        // Convert to array and sort by date (most recent first)
+        allWeeks = Object.values(weekMap).sort((a, b) => b.key.localeCompare(a.key));
+        
+        populateWeekDropdown();
+      } catch (error) {
+        console.error('Error loading weeks:', error);
+        const weekSelect = document.getElementById('week-select');
+        weekSelect.innerHTML = '<option value="">Error loading weeks</option>';
+      }
+    }
+    
+    // Populate week dropdown
+    function populateWeekDropdown() {
+      const weekSelect = document.getElementById('week-select');
+      
+      if (allWeeks.length === 0) {
+        weekSelect.innerHTML = '<option value="">No weeks available</option>';
+        return;
+      }
+      
+      weekSelect.innerHTML = '<option value="">Select a week...</option>';
+      
+      allWeeks.forEach(week => {
+        const option = document.createElement('option');
+        option.value = week.key;
+        option.textContent = `Week ${parseInt(week.week)}, ${week.year} - ${week.trades.length} trades (${week.totalPnL >= 0 ? '+' : ''}$${week.totalPnL.toFixed(2)})`;
+        weekSelect.appendChild(option);
+      });
+    }
+    
+    // Handle week selection
+    document.getElementById('week-select').addEventListener('change', async (e) => {
+      const weekKey = e.target.value;
+      
+      if (!weekKey) {
+        document.getElementById('summary-section').classList.remove('active');
+        return;
+      }
+      
+      // Show loading
+      document.getElementById('loading-container').classList.add('active');
+      document.getElementById('summary-section').classList.remove('active');
+      
+      // Simulate fetching data (in a real implementation, this would fetch from backend)
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Find week data
+      currentWeekData = allWeeks.find(w => w.key === weekKey);
+      
+      if (currentWeekData) {
+        displayWeekSummary(currentWeekData);
+      }
+      
+      // Hide loading
+      document.getElementById('loading-container').classList.remove('active');
+      document.getElementById('summary-section').classList.add('active');
+      
+      // Try to load existing summary
+      await loadExistingSummary(weekKey);
+    });
+    
+    // Display week summary
+    function displayWeekSummary(weekData) {
+      // Update title
+      document.getElementById('week-title').textContent = `Week ${parseInt(weekData.week)}, ${weekData.year}`;
+      
+      // Calculate statistics
+      const totalTrades = weekData.trades.length;
+      const winRate = totalTrades > 0 ? (weekData.wins / totalTrades * 100).toFixed(1) : '0.0';
+      const avgPnL = totalTrades > 0 ? (weekData.totalPnL / totalTrades).toFixed(2) : '0.00';
+      
+      // Update stats grid
+      const statsGrid = document.getElementById('stats-grid');
+      statsGrid.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">Total Trades</div>
+          <div class="stat-value">${totalTrades}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Win Rate</div>
+          <div class="stat-value">${winRate}%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Wins</div>
+          <div class="stat-value positive">${weekData.wins}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Losses</div>
+          <div class="stat-value negative">${weekData.losses}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total P&L</div>
+          <div class="stat-value ${weekData.totalPnL >= 0 ? 'positive' : 'negative'}">
+            ${weekData.totalPnL >= 0 ? '+' : ''}$${weekData.totalPnL.toFixed(2)}
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Avg P&L</div>
+          <div class="stat-value ${parseFloat(avgPnL) >= 0 ? 'positive' : 'negative'}">
+            ${parseFloat(avgPnL) >= 0 ? '+' : ''}$${avgPnL}
+          </div>
+        </div>
+      `;
+      
+      // Update trades list
+      const tradesList = document.getElementById('trades-list');
+      tradesList.innerHTML = weekData.trades.map(trade => {
+        const pnl = parseFloat(trade.pnl_usd) || 0;
+        const pnlClass = pnl >= 0 ? 'positive' : 'negative';
+        const pnlSign = pnl >= 0 ? '+' : '';
+        
+        return `
+          <div class="trade-item">
+            <div>
+              <span class="trade-ticker">${trade.ticker || 'N/A'}</span>
+              <span style="color: var(--text-secondary); margin-left: 0.5rem;">
+                ${trade.direction || 'LONG'} | ${trade.position_size || 0} shares
+              </span>
+            </div>
+            <div class="trade-pnl ${pnlClass}">
+              ${pnlSign}$${Math.abs(pnl).toFixed(2)}
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Update strategy breakdown
+      const strategies = {};
+      weekData.trades.forEach(trade => {
+        const strategy = trade.strategy || 'Unknown';
+        if (!strategies[strategy]) {
+          strategies[strategy] = { count: 0, pnl: 0 };
+        }
+        strategies[strategy].count++;
+        strategies[strategy].pnl += parseFloat(trade.pnl_usd) || 0;
+      });
+      
+      const strategyBreakdown = document.getElementById('strategy-breakdown');
+      strategyBreakdown.innerHTML = Object.entries(strategies).map(([strategy, data]) => {
+        const pnlClass = data.pnl >= 0 ? 'positive' : 'negative';
+        const pnlSign = data.pnl >= 0 ? '+' : '';
+        
+        return `
+          <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border-color);">
+            <span style="color: var(--text-primary);">
+              <strong>${strategy}</strong> (${data.count} ${data.count === 1 ? 'trade' : 'trades'})
+            </span>
+            <span class="trade-pnl ${pnlClass}">
+              ${pnlSign}$${data.pnl.toFixed(2)}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+    
+    // Load existing summary if available
+    async function loadExistingSummary(weekKey) {
+      try {
+        const response = await fetch(`./summaries/weekly-${weekKey}.md`);
+        if (response.ok) {
+          const content = await response.text();
+          
+          // Parse existing content
+          const whatWentWellMatch = content.match(/### What Went Well\s*\n\s*\n([^#]*)/);
+          const needsImprovementMatch = content.match(/### What Needs Improvement\s*\n\s*\n([^#]*)/);
+          const lessonsMatch = content.match(/### Key Lessons Learned\s*\n\s*\n([^#]*)/);
+          const goalsMatch = content.match(/## Next Period Goals\s*\n\s*\n([^-]*(?:- [^\n]*\n*)*)/);
+          
+          // Fill in form if content exists and is not placeholder
+          if (whatWentWellMatch && !whatWentWellMatch[1].includes('_To be filled')) {
+            document.getElementById('what-went-well').value = whatWentWellMatch[1].trim();
+          }
+          
+          if (needsImprovementMatch && !needsImprovementMatch[1].includes('_To be filled')) {
+            document.getElementById('what-needs-improvement').value = needsImprovementMatch[1].trim();
+          }
+          
+          if (lessonsMatch && !lessonsMatch[1].includes('_To be filled')) {
+            document.getElementById('key-lessons').value = lessonsMatch[1].trim();
+          }
+          
+          if (goalsMatch && !goalsMatch[1].includes('_Goal')) {
+            document.getElementById('next-week-goals').value = goalsMatch[1].trim();
+          }
+        }
+      } catch (error) {
+        console.log('No existing summary found or error loading:', error);
+      }
+    }
+    
+    // Handle form submission
+    document.getElementById('review-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const saveStatus = document.getElementById('save-status');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      
+      submitBtn.disabled = true;
+      saveStatus.textContent = 'Saving...';
+      saveStatus.style.color = 'var(--accent-green)';
+      
+      // Get form data
+      const formData = {
+        whatWentWell: document.getElementById('what-went-well').value,
+        whatNeedsImprovement: document.getElementById('what-needs-improvement').value,
+        keyLessons: document.getElementById('key-lessons').value,
+        nextWeekGoals: document.getElementById('next-week-goals').value
+      };
+      
+      // In a real implementation, this would send data to a backend API
+      // For now, we'll simulate a save operation
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message
+      saveStatus.textContent = '✓ Summary saved successfully!';
+      saveStatus.style.color = 'var(--accent-green)';
+      
+      // Re-enable button after 2 seconds
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        saveStatus.textContent = '';
+      }, 2000);
+      
+      // Log the data (in production, this would be sent to backend)
+      console.log('Summary data to save:', {
+        week: currentWeekData.key,
+        ...formData
+      });
+    });
+    
+    // Initialize
+    loadWeeks();
+  </script>
+</body>
+</html>
