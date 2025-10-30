@@ -25,10 +25,11 @@
     // Find the index of 'index.directory' in the path
     const indexDirIdx = pathParts.indexOf('index.directory');
     if (indexDirIdx !== -1) {
-      // Number of segments after 'index.directory'
-      const afterIndexDir = pathParts.length - (indexDirIdx + 1);
-      if (afterIndexDir === 0) {
-        // We are at the root of index.directory
+      // Number of directory segments after 'index.directory' (excluding the HTML file itself)
+      // We subtract 1 more to exclude the current HTML file from the count
+      const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
+      if (afterIndexDir <= 0) {
+        // We are at the root of index.directory or directly in it
         basePath = '';
       } else {
         // We are in a subdirectory of index.directory
