@@ -59,24 +59,12 @@
     // Define bubble configurations with new structure
     const bubbles = [
       {
-        type: 'dropdown',
-        class: 'bubble-mentors',
-        tooltip: 'Mentors',
+        type: 'button',
+        class: 'bubble-login',
+        tooltip: 'Login',
+        id: 'bubble-auth-button',
         icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-        </svg>`,
-        dropdownItems: [
-          { label: 'Timothy Sykes', href: 'https://www.timothysykes.com/', external: true },
-          { label: 'Tim Bohen', href: 'https://www.stockstotrade.com/', external: true }
-        ]
-      },
-      {
-        type: 'link',
-        href: `${rootPath}index.html`,
-        class: 'bubble-home',
-        tooltip: 'Home',
-        icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
         </svg>`
       },
       {
@@ -128,13 +116,16 @@
         ]
       },
       {
-        type: 'button',
-        class: 'bubble-login',
-        tooltip: 'Login',
-        id: 'bubble-auth-button',
+        type: 'dropdown',
+        class: 'bubble-mentors',
+        tooltip: 'Mentors',
         icon: `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-        </svg>`
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>`,
+        dropdownItems: [
+          { label: 'Timothy Sykes', href: 'https://www.timothysykes.com/', external: true },
+          { label: 'Tim Bohen', href: 'https://www.stockstotrade.com/', external: true }
+        ]
       }
     ];
     
@@ -266,60 +257,48 @@
   }
   
   /**
-   * Initialize navbar auth bubble (mobile only)
+   * Initialize navbar home bubble (mobile only)
    */
-  function initNavbarAuthBubble() {
+  function initNavbarHomeBubble() {
     const container = document.getElementById('navbar-mentors-bubble');
     if (!container) return;
     
-    // Create the bubble button element
-    const button = document.createElement('button');
-    button.className = 'glowing-bubble bubble-login';
-    button.id = 'navbar-auth-button';
-    button.setAttribute('data-tooltip', 'Login');
-    button.setAttribute('aria-label', 'Login');
-    button.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+    // Determine path to home
+    const pathParts = window.location.pathname.split('/').filter(part => part !== '');
+    const indexDirIdx = pathParts.indexOf('index.directory');
+    let homePath = 'index.html';
+    
+    if (indexDirIdx !== -1) {
+      // We are inside index.directory, need to go up
+      const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
+      if (afterIndexDir <= 0) {
+        homePath = '../index.html';
+      } else {
+        homePath = '../'.repeat(afterIndexDir) + '../index.html';
+      }
+    }
+    
+    // Create the bubble link element
+    const link = document.createElement('a');
+    link.href = homePath;
+    link.className = 'glowing-bubble bubble-home';
+    link.setAttribute('data-tooltip', 'Home');
+    link.setAttribute('aria-label', 'Home');
+    link.innerHTML = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
     </svg>`;
     
-    container.appendChild(button);
-    
-    // Set up authentication functionality
-    if (typeof GitHubAuth !== 'undefined') {
-      const auth = new GitHubAuth();
-      
-      if (auth.isAuthenticated()) {
-        button.setAttribute('data-tooltip', 'Logout');
-        button.addEventListener('click', () => {
-          auth.clearAuth();
-          window.location.reload();
-        });
-      } else {
-        button.setAttribute('data-tooltip', 'Login');
-        button.addEventListener('click', () => {
-          if (typeof showAuthPrompt !== 'undefined') {
-            showAuthPrompt();
-          } else {
-            alert('Authentication system not available. Please refresh the page.');
-          }
-        });
-      }
-    } else {
-      // GitHubAuth not available, disable button
-      button.setAttribute('data-tooltip', 'Auth Not Available');
-      button.style.opacity = '0.5';
-      button.style.cursor = 'not-allowed';
-    }
+    container.appendChild(link);
   }
   
   // Initialize on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       initGlowingBubbles();
-      initNavbarAuthBubble();
+      initNavbarHomeBubble();
     });
   } else {
     initGlowingBubbles();
-    initNavbarAuthBubble();
+    initNavbarHomeBubble();
   }
 })();
