@@ -22,20 +22,13 @@
     const pathParts = window.location.pathname.split('/').filter(part => part !== '');
     let basePath = '';
 
-    // Debug logging
-    console.log('[Glowing Bubbles] Initializing...');
-    console.log('[Glowing Bubbles] Full pathname:', window.location.pathname);
-    console.log('[Glowing Bubbles] Path parts:', pathParts);
-
     // Find the index of 'index.directory' in the path
     const indexDirIdx = pathParts.indexOf('index.directory');
-    console.log('[Glowing Bubbles] index.directory index:', indexDirIdx);
     
     if (indexDirIdx !== -1) {
       // We are inside index.directory
       // Count how many levels deep we are AFTER index.directory (excluding the HTML file)
       const afterIndexDir = pathParts.length - (indexDirIdx + 1) - 1;
-      console.log('[Glowing Bubbles] Segments after index.directory:', afterIndexDir);
       
       if (afterIndexDir <= 0) {
         // We are at the root of index.directory (e.g., /index.directory/books.html)
@@ -57,9 +50,6 @@
         basePath = 'index.directory/';
       }
     }
-    
-    console.log('[Glowing Bubbles] Calculated basePath:', basePath);
-    console.log('[Glowing Bubbles] Example link will be:', basePath + 'books.html');
     
     // Define bubble configurations
     const bubbles = [

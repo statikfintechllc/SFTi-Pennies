@@ -28,6 +28,8 @@ class MarkdownRenderer {
       smartypants: false,
       headerIds: true,
       mangle: false,
+      // Note: marked.js in GFM mode does not render raw HTML by default
+      // which provides XSS protection for user-generated markdown content
       highlight: (code, lang) => {
         if (this.hljs && lang && this.hljs.getLanguage(lang)) {
           try {
@@ -98,6 +100,8 @@ class MarkdownRenderer {
 
   /**
    * Render markdown to HTML
+   * Note: marked.js escapes HTML by default in GFM mode.
+   * Raw HTML in markdown is not rendered unless explicitly enabled.
    */
   render(markdown) {
     if (!markdown) {

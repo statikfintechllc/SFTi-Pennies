@@ -314,9 +314,12 @@
       const container = document.getElementById('alert-container');
       const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-warning';
       
+      // Escape message to prevent XSS
+      const escapedMessage = escapeHtml(message);
+      
       container.innerHTML = `
         <div class="alert ${alertClass}">
-          <p>${message}</p>
+          <p>${escapedMessage}</p>
         </div>
       `;
       

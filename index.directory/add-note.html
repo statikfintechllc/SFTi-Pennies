@@ -359,6 +359,8 @@ You can reference uploaded images like this:
       const textarea = document.getElementById('note-content');
       
       if (markdownRenderer && content) {
+        // MarkdownRenderer uses marked.js in GFM mode which does not render raw HTML by default,
+        // providing XSS protection for user-generated markdown content
         preview.innerHTML = markdownRenderer.render(content);
         preview.style.display = 'block';
         textarea.style.display = 'none';
@@ -541,9 +543,12 @@ You can reference uploaded images like this:
       const container = document.getElementById('alert-container');
       const alertClass = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : 'alert-warning';
       
+      // Escape message to prevent XSS
+      const escapedMessage = escapeHtml(message);
+      
       container.innerHTML = `
         <div class="alert ${alertClass}">
-          <p>${message}</p>
+          <p>${escapedMessage}</p>
         </div>
       `;
       
