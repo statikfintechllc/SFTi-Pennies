@@ -492,17 +492,26 @@ def aggregate_monthly_insights(year):
         for filename in sorted(os.listdir(summaries_dir)):
             if filename.startswith(f"monthly-{year}-") and filename.endswith(".md"):
                 # Extract month number from filename
-                try:
-                    month_match = re.match(r'monthly-\d{4}-(\d{2})\.md', filename)
-                    if month_match:
-                        month_num = int(month_match.group(1))
-                        month_name = datetime(int(year), month_num, 1).strftime("%B")
-                        filepath = os.path.join(summaries_dir, filename)
-                        review = load_existing_summary(filepath)
-                        if review and any(review.values()):
-                            monthly_reviews.append((month_name, review))
-                except (ValueError, AttributeError):
+                month_match = re.match(r'monthly-\d{4}-(\d{2})\.md', filename)
+                if not month_match:
+                    # Optionally log or print a warning about filename format
+                    # print(f"Warning: Filename {filename} does not match expected pattern.")
                     continue
+                month_num = int(month_match.group(1))
+                if not (1 <= month_num <= 12):
+                    # Optionally log or print a warning about invalid month
+                    # print(f"Warning: Invalid month {month_num} in filename {filename}.")
+                    continue
+                try:
+                    month_name = datetime(int(year), month_num, 1).strftime("%B")
+                except ValueError:
+                    # This should not happen due to the above check, but just in case
+                    # print(f"Warning: Could not create datetime for year {year}, month {month_num}.")
+                    continue
+                filepath = os.path.join(summaries_dir, filename)
+                review = load_existing_summary(filepath)
+                if review and any(review.values()):
+                    monthly_reviews.append((month_name, review))
     
     if not monthly_reviews:
         return None
