@@ -170,10 +170,10 @@ def generate_trade_html(trade):
   <!-- Navigation -->
   <nav class="navbar">
     <div class="nav-container">
-      <a href="../all-weeks.html" class="nav-brand">
-        <img src="../assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;">
-        SFTi-Pennies Trading Journal
+      <a href="../all-weeks.html" class="nav-logo">
+        <img src="../assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
       </a>
+      <span class="nav-title">SFTi-Pennies Trading Journal</span>
       
       <ul class="nav-menu">
         <li class="nav-item">

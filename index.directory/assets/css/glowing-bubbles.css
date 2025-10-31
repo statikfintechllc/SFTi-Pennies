@@ -476,16 +476,25 @@ body {
     justify-content: flex-end;
   }
   
-  /* Increase navbar brand size on mobile (slightly larger) */
-  .nav-brand {
-    font-size: 1.1rem !important;
-    white-space: nowrap;
+  /* Style logo and title separately on mobile */
+  .nav-logo {
+    display: flex !important;
+    align-items: center !important;
   }
   
-  .nav-brand img {
+  .nav-logo img {
     width: 28px !important;
     height: 28px !important;
-    margin-right: 6px !important;
+  }
+  
+  .nav-title {
+    flex: 1 !important;
+    text-align: center !important;
+    font-size: 1.1rem !important;
+    white-space: nowrap;
+    margin: 0 !important;
+    margin-left: 8px !important;
+    margin-right: -10px !important;
   }
   
   /* Hide ALL traditional nav items on mobile except home icon */
@@ -513,27 +522,12 @@ body {
     height: 32px !important;
   }
   
-  /* Center the navbar brand on mobile */
+  /* Layout navbar container on mobile */
   .nav-container {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-start !important;
+    justify-content: space-between !important;
     gap: 0 !important;
-    position: relative !important;
-  }
-  
-  .nav-brand {
-    position: absolute !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    text-align: center !important;
-    margin: 0 !important;
-    z-index: 1 !important;
-  }
-  
-  .nav-menu {
-    margin-left: auto !important;
-    z-index: 2 !important;
   }
   
   /* Show ONLY navbar bubble on mobile - REMOVE ALL DEFAULT STYLES */
