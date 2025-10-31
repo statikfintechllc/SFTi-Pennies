@@ -368,9 +368,16 @@ body {
 }
 
 /* Mentors dropdown - narrower width for shorter text */
-.bubble-mentors + .bubble-dropdown {
-  min-width: 140px;
-  width: max-content;
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown {
+  min-width: auto;
+  width: auto;
+  max-width: 150px;
+}
+
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a {
+  padding: 0.75rem 0.75rem;
+  white-space: normal;
+  text-align: center;
 }
 
 /* Additional bubble styles for new buttons */
