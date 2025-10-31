@@ -591,26 +591,15 @@ body {
     cursor: pointer;
   }
   
-  /* Adjust dropdown positioning on mobile to prevent overflow */
-  .bubble-dropdown {
-    left: auto;
-    right: auto;
-    transform: none;
-    /* Center the dropdown but constrain it within viewport */
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  /* Position dropdown relative to viewport center on mobile */
+  /* Position dropdown for last and second-to-last bubbles - align to right edge */
   .glowing-bubble-wrapper:last-child .bubble-dropdown,
   .glowing-bubble-wrapper:nth-last-child(-n+2) .bubble-dropdown {
-    /* For last and second-to-last bubbles, align dropdown to the right edge */
     left: auto;
     right: 0;
     transform: none;
   }
   
-  /* For first and second bubbles, align dropdown to the left edge */
+  /* Position dropdown for first and second bubbles - align to left edge */
   .glowing-bubble-wrapper:first-child .bubble-dropdown,
   .glowing-bubble-wrapper:nth-child(2) .bubble-dropdown {
     left: 0;
@@ -618,16 +607,14 @@ body {
     transform: none;
   }
   
-  /* Keep middle bubbles centered */
+  /* Position dropdown for middle bubbles - keep centered */
   .glowing-bubble-wrapper:not(:first-child):not(:nth-child(2)):not(:nth-last-child(-n+2)) .bubble-dropdown {
     left: 50%;
+    right: auto;
     transform: translateX(-50%);
   }
   
-  .glowing-bubble-wrapper.active .bubble-dropdown {
-    transform: none;
-  }
-  
+  /* Maintain transform for active middle bubbles */
   .glowing-bubble-wrapper.active:not(:first-child):not(:nth-child(2)):not(:nth-last-child(-n+2)) .bubble-dropdown {
     transform: translateX(-50%);
   }
