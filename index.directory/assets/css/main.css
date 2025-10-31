@@ -708,6 +708,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.7;
   transition: opacity var(--transition-fast);
+  width: 16px;
+  height: 16px;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
@@ -720,6 +722,8 @@ input[type="date"]::-moz-calendar-picker-indicator,
 input[type="time"]::-moz-calendar-picker-indicator {
   filter: invert(0.8);
   cursor: pointer;
+  width: 16px;
+  height: 16px;
 }
 
 /* Ensure date/time inputs don't overflow */
