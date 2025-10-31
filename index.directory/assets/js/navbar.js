@@ -7,6 +7,7 @@ class Navbar {
   constructor(options = {}) {
     this.basePath = options.basePath || '';
     this.currentPath = options.currentPath || '';
+    this.navbarClass = options.navbarClass || 'navbar-floating';
     this.render();
   }
 
@@ -20,7 +21,7 @@ class Navbar {
             addTradePath, homeIconPath } = this.getPaths();
 
     return `
-<nav class="navbar navbar-floating">
+<nav class="navbar ${this.navbarClass}">
   <div class="nav-container">
     <a href="${homePath}" class="nav-logo" style="color: var(--accent-green, #00ff88);">
       <img src="${logoPath}" alt="Chart Logo" class="green-svg" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
@@ -148,32 +149,54 @@ class Navbar {
   }
   
   /**
-   * Setup dropdown menu functionality
+   * Setup dropdown menu functionality using event delegation
    */
   setupDropdowns() {
-    const dropdownItems = document.querySelectorAll('.nav-item.has-submenu');
-    
-    dropdownItems.forEach(item => {
-      // Toggle on click for mobile
-      item.addEventListener('click', (e) => {
+    const navbar = document.querySelector('nav.navbar');
+    if (!navbar) return;
+
+    // Remove any previous event listeners by cloning and replacing the navbar
+    // This ensures no duplicate listeners accumulate
+    // (Note: This is already handled by outerHTML replacement in render())
+
+    // Use event delegation for click events (mobile)
+    navbar.addEventListener('click', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
         if (window.innerWidth <= 768) {
           e.preventDefault();
+          e.stopPropagation();
+          
+          // Close other submenus
+          navbar.querySelectorAll('.nav-item.has-submenu').forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+            }
+          });
+          
           item.classList.toggle('active');
         }
-      });
-      
-      // Show on hover for desktop
-      item.addEventListener('mouseenter', () => {
+      }
+    });
+
+    // Use event delegation for mouseenter (desktop)
+    navbar.addEventListener('mouseover', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
         if (window.innerWidth > 768) {
           item.classList.add('active');
         }
-      });
-      
-      item.addEventListener('mouseleave', () => {
+      }
+    });
+
+    // Use event delegation for mouseleave (desktop)
+    navbar.addEventListener('mouseout', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
         if (window.innerWidth > 768) {
           item.classList.remove('active');
         }
-      });
+      }
     });
   }
 }
