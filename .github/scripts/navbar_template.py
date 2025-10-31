@@ -106,8 +106,8 @@ def get_navbar_html(level="root"):
         
         <!-- SVG Home Icon in Navbar -->
         <li class="nav-item nav-home-icon" style="margin-left: auto;">
-          <a href="{home_path}" class="nav-link" aria-label="Home" title="Home">
-            <img src="{home_icon_path}" alt="Home" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+          <a href="{home_path}" aria-label="Home" title="Home">
+            <img src="{home_icon_path}" alt="Home" style="width: 32px; height: 32px; display: inline-block; vertical-align: middle;">
           </a>
         </li>
       </ul>
