@@ -291,7 +291,7 @@ code {
 
 /* Container */
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: var(--spacing-lg) var(--spacing-lg);
 }
@@ -667,14 +667,15 @@ code {
 .form-select,
 .form-textarea {
   width: 100%;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 4px;
   color: var(--text-primary);
   font-family: var(--font-mono);
-  font-size: 0.95rem;
+  font-size: 1rem;
   transition: border-color var(--transition-fast);
+  min-height: 48px;
 }
 
 .form-input:focus,
@@ -694,11 +695,8 @@ code {
 input[type="date"],
 input[type="time"] {
   position: relative;
-  min-height: 40px;
+  min-height: 48px;
   color-scheme: dark;
-  box-sizing: border-box;
-  max-width: 100%;
-  margin-left: -5px;
 }
 
 /* Style the date and time input calendar/clock icons */
@@ -708,8 +706,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: 0.7;
   transition: opacity var(--transition-fast);
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator:hover,
@@ -722,24 +720,41 @@ input[type="date"]::-moz-calendar-picker-indicator,
 input[type="time"]::-moz-calendar-picker-indicator {
   filter: invert(0.8);
   cursor: pointer;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 
 /* Ensure date/time inputs don't overflow */
 input[type="date"]::-webkit-datetime-edit,
 input[type="time"]::-webkit-datetime-edit {
   padding: 0;
-  display: flex;
-  align-items: center;
-  max-width: 100%;
+  padding-right: 0;
+  display: inline-block;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
 }
 
 input[type="date"]::-webkit-datetime-edit-fields-wrapper,
 input[type="time"]::-webkit-datetime-edit-fields-wrapper {
   padding: 0;
+  margin: 0;
   max-width: 100%;
   overflow: hidden;
+  text-overflow: clip;
+}
+
+input[type="date"]::-webkit-datetime-edit-text,
+input[type="time"]::-webkit-datetime-edit-text {
+  padding: 0 2px;
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="time"]::-webkit-datetime-edit-hour-field,
+input[type="time"]::-webkit-datetime-edit-minute-field,
+input[type="time"]::-webkit-datetime-edit-ampm-field {
+  padding: 0 1px;
 }
 
 .form-row {
