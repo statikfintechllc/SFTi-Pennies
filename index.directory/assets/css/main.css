@@ -698,6 +698,7 @@ input[type="time"] {
   color-scheme: dark;
   box-sizing: border-box;
   max-width: 100%;
+  margin-left: -5px;
 }
 
 /* Style the date and time input calendar/clock icons */
