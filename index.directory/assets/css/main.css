@@ -690,6 +690,34 @@ code {
   min-height: 100px;
 }
 
+/* Normalize date and time inputs to match other form inputs */
+input[type="date"].form-input,
+input[type="time"].form-input {
+  height: auto;
+  line-height: normal;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Ensure date and time input internal elements don't overflow */
+input[type="date"].form-input::-webkit-calendar-picker-indicator,
+input[type="time"].form-input::-webkit-calendar-picker-indicator {
+  margin-left: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+input[type="date"].form-input::-webkit-datetime-edit,
+input[type="time"].form-input::-webkit-datetime-edit {
+  padding: 0;
+}
+
+input[type="date"].form-input::-webkit-datetime-edit-fields-wrapper,
+input[type="time"].form-input::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
