@@ -1155,3 +1155,10 @@ input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
   margin-left: 4px;
 }
+
+/* Mobile: Force form to single column for uniform input widths */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
