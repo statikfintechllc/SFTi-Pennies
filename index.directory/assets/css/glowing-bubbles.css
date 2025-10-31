@@ -380,6 +380,32 @@ body {
   text-align: center;
 }
 
+/* Books dropdown - wider to prevent text wrapping */
+.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown {
+  min-width: auto;
+  width: auto;
+  max-width: 220px;
+}
+
+.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown a {
+  padding: 0.75rem 0.75rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Notes dropdown - wider to prevent text wrapping */
+.glowing-bubble-wrapper:has(.bubble-notes) .bubble-dropdown {
+  min-width: auto;
+  width: auto;
+  max-width: 220px;
+}
+
+.glowing-bubble-wrapper:has(.bubble-notes) .bubble-dropdown a {
+  padding: 0.75rem 0.75rem;
+  white-space: nowrap;
+  text-align: center;
+}
+
 /* Additional bubble styles for new buttons */
 .glowing-bubble.bubble-trades {
   border-color: rgba(251, 191, 36, 0.3);
