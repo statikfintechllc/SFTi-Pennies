@@ -31,7 +31,12 @@ class Navbar {
       <li class="nav-item">
         <a href="${homePath}" class="nav-link">Home</a>
       </li>
-      
+
+    <!-- SVG Home Icon in Navbar -->
+    <a href="${homePath}" class="nav-link" aria-label="Home" title="Home">
+      <img src="${homeIconPath}" alt="Home" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+    </a>
+
       <li class="nav-item">
         <a href="${booksPath}" class="nav-link">Books</a>
       </li>
@@ -62,14 +67,7 @@ class Navbar {
       <li class="nav-item nav-buttons-group">
         <a href="${addTradePath}" class="nav-link btn btn-primary">+ Add Trade</a>
         <button id="auth-button" class="btn btn-secondary">Login</button>
-      </li>
-      
-      <!-- SVG Home Icon in Navbar -->
-      <li class="nav-item nav-home-icon" style="margin-left: auto;">
-        <a href="${homePath}" class="nav-link" aria-label="Home" title="Home">
-          <img src="${homeIconPath}" alt="Home" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
-        </a>
-      </li>
+      </li>   
     </ul>
   </div>
 </nav>`;
