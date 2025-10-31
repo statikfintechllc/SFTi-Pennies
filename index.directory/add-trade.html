@@ -107,13 +107,13 @@
           <div class="form-row">
             <div class="form-group">
               <label for="trade_number" class="form-label required">Trade Number</label>
-              <input type="number" id="trade_number" class="form-input" required min="1" placeholder="1">
+              <input type="number" id="trade_number" class="form-input" required min="1" placeholder="1" style="width: 100%;">
               <p class="form-helper">Sequential trade number</p>
             </div>
             
             <div class="form-group">
               <label for="ticker" class="form-label required">Ticker Symbol</label>
-              <input type="text" id="ticker" class="form-input" required placeholder="AAPL" style="text-transform: uppercase;">
+              <input type="text" id="ticker" class="form-input" required placeholder="AAPL" style="text-transform: uppercase; width: 100%;">
               <p class="form-helper">Stock ticker (e.g., AAPL, TSLA)</p>
             </div>
           </div>
@@ -126,17 +126,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="entry_date" class="form-label required">Entry Date</label>
-              <input type="date" id="entry_date" class="form-input" required>
+              <input type="date" id="entry_date" class="form-input" required style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="entry_time" class="form-label required">Entry Time</label>
-              <input type="time" id="entry_time" class="form-input" required>
+              <input type="time" id="entry_time" class="form-input" required style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="entry_price" class="form-label required">Entry Price ($)</label>
-              <input type="number" id="entry_price" class="form-input" required step="0.0001" placeholder="10.50">
+              <input type="number" id="entry_price" class="form-input" required step="0.0001" placeholder="10.50" style="width: 100%;">
             </div>
           </div>
         </div>
@@ -148,17 +148,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="exit_date" class="form-label required">Exit Date</label>
-              <input type="date" id="exit_date" class="form-input" required>
+              <input type="date" id="exit_date" class="form-input" required style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="exit_time" class="form-label required">Exit Time</label>
-              <input type="time" id="exit_time" class="form-input" required>
+              <input type="time" id="exit_time" class="form-input" required style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="exit_price" class="form-label required">Exit Price ($)</label>
-              <input type="number" id="exit_price" class="form-input" required step="0.0001" placeholder="11.25">
+              <input type="number" id="exit_price" class="form-input" required step="0.0001" placeholder="11.25" style="width: 100%;">
             </div>
           </div>
         </div>
@@ -170,7 +170,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="direction" class="form-label required">Direction</label>
-              <select id="direction" class="form-select" required>
+              <select id="direction" class="form-select" required style="width: 100%;">
                 <option value="">Select direction</option>
                 <option value="LONG">LONG (Buy)</option>
                 <option value="SHORT">SHORT (Sell)</option>
@@ -179,12 +179,12 @@
             
             <div class="form-group">
               <label for="position_size" class="form-label required">Position Size (Shares)</label>
-              <input type="number" id="position_size" class="form-input" required min="1" placeholder="100">
+              <input type="number" id="position_size" class="form-input" required min="1" placeholder="100" style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="broker" class="form-label required">Broker</label>
-              <input type="text" id="broker" class="form-input" required placeholder="TD Ameritrade">
+              <input type="text" id="broker" class="form-input" required placeholder="TD Ameritrade" style="width: 100%;">
             </div>
           </div>
         </div>
@@ -196,17 +196,17 @@
           <div class="form-row">
             <div class="form-group">
               <label for="stop_loss" class="form-label required">Stop Loss ($)</label>
-              <input type="number" id="stop_loss" class="form-input" required step="0.0001" placeholder="10.00">
+              <input type="number" id="stop_loss" class="form-input" required step="0.0001" placeholder="10.00" style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="target_price" class="form-label required">Target Price ($)</label>
-              <input type="number" id="target_price" class="form-input" required step="0.0001" placeholder="12.00">
+              <input type="number" id="target_price" class="form-input" required step="0.0001" placeholder="12.00" style="width: 100%;">
             </div>
             
             <div class="form-group">
               <label for="strategy" class="form-label required">Strategy</label>
-              <input type="text" id="strategy" class="form-input" required placeholder="Breakout Play">
+              <input type="text" id="strategy" class="form-input" required placeholder="Breakout Play" style="width: 100%;">
               <p class="form-helper">e.g., Breakout, Reversal, VWAP Hold</p>
             </div>
           </div>
@@ -224,14 +224,14 @@
           <div class="form-row">
             <div class="form-group">
               <label for="strategy_tags" class="form-label">Strategy Tags</label>
-              <input type="text" id="strategy_tags" class="form-input tag-input" placeholder="e.g., Breakout, Momentum, Reversal">
+              <input type="text" id="strategy_tags" class="form-input tag-input" placeholder="e.g., Breakout, Momentum, Reversal" style="width: 100%;">
               <p class="form-helper">Comma-separated tags for trading strategies</p>
               <div id="strategy_tags_display" class="tag-display"></div>
             </div>
             
             <div class="form-group">
               <label for="setup_tags" class="form-label">Setup Tags</label>
-              <input type="text" id="setup_tags" class="form-input tag-input" placeholder="e.g., Bull Flag, VWAP Bounce, Gap Fill">
+              <input type="text" id="setup_tags" class="form-input tag-input" placeholder="e.g., Bull Flag, VWAP Bounce, Gap Fill" style="width: 100%;">
               <p class="form-helper">Comma-separated tags for chart setups</p>
               <div id="setup_tags_display" class="tag-display"></div>
             </div>
@@ -240,14 +240,14 @@
           <div class="form-row">
             <div class="form-group">
               <label for="session_tags" class="form-label">Session Tags</label>
-              <input type="text" id="session_tags" class="form-input tag-input" placeholder="e.g., Pre-market, Morning, Afternoon">
+              <input type="text" id="session_tags" class="form-input tag-input" placeholder="e.g., Pre-market, Morning, Afternoon" style="width: 100%;">
               <p class="form-helper">Comma-separated tags for trading sessions</p>
               <div id="session_tags_display" class="tag-display"></div>
             </div>
             
             <div class="form-group">
               <label for="market_condition_tags" class="form-label">Market Condition Tags</label>
-              <input type="text" id="market_condition_tags" class="form-input tag-input" placeholder="e.g., Trending, Choppy, High Volume">
+              <input type="text" id="market_condition_tags" class="form-input tag-input" placeholder="e.g., Trending, Choppy, High Volume" style="width: 100%;">
               <p class="form-helper">Comma-separated tags for market conditions</p>
               <div id="market_condition_tags_display" class="tag-display"></div>
             </div>
