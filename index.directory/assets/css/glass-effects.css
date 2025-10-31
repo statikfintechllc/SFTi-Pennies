@@ -52,6 +52,7 @@
   border: 1px solid var(--glass-border-medium);
   border-radius: var(--glass-radius-md);
   box-shadow: var(--glass-shadow-md);
+  padding: 2rem;
   position: relative;
   overflow: hidden;
   transform: translateZ(0);
@@ -344,6 +345,7 @@
   .glass-card,
   .glass-stat {
     border-radius: var(--glass-radius-sm);
+    padding: 1.5rem;
   }
   
   .glass-chart {
