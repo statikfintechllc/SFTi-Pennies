@@ -496,6 +496,31 @@ body {
   /* Show home icon on mobile */
   .nav-item.nav-home-icon {
     display: flex !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Size home icon appropriately on mobile */
+  .nav-item.nav-home-icon a {
+    padding: 0.25rem !important;
+  }
+  
+  .nav-item.nav-home-icon svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  
+  /* Center the navbar brand on mobile */
+  .nav-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+  
+  .nav-brand {
+    flex: 1 !important;
+    text-align: left !important;
+    margin-right: auto !important;
   }
   
   /* Show ONLY navbar bubble on mobile - REMOVE ALL DEFAULT STYLES */
