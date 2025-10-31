@@ -339,6 +339,7 @@ def generate_trade_html(trade):
       autoplayVideos: true
     }});
   </script>
+  <script src="../assets/js/navbar.js"></script>
   <script src="../assets/js/background.js"></script>
   <script src="../assets/js/auth.js"></script>
   <script src="../assets/js/app.js"></script>

@@ -20,22 +20,17 @@ class Navbar {
             addTradePath, homeIconPath } = this.getPaths();
 
     return `
-<nav class="navbar">
+<nav class="navbar navbar-floating">
   <div class="nav-container">
-    <a href="${homePath}" class="nav-logo">
-      <img src="${logoPath}" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+    <a href="${homePath}" class="nav-logo" style="color: var(--accent-green, #00ff88);">
+      <img src="${logoPath}" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; filter: brightness(0) saturate(100%) invert(84%) sepia(48%) saturate(2476%) hue-rotate(84deg) brightness(101%) contrast(106%);">
     </a>
-    <span class="nav-title">SFTi-Pennies Trading Journal</span>
+    <span class="nav-title" style="color: var(--accent-green, #00ff88);">SFTi-Pennies Trading Journal</span>
     
     <ul class="nav-menu">
       <li class="nav-item">
-        <a href="${homePath}" class="nav-link">Home</a>
+        <a href="${homePath}" class="nav-link" style="color: var(--accent-green, #00ff88);">Home</a>
       </li>
-
-    <!-- SVG Home Icon in Navbar -->
-    <a href="${homePath}" class="nav-link" aria-label="Home" title="Home">
-      <img src="${homeIconPath}" alt="Home" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
-    </a>
 
       <li class="nav-item">
         <a href="${booksPath}" class="nav-link">Books</a>
@@ -67,7 +62,14 @@ class Navbar {
       <li class="nav-item nav-buttons-group">
         <a href="${addTradePath}" class="nav-link btn btn-primary">+ Add Trade</a>
         <button id="auth-button" class="btn btn-secondary">Login</button>
-      </li>   
+      </li>
+      
+      <!-- SVG Home Icon in Navbar -->
+      <li class="nav-item nav-home-icon" style="margin-left: auto;">
+        <a href="${homePath}" aria-label="Home" title="Home">
+          <img src="${homeIconPath}" alt="Home" style="width: 32px; height: 32px; display: inline-block; vertical-align: middle; filter: brightness(0) saturate(100%) invert(84%) sepia(48%) saturate(2476%) hue-rotate(84deg) brightness(101%) contrast(106%);">
+        </a>
+      </li>
     </ul>
   </div>
 </nav>`;
