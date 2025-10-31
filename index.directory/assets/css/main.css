@@ -153,6 +153,11 @@ code {
   color: var(--accent-green);
 }
 
+/* Green SVG filter for logo and icons */
+.navbar-floating .green-svg {
+  filter: brightness(0) saturate(100%) invert(84%) sepia(48%) saturate(2476%) hue-rotate(84deg) brightness(101%) contrast(106%);
+}
+
 .nav-container {
   max-width: 1200px;
   margin: 0 auto;
