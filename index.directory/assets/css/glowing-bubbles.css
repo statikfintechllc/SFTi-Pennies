@@ -507,16 +507,24 @@ body {
     display: flex !important;
     margin-left: 0 !important;
     padding: 0 !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    outline: none !important;
   }
   
   /* Size home icon appropriately on mobile */
   .nav-item.nav-home-icon a {
     padding: 0 !important;
+    margin: 0 !important;
     border: none !important;
     border-bottom: none !important;
     text-decoration: none !important;
     display: flex !important;
     align-items: center !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: none !important;
   }
   
   .nav-item.nav-home-icon svg,
