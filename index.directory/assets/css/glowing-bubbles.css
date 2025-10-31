@@ -511,10 +511,12 @@ body {
   
   /* Size home icon appropriately on mobile */
   .nav-item.nav-home-icon a {
-    padding: 0.25rem !important;
+    padding: 0 !important;
     border: none !important;
     border-bottom: none !important;
     text-decoration: none !important;
+    display: flex !important;
+    align-items: center !important;
   }
   
   .nav-item.nav-home-icon svg,
