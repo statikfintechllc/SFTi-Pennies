@@ -367,6 +367,12 @@ body {
   transform: translateX(4px);
 }
 
+/* Mentors dropdown - narrower width for shorter text */
+.bubble-mentors + .bubble-dropdown {
+  min-width: 140px;
+  width: max-content;
+}
+
 /* Additional bubble styles for new buttons */
 .glowing-bubble.bubble-trades {
   border-color: rgba(251, 191, 36, 0.3);
@@ -591,31 +597,13 @@ body {
     cursor: pointer;
   }
   
-  /* Position dropdown for last and second-to-last bubbles - align to right edge */
-  .glowing-bubble-wrapper:last-child .bubble-dropdown,
-  .glowing-bubble-wrapper:nth-last-child(-n+2) .bubble-dropdown {
-    left: auto;
-    right: 0;
-    transform: none;
-  }
-  
-  /* Position dropdown for first and second bubbles - align to left edge */
-  .glowing-bubble-wrapper:first-child .bubble-dropdown,
-  .glowing-bubble-wrapper:nth-child(2) .bubble-dropdown {
-    left: 0;
-    right: auto;
-    transform: none;
-  }
-  
-  /* Position dropdown for middle bubbles - keep centered */
-  .glowing-bubble-wrapper:not(:first-child):not(:nth-child(2)):not(:nth-last-child(-n+2)) .bubble-dropdown {
+  /* All dropdowns stay centered on mobile, just constrained by max-width */
+  .bubble-dropdown {
     left: 50%;
-    right: auto;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(10px);
   }
   
-  /* Maintain transform for active middle bubbles */
-  .glowing-bubble-wrapper.active:not(:first-child):not(:nth-child(2)):not(:nth-last-child(-n+2)) .bubble-dropdown {
-    transform: translateX(-50%);
+  .glowing-bubble-wrapper.active .bubble-dropdown {
+    transform: translateX(-50%) translateY(0);
   }
 }
