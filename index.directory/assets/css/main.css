@@ -752,12 +752,6 @@ input[type="time"].form-input::-webkit-datetime-edit-fields-wrapper {
   font-size: 0.875rem;
   color: var(--text-dim);
   margin-top: var(--spacing-xs);
-}
-
-.form-help {
-  font-size: 0.875rem;
-  color: var(--text-dim);
-  margin-top: var(--spacing-xs);
   margin-bottom: 0;
 }
 
