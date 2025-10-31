@@ -337,6 +337,8 @@ body {
   transform: translateX(-50%) translateY(10px);
   pointer-events: none;
   z-index: 10000;
+  /* Prevent overflow on mobile */
+  max-width: calc(100vw - 2rem);
 }
 
 .glowing-bubble-wrapper:hover .bubble-dropdown,
@@ -363,6 +365,19 @@ body {
   background: rgba(0, 255, 136, 0.15);
   color: var(--accent-green, #00ff88);
   transform: translateX(4px);
+}
+
+/* Mentors dropdown - wider to prevent text wrapping */
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown {
+  min-width: auto;
+  width: auto;
+  max-width: 220px;
+}
+
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a {
+  padding: 0.75rem 0.75rem;
+  white-space: nowrap;
+  text-align: center;
 }
 
 /* Additional bubble styles for new buttons */
@@ -587,5 +602,15 @@ body {
   .glowing-bubble-wrapper.has-dropdown > .glowing-bubble {
     pointer-events: auto;
     cursor: pointer;
+  }
+  
+  /* All dropdowns stay centered on mobile, just constrained by max-width */
+  .bubble-dropdown {
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+  }
+  
+  .glowing-bubble-wrapper.active .bubble-dropdown {
+    transform: translateX(-50%) translateY(0);
   }
 }
