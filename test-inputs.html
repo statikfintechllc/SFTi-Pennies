@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root {
+  --bg-secondary: #0f1429;
+  --border-color: #27272a;
+  --text-primary: #e4e4e7;
+  --font-mono: 'Courier New', monospace;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+}
+
+body {
+  background: #0a0e27;
+  color: var(--text-primary);
+  padding: 20px;
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+
+.test-container {
+  max-width: 400px;
+  margin: 20px 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+</style>
+</head>
+<body>
+
+<div class="test-container">
+  <label>Date Input:</label>
+  <input type="date" class="form-input">
+</div>
+
+<div class="test-container">
+  <label>Time Input:</label>
+  <input type="time" class="form-input">
+</div>
+
+<div class="test-container">
+  <label>Number Input:</label>
+  <input type="number" class="form-input" placeholder="10.50">
+</div>
+
+<div class="test-container">
+  <label>Text Input:</label>
+  <input type="text" class="form-input" placeholder="AAPL">
+</div>
+
+</body>
+</html>

@@ -696,6 +696,15 @@ code {
   gap: var(--spacing-md);
 }
 
+.form-group {
+  min-width: 0;
+}
+
+.form-group input {
+  width: 100%;
+  min-width: 0;
+}
+
 .form-helper {
   font-size: 0.875rem;
   color: var(--text-dim);
