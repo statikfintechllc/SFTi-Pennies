@@ -696,6 +696,8 @@ input[type="time"] {
   position: relative;
   min-height: 40px;
   color-scheme: dark;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 /* Style the date and time input calendar/clock icons */
@@ -725,11 +727,14 @@ input[type="time"]::-webkit-datetime-edit {
   padding: 0;
   display: flex;
   align-items: center;
+  max-width: 100%;
 }
 
 input[type="date"]::-webkit-datetime-edit-fields-wrapper,
 input[type="time"]::-webkit-datetime-edit-fields-wrapper {
   padding: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .form-row {
