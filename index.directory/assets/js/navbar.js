@@ -26,6 +26,10 @@ class Navbar {
       <img src="${logoPath}" alt="Chart Logo" class="green-svg" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
     </a>
     <span class="nav-title" style="color: var(--accent-green, #00ff88);">SFTi-Pennies Trading Journal</span>
+    <!-- Home Icon in Navbar -->
+    <a href="${homePath}" aria-label="Home" title="Home" style="color: var(--accent-green, #00ff88);">
+      <img src="${homeIconPath}" alt="Home" class="green-svg" style="width: 32px; height: 32px; display: inline-block; vertical-align: middle;">
+    </a>
     
     <ul class="nav-menu">
       <li class="nav-item">
@@ -58,13 +62,6 @@ class Navbar {
       <li class="nav-item nav-buttons-group">
         <a href="${addTradePath}" class="nav-link btn btn-primary">+ Add Trade</a>
         <button id="auth-button" class="btn btn-secondary">Login</button>
-      </li>
-      
-      <!-- Home Icon in Navbar -->
-      <li class="nav-item nav-home-icon" style="margin-left: auto;">
-        <a href="${homePath}" aria-label="Home" title="Home" style="color: var(--accent-green, #00ff88);">
-          <img src="${homeIconPath}" alt="Home" class="green-svg" style="width: 32px; height: 32px; display: inline-block; vertical-align: middle;">
-        </a>
       </li>
     </ul>
   </div>
