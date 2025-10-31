@@ -17,6 +17,7 @@ import json
 import os
 from pathlib import Path
 from datetime import datetime
+from navbar_template import get_navbar_html
 
 
 def load_trades_index():
@@ -167,62 +168,7 @@ def generate_trade_html(trade):
 <body>
   <canvas id="bg-canvas"></canvas>
   
-  <!-- Navigation -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <a href="../../index.html" class="nav-logo">
-        <img src="../assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
-      </a>
-      <span class="nav-title">SFTi-Pennies Trading Journal</span>
-      
-      <ul class="nav-menu">
-        <li class="nav-item">
-          <a href="../../index.html" class="nav-link">Home</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="../books.html" class="nav-link">Books</a>
-        </li>
-        
-        <li class="nav-item">
-          <a href="../notes.html" class="nav-link">Notes</a>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Trades</a>
-          <ul class="nav-submenu">
-            <li><a href="../all-trades.html" class="nav-link">All Trades</a></li>
-            <li><a href="../all-weeks.html" class="nav-link">All Summaries</a></li>
-            <li><a href="../analytics.html" class="nav-link">Analytics</a></li>
-            <li><a href="../import.html" class="nav-link">Import CSV</a></li>
-            <li><a href="../review.html" class="nav-link">Review Trades</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item has-submenu">
-          <a href="#" class="nav-link">Mentors</a>
-          <ul class="nav-submenu">
-            <li><a href="https://www.timothysykes.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Timothy Sykes</a></li>
-            <li><a href="https://www.stockstotrade.com/" target="_blank" rel="noopener noreferrer" class="nav-link">Tim Bohen</a></li>
-          </ul>
-        </li>
-        
-        <li class="nav-item nav-buttons-group">
-          <a href="../add-trade.html" class="nav-link btn btn-primary">+ Add Trade</a>
-          <button id="auth-button" class="btn btn-secondary">Login</button>
-        </li>
-        
-        <!-- SVG Home Icon in Navbar -->
-        <li class="nav-item nav-home-icon" style="margin-left: auto;">
-          <a href="../../index.html" class="nav-link" aria-label="Home" title="Home" style="display: flex; align-items: center; padding: 0.5rem;">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 28px; height: 28px; color: var(--accent-green, #00ff88);">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+{get_navbar_html("subdirectory")}
   
   <!-- Main Content -->
   <main class="container">
