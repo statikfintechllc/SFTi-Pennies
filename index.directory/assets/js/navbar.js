@@ -7,6 +7,7 @@ class Navbar {
   constructor(options = {}) {
     this.basePath = options.basePath || '';
     this.currentPath = options.currentPath || '';
+    this.navbarClass = options.navbarClass || 'navbar-floating';
     this.render();
   }
 
@@ -20,23 +21,18 @@ class Navbar {
             addTradePath, homeIconPath } = this.getPaths();
 
     return `
-<nav class="navbar">
+<nav class="navbar ${this.navbarClass}">
   <div class="nav-container">
-    <a href="${homePath}" class="nav-logo">
-      <img src="${logoPath}" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
+    <a href="${homePath}" class="nav-logo" style="color: var(--accent-green, #00ff88);">
+      <img src="${logoPath}" alt="Chart Logo" class="green-svg" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
     </a>
-    <span class="nav-title">SFTi-Pennies Trading Journal</span>
+    <span class="nav-title" style="color: var(--accent-green, #00ff88);">SFTi-Pennies Trading Journal</span>
+    <!-- Home Icon in Navbar -->
+    <a href="${homePath}" aria-label="Home" title="Home" style="color: var(--accent-green, #00ff88);">
+      <img src="${homeIconPath}" alt="Home" class="green-svg" style="width: 32px; height: 32px; display: inline-block; vertical-align: middle;">
+    </a>
     
     <ul class="nav-menu">
-      <li class="nav-item">
-        <a href="${homePath}" class="nav-link">Home</a>
-      </li>
-
-    <!-- SVG Home Icon in Navbar -->
-    <a href="${homePath}" class="nav-link" aria-label="Home" title="Home">
-      <img src="${homeIconPath}" alt="Home" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
-    </a>
-
       <li class="nav-item">
         <a href="${booksPath}" class="nav-link">Books</a>
       </li>
@@ -67,7 +63,7 @@ class Navbar {
       <li class="nav-item nav-buttons-group">
         <a href="${addTradePath}" class="nav-link btn btn-primary">+ Add Trade</a>
         <button id="auth-button" class="btn btn-secondary">Login</button>
-      </li>   
+      </li>
     </ul>
   </div>
 </nav>`;
@@ -147,6 +143,61 @@ class Navbar {
       navbar.innerHTML = this.getNavbarHTML();
       document.body.insertBefore(navbar.firstElementChild, document.body.firstChild);
     }
+    
+    // Set up dropdown functionality after rendering
+    this.setupDropdowns();
+  }
+  
+  /**
+   * Setup dropdown menu functionality using event delegation
+   */
+  setupDropdowns() {
+    const navbar = document.querySelector('nav.navbar');
+    if (!navbar) return;
+
+    // Remove any previous event listeners by cloning and replacing the navbar
+    // This ensures no duplicate listeners accumulate
+    // (Note: This is already handled by outerHTML replacement in render())
+
+    // Use event delegation for click events (mobile)
+    navbar.addEventListener('click', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Close other submenus
+          navbar.querySelectorAll('.nav-item.has-submenu').forEach(otherItem => {
+            if (otherItem !== item) {
+              otherItem.classList.remove('active');
+            }
+          });
+          
+          item.classList.toggle('active');
+        }
+      }
+    });
+
+    // Use event delegation for mouseenter (desktop)
+    navbar.addEventListener('mouseover', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
+        if (window.innerWidth > 768) {
+          item.classList.add('active');
+        }
+      }
+    });
+
+    // Use event delegation for mouseleave (desktop)
+    navbar.addEventListener('mouseout', function(e) {
+      const item = e.target.closest('.nav-item.has-submenu');
+      if (item && navbar.contains(item)) {
+        if (window.innerWidth > 768) {
+          item.classList.remove('active');
+        }
+      }
+    });
   }
 }
 

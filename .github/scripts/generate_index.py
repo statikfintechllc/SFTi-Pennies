@@ -189,6 +189,7 @@ def create_trade_list_html(trades):
         <p>&copy; 2025 SFTi-Pennies Trading Journal</p>
     </footer>
     
+    <script src="assets/js/navbar.js"></script>
     <script src="assets/js/background.js"></script>
     <script src="assets/js/auth.js"></script>
     <script src="assets/js/app.js"></script>

@@ -134,6 +134,30 @@ code {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
+/* Floating navbar - transparent background like bottom bubbles */
+.navbar.navbar-floating {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.navbar.navbar-floating .nav-logo,
+.navbar.navbar-floating .nav-title {
+  color: var(--accent-green);
+}
+
+.navbar.navbar-floating .nav-link[href*="index.html"],
+.navbar.navbar-floating .nav-home-icon a {
+  color: var(--accent-green);
+}
+
+/* Green SVG filter for logo and icons */
+.navbar-floating .green-svg {
+  filter: brightness(0) saturate(100%) invert(84%) sepia(48%) saturate(2476%) hue-rotate(84deg) brightness(101%) contrast(106%);
+}
+
 .nav-container {
   max-width: 1200px;
   margin: 0 auto;
