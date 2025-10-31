@@ -367,11 +367,11 @@ body {
   transform: translateX(4px);
 }
 
-/* Mentors dropdown - narrower width for shorter text */
+/* Mentors dropdown - wider to prevent text wrapping */
 .glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown {
   min-width: auto;
   width: auto;
-  max-width: 180px;
+  max-width: 220px;
 }
 
 .glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a {
