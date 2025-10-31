@@ -517,14 +517,23 @@ body {
   .nav-container {
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     gap: 0 !important;
+    position: relative !important;
   }
   
   .nav-brand {
-    flex: 1 !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     text-align: center !important;
     margin: 0 !important;
+    z-index: 1 !important;
+  }
+  
+  .nav-menu {
+    margin-left: auto !important;
+    z-index: 2 !important;
   }
   
   /* Show ONLY navbar bubble on mobile - REMOVE ALL DEFAULT STYLES */
