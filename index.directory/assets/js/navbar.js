@@ -149,6 +149,39 @@ class Navbar {
       navbar.innerHTML = this.getNavbarHTML();
       document.body.insertBefore(navbar.firstElementChild, document.body.firstChild);
     }
+    
+    // Set up dropdown functionality after rendering
+    this.setupDropdowns();
+  }
+  
+  /**
+   * Setup dropdown menu functionality
+   */
+  setupDropdowns() {
+    const dropdownItems = document.querySelectorAll('.nav-item.has-submenu');
+    
+    dropdownItems.forEach(item => {
+      // Toggle on click for mobile
+      item.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768) {
+          e.preventDefault();
+          item.classList.toggle('active');
+        }
+      });
+      
+      // Show on hover for desktop
+      item.addEventListener('mouseenter', () => {
+        if (window.innerWidth > 768) {
+          item.classList.add('active');
+        }
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        if (window.innerWidth > 768) {
+          item.classList.remove('active');
+        }
+      });
+    });
   }
 }
 
