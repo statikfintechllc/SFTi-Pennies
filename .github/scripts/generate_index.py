@@ -156,7 +156,7 @@ def create_trade_list_html(trades):
     
 <nav class="navbar">
     <div class="nav-container">
-      <a href="all-weeks.html" class="nav-logo">
+      <a href="../index.html" class="nav-logo">
         <img src="assets/img/chart-logo.svg" alt="Chart Logo" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle;">
       </a>
       <span class="nav-title">SFTi-Pennies Trading Journal</span>
