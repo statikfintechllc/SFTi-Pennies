@@ -367,39 +367,17 @@ body {
   transform: translateX(4px);
 }
 
-/* Mentors dropdown - wider to prevent text wrapping */
-.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown {
-  min-width: auto;
-  width: auto;
-  max-width: 220px;
-}
-
-.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a {
-  padding: 0.75rem 0.75rem;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* Books dropdown - wider to prevent text wrapping */
-.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown {
-  min-width: auto;
-  width: auto;
-  max-width: 220px;
-}
-
-.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown a {
-  padding: 0.75rem 0.75rem;
-  white-space: nowrap;
-  text-align: center;
-}
-
-/* Notes dropdown - wider to prevent text wrapping */
+/* Mentors, Books, and Notes dropdowns - wider to prevent text wrapping */
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown,
+.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown,
 .glowing-bubble-wrapper:has(.bubble-notes) .bubble-dropdown {
   min-width: auto;
   width: auto;
   max-width: 220px;
 }
 
+.glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a,
+.glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown a,
 .glowing-bubble-wrapper:has(.bubble-notes) .bubble-dropdown a {
   padding: 0.75rem 0.75rem;
   white-space: nowrap;
