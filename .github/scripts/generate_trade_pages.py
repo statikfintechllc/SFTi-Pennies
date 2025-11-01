@@ -106,15 +106,16 @@ def generate_trade_html(trade):
     gallery_html = ""
     if images and len(images) > 0:
         # Use list comprehension for better performance
-        gallery_items = [
-            f"""
-                <a href="{img.replace("../../assets/", "../assets/")}" class="glightbox" data-gallery="trade-{trade_number}">
-                    <img src="{img.replace("../../assets/", "../assets/")}" alt="Trade screenshot {idx+1}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color); transition: all 0.3s;">
+        # Pre-compute adjusted paths to avoid duplicate string operations
+        gallery_items = []
+        for idx, img in enumerate(images):
+            if img and img != "None" and img.strip():
+                img_path = img.replace("../../assets/", "../assets/")
+                gallery_items.append(f"""
+                <a href="{img_path}" class="glightbox" data-gallery="trade-{trade_number}">
+                    <img src="{img_path}" alt="Trade screenshot {idx+1}" style="width: 200px; height: 150px; object-fit: cover; border-radius: 8px; cursor: pointer; border: 2px solid var(--border-color); transition: all 0.3s;">
                 </a>
-                """
-            for idx, img in enumerate(images)
-            if img and img != "None" and img.strip()
-        ]
+                """)
 
         if gallery_items:
             gallery_html = f"""
