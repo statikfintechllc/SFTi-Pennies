@@ -274,31 +274,6 @@
     const lightbox = GLightbox({
       selector: '.glightbox'
     });
-    
-    // Register Service Worker for PWA offline support
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/SFTi-Pennies/sw.js')
-          .then((registration) => {
-            console.log('[PWA] Service Worker registered:', registration.scope);
-            
-            // Check for updates
-            registration.addEventListener('updatefound', () => {
-              const newWorker = registration.installing;
-              console.log('[PWA] New Service Worker found, installing...');
-              
-              newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  console.log('[PWA] New content available, will refresh on next visit');
-                }
-              });
-            });
-          })
-          .catch((error) => {
-            console.log('[PWA] Service Worker registration failed:', error);
-          });
-      });
-    }
   </script>
 </body>
 </html>
