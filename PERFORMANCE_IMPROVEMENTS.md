@@ -138,18 +138,7 @@ All optimizations maintain:
 .github/scripts/generate_week_summaries.py
 .github/scripts/generate_trade_pages.py
 index.directory/assets/js/analytics.js
-.gitignore
 ```
-
-## Build Artifacts
-
-Updated `.gitignore` to exclude generated files:
-- `index.directory/trades-index.json`
-- `index.directory/summaries/`
-- `index.directory/assets/charts/analytics-data.json`
-- `index.directory/assets/charts/equity-curve.png`
-
-These files are generated from source and should not be committed to version control.
 
 ---
 

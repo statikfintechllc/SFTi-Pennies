@@ -20,9 +20,3 @@ build/
 venv/
 ENV/
 .screenshots/
-
-# Generated files (can be rebuilt from source)
-index.directory/trades-index.json
-index.directory/summaries/
-index.directory/assets/charts/analytics-data.json
-index.directory/assets/charts/equity-curve.png
