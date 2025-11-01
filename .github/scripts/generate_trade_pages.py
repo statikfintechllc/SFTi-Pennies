@@ -333,6 +333,12 @@ def generate_trade_html(trade):
       autoplayVideos: true
     }});
   </script>
+  
+  <!-- Load shared utilities first -->
+  <script src="../assets/js/utils.js"></script>
+  <script src="../assets/js/chartConfig.js"></script>
+  
+  <!-- Application scripts -->
   <script src="../assets/js/navbar.js"></script>
   <script src="../assets/js/footer.js"></script>
   <script src="../assets/js/background.js"></script>
