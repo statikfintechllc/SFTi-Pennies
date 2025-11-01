@@ -238,13 +238,13 @@ class AccountManager {
   }
 }
 
-// Initialize global account manager
-let accountManager = null;
+// Initialize global account manager on window object
+window.accountManager = null;
 
 // Initialize when DOM is ready
 SFTiUtils.onDOMReady(async () => {
-  accountManager = new AccountManager();
-  await accountManager.init();
+  window.accountManager = new AccountManager();
+  await window.accountManager.init();
 });
 
 /**

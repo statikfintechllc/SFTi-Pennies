@@ -112,9 +112,6 @@ function setupAnalyticsEventListeners() {
     renderStrategyTable(analyticsData);
   });
 }
-    console.error('Error loading analytics:', error);
-  }
-}
 
 /**
  * Update metrics display
