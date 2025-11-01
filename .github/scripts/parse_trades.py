@@ -155,39 +155,51 @@ def calculate_statistics(trades):
             "total_volume": 0,
         }
 
-    # Calculate basic stats
+    # Single pass through all trades to calculate multiple metrics
     total_trades = len(trades)
-    winners = [t for t in trades if t.get("pnl_usd", 0) > 0]
-    losers = [t for t in trades if t.get("pnl_usd", 0) < 0]
-
-    winning_trades = len(winners)
-    losing_trades = len(losers)
-    win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
-
-    # P&L calculations
-    pnls = [t.get("pnl_usd", 0) for t in trades]
-    total_pnl = sum(pnls)
-    avg_pnl = total_pnl / total_trades if total_trades > 0 else 0
-
-    winner_pnls = [t.get("pnl_usd", 0) for t in winners]
-    loser_pnls = [t.get("pnl_usd", 0) for t in losers]
-
-    avg_winner = sum(winner_pnls) / len(winners) if winners else 0
-    avg_loser = sum(loser_pnls) / len(losers) if losers else 0
-
-    largest_win = max(pnls) if pnls else 0
-    largest_loss = min(pnls) if pnls else 0
-
-    # Volume
-    total_volume = sum(t.get("position_size", 0) for t in trades)
-
-    # Calculate max drawdown (simple version based on cumulative P&L)
+    winning_trades = 0
+    losing_trades = 0
+    total_pnl = 0.0
+    total_winner_pnl = 0.0
+    total_loser_pnl = 0.0
+    largest_win = float('-inf')
+    largest_loss = float('inf')
+    total_volume = 0
+    
+    # For drawdown calculation
     cumulative_pnl = []
-    running_total = 0
-    for pnl in pnls:
+    running_total = 0.0
+
+    for t in trades:
+        pnl = t.get("pnl_usd", 0)
+        total_pnl += pnl
+        total_volume += t.get("position_size", 0)
+        
+        # Track cumulative for drawdown
         running_total += pnl
         cumulative_pnl.append(running_total)
+        
+        # Update extremes
+        if pnl > largest_win:
+            largest_win = pnl
+        if pnl < largest_loss:
+            largest_loss = pnl
+        
+        # Categorize winners/losers
+        if pnl > 0:
+            winning_trades += 1
+            total_winner_pnl += pnl
+        elif pnl < 0:
+            losing_trades += 1
+            total_loser_pnl += pnl
 
+    # Calculate derived statistics
+    win_rate = (winning_trades / total_trades * 100) if total_trades > 0 else 0
+    avg_pnl = total_pnl / total_trades if total_trades > 0 else 0
+    avg_winner = total_winner_pnl / winning_trades if winning_trades > 0 else 0
+    avg_loser = total_loser_pnl / losing_trades if losing_trades > 0 else 0
+
+    # Calculate max drawdown efficiently
     max_drawdown = 0
     if cumulative_pnl:
         peak = cumulative_pnl[0]
@@ -197,6 +209,12 @@ def calculate_statistics(trades):
             drawdown = peak - value
             if drawdown > max_drawdown:
                 max_drawdown = drawdown
+
+    # Handle edge cases for extremes
+    if largest_win == float('-inf'):
+        largest_win = 0
+    if largest_loss == float('inf'):
+        largest_loss = 0
 
     return {
         "total_trades": total_trades,

@@ -108,16 +108,16 @@ def group_trades_by_period(trades, period="week"):
 
     for trade in trades:
         try:
-            entry_date = datetime.fromisoformat(str(trade.get("entry_date")))
+            # Parse date only once
+            entry_date_str = str(trade.get("entry_date"))
+            entry_date = datetime.fromisoformat(entry_date_str)
 
+            # Generate key based on period type
             if period == "week":
-                # ISO week format: YYYY-Www
                 key = f"{entry_date.year}-W{entry_date.isocalendar()[1]:02d}"
             elif period == "month":
-                # Format: YYYY-MM
                 key = f"{entry_date.year}-{entry_date.month:02d}"
             elif period == "year":
-                # Format: YYYY
                 key = str(entry_date.year)
             else:
                 key = "unknown"
@@ -146,30 +146,49 @@ def calculate_period_stats(trades):
         return {}
 
     total_trades = len(trades)
-    winners = [t for t in trades if t.get("pnl_usd", 0) > 0]
-    losers = [t for t in trades if t.get("pnl_usd", 0) < 0]
-
-    pnls = [t.get("pnl_usd", 0) for t in trades]
-    total_pnl = sum(pnls)
-
-    # Find best and worst trades
-    best_trade = max(trades, key=lambda t: t.get("pnl_usd", 0))
-    worst_trade = min(trades, key=lambda t: t.get("pnl_usd", 0))
-
-    # Strategy breakdown
-    strategies = defaultdict(lambda: {"count": 0, "pnl": 0})
+    
+    # Single pass to calculate all metrics
+    win_count = 0
+    loss_count = 0
+    total_pnl = 0.0
+    total_volume = 0
+    best_trade = trades[0]
+    worst_trade = trades[0]
+    best_pnl = trades[0].get("pnl_usd", 0)
+    worst_pnl = trades[0].get("pnl_usd", 0)
+    
+    # Strategy breakdown using defaultdict for efficiency
+    strategies = defaultdict(lambda: {"count": 0, "pnl": 0.0})
+    
     for trade in trades:
+        pnl = trade.get("pnl_usd", 0)
+        total_pnl += pnl
+        total_volume += trade.get("position_size", 0)
+        
+        # Track wins/losses
+        if pnl > 0:
+            win_count += 1
+        elif pnl < 0:
+            loss_count += 1
+        
+        # Track best/worst trades
+        if pnl > best_pnl:
+            best_pnl = pnl
+            best_trade = trade
+        if pnl < worst_pnl:
+            worst_pnl = pnl
+            worst_trade = trade
+        
+        # Update strategy breakdown
         strategy = trade.get("strategy", "Unknown")
         strategies[strategy]["count"] += 1
-        strategies[strategy]["pnl"] += trade.get("pnl_usd", 0)
+        strategies[strategy]["pnl"] += pnl
 
     return {
         "total_trades": total_trades,
-        "winning_trades": len(winners),
-        "losing_trades": len(losers),
-        "win_rate": round(len(winners) / total_trades * 100, 2)
-        if total_trades > 0
-        else 0,
+        "winning_trades": win_count,
+        "losing_trades": loss_count,
+        "win_rate": round(win_count / total_trades * 100, 2) if total_trades > 0 else 0,
         "total_pnl": round(total_pnl, 2),
         "avg_pnl": round(total_pnl / total_trades, 2) if total_trades > 0 else 0,
         "best_trade": {
@@ -182,7 +201,7 @@ def calculate_period_stats(trades):
             "pnl": round(worst_trade.get("pnl_usd", 0), 2),
             "trade_number": worst_trade.get("trade_number"),
         },
-        "total_volume": sum(t.get("position_size", 0) for t in trades),
+        "total_volume": total_volume,
         "strategies": dict(strategies),
     }
 
