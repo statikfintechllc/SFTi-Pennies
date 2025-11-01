@@ -4,6 +4,12 @@ Generate Analytics Script
 Computes advanced analytics from trades data including expectancy, streaks,
 per-tag aggregates, drawdown series, and profit factors.
 
+Performance Optimizations:
+- Single-pass algorithms for calculating win/loss statistics
+- Reduced list comprehensions and intermediate data structures
+- Optimized aggregate_by_tag() to minimize iterations
+- Efficient memory usage with streaming calculations
+
 Output: analytics-data.json
 """
 
@@ -38,17 +44,27 @@ def calculate_expectancy(trades: List[Dict]) -> float:
     if not trades:
         return 0.0
 
-    winners = [t for t in trades if t.get("pnl_usd", 0) > 0]
-    losers = [t for t in trades if t.get("pnl_usd", 0) < 0]
-
+    # Single pass to calculate wins and losses
     total = len(trades)
-    win_rate = len(winners) / total if total > 0 else 0
-    loss_rate = len(losers) / total if total > 0 else 0
+    win_count = 0
+    loss_count = 0
+    total_wins = 0.0
+    total_losses = 0.0
+    
+    for t in trades:
+        pnl = t.get("pnl_usd", 0)
+        if pnl > 0:
+            win_count += 1
+            total_wins += pnl
+        elif pnl < 0:
+            loss_count += 1
+            total_losses += pnl
 
-    avg_win = sum(t.get("pnl_usd", 0) for t in winners) / len(winners) if winners else 0
-    avg_loss = (
-        abs(sum(t.get("pnl_usd", 0) for t in losers) / len(losers)) if losers else 0
-    )
+    win_rate = win_count / total if total > 0 else 0
+    loss_rate = loss_count / total if total > 0 else 0
+
+    avg_win = total_wins / win_count if win_count > 0 else 0
+    avg_loss = abs(total_losses / loss_count) if loss_count > 0 else 0
 
     expectancy = (win_rate * avg_win) - (loss_rate * avg_loss)
     return round(expectancy, 2)
@@ -67,11 +83,19 @@ def calculate_profit_factor(trades: List[Dict]) -> float:
     if not trades:
         return 0.0
 
-    gross_profit = sum(t.get("pnl_usd", 0) for t in trades if t.get("pnl_usd", 0) > 0)
-    gross_loss = abs(
-        sum(t.get("pnl_usd", 0) for t in trades if t.get("pnl_usd", 0) < 0)
-    )
+    # Single pass calculation
+    gross_profit = 0.0
+    gross_loss = 0.0
+    
+    for t in trades:
+        pnl = t.get("pnl_usd", 0)
+        if pnl > 0:
+            gross_profit += pnl
+        elif pnl < 0:
+            gross_loss += pnl
 
+    gross_loss = abs(gross_loss)
+    
     if gross_loss == 0:
         return 0.0 if gross_profit == 0 else float("inf")
 
@@ -170,15 +194,27 @@ def calculate_kelly_criterion(trades: List[Dict]) -> float:
     if not trades:
         return 0.0
 
-    winners = [t for t in trades if t.get("pnl_usd", 0) > 0]
-    losers = [t for t in trades if t.get("pnl_usd", 0) < 0]
+    # Single pass to calculate stats
+    win_count = 0
+    loss_count = 0
+    total_wins = 0.0
+    total_losses = 0.0
+    
+    for t in trades:
+        pnl = t.get("pnl_usd", 0)
+        if pnl > 0:
+            win_count += 1
+            total_wins += pnl
+        elif pnl < 0:
+            loss_count += 1
+            total_losses += pnl
 
-    if not winners or not losers:
+    if win_count == 0 or loss_count == 0:
         return 0.0
 
-    win_rate = len(winners) / len(trades)
-    avg_win = sum(t.get("pnl_usd", 0) for t in winners) / len(winners)
-    avg_loss = abs(sum(t.get("pnl_usd", 0) for t in losers) / len(losers))
+    win_rate = win_count / len(trades)
+    avg_win = total_wins / win_count
+    avg_loss = abs(total_losses / loss_count)
 
     if avg_loss == 0:
         return 0.0
@@ -202,8 +238,8 @@ def aggregate_by_tag(trades: List[Dict], tag_field: str) -> Dict:
     """
     aggregates = {}
 
+    # Group trades by tag and calculate stats in single pass
     for trade in trades:
-        # Get tag value, default to 'Unclassified' if not present
         tag_value = trade.get(tag_field)
         if not tag_value or tag_value == "":
             tag_value = "Unclassified"
@@ -215,29 +251,40 @@ def aggregate_by_tag(trades: List[Dict], tag_field: str) -> Dict:
                 "winning_trades": 0,
                 "losing_trades": 0,
                 "win_rate": 0,
-                "total_pnl": 0,
+                "total_pnl": 0.0,
                 "avg_pnl": 0,
                 "expectancy": 0,
             }
 
         aggregates[tag_value]["trades"].append(trade)
 
-    # Calculate stats for each tag
+    # Calculate stats for each tag in optimized manner
     for tag_value, data in aggregates.items():
         tag_trades = data["trades"]
-
         data["total_trades"] = len(tag_trades)
-        data["winning_trades"] = len([t for t in tag_trades if t.get("pnl_usd", 0) > 0])
-        data["losing_trades"] = len([t for t in tag_trades if t.get("pnl_usd", 0) < 0])
+        
+        # Calculate all metrics in single pass
+        win_count = 0
+        loss_count = 0
+        total_pnl = 0.0
+        
+        for t in tag_trades:
+            pnl = t.get("pnl_usd", 0)
+            total_pnl += pnl
+            if pnl > 0:
+                win_count += 1
+            elif pnl < 0:
+                loss_count += 1
+        
+        data["winning_trades"] = win_count
+        data["losing_trades"] = loss_count
         data["win_rate"] = round(
-            (data["winning_trades"] / data["total_trades"] * 100)
-            if data["total_trades"] > 0
-            else 0,
+            (win_count / data["total_trades"] * 100) if data["total_trades"] > 0 else 0,
             1,
         )
-        data["total_pnl"] = round(sum(t.get("pnl_usd", 0) for t in tag_trades), 2)
+        data["total_pnl"] = round(total_pnl, 2)
         data["avg_pnl"] = round(
-            data["total_pnl"] / data["total_trades"] if data["total_trades"] > 0 else 0,
+            total_pnl / data["total_trades"] if data["total_trades"] > 0 else 0,
             2,
         )
         data["expectancy"] = calculate_expectancy(tag_trades)

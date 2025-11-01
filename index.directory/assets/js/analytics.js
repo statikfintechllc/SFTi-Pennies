@@ -2,6 +2,11 @@
  * Analytics Page JavaScript
  * Loads analytics data from analytics-data.json and renders advanced charts and metrics
  * Falls back to mock data if analytics-data.json is not available
+ * 
+ * Performance Optimizations:
+ * - Reduced duplicate map operations on arrays
+ * - Pre-computed color arrays for chart rendering
+ * - Efficient template string building for tables
  */
 
 // State
@@ -83,6 +88,12 @@ function renderStrategyChart(data) {
   const strategies = Object.keys(data.by_strategy);
   const pnls = strategies.map(s => data.by_strategy[s].total_pnl);
   
+  // Pre-compute colors once instead of in map
+  const colors = pnls.map(p => ({
+    bg: p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)',
+    border: p >= 0 ? '#00ff88' : '#ff4757'
+  }));
+  
   if (strategyChart) strategyChart.destroy();
   
   strategyChart = new Chart(ctx, {
@@ -92,8 +103,8 @@ function renderStrategyChart(data) {
       datasets: [{
         label: 'Total P&L ($)',
         data: pnls,
-        backgroundColor: pnls.map(p => p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)'),
-        borderColor: pnls.map(p => p >= 0 ? '#00ff88' : '#ff4757'),
+        backgroundColor: colors.map(c => c.bg),
+        borderColor: colors.map(c => c.border),
         borderWidth: 2
       }]
     },
@@ -135,6 +146,12 @@ function renderSetupChart(data) {
   const setups = Object.keys(data.by_setup);
   const pnls = setups.map(s => data.by_setup[s].total_pnl);
   
+  // Pre-compute colors once instead of in map
+  const colors = pnls.map(p => ({
+    bg: p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)',
+    border: p >= 0 ? '#00ff88' : '#ff4757'
+  }));
+  
   if (setupChart) setupChart.destroy();
   
   setupChart = new Chart(ctx, {
@@ -144,8 +161,8 @@ function renderSetupChart(data) {
       datasets: [{
         label: 'Total P&L ($)',
         data: pnls,
-        backgroundColor: pnls.map(p => p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)'),
-        borderColor: pnls.map(p => p >= 0 ? '#00ff88' : '#ff4757'),
+        backgroundColor: colors.map(c => c.bg),
+        borderColor: colors.map(c => c.border),
         borderWidth: 2
       }]
     },

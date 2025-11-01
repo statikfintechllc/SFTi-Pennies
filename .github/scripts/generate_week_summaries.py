@@ -8,6 +8,11 @@ This script:
 2. Aggregates trade data for each week
 3. Generates a master.trade.md file with week summary
 4. Includes statistics, trade list, and images
+
+Performance Optimizations:
+- Single-pass calculation for week statistics
+- Efficient tracking of wins/losses without intermediate lists
+- Combined calculation of totals and extremes
 """
 
 import os
@@ -111,34 +116,41 @@ def calculate_week_stats(trades: List[Dict]) -> Dict:
             "profit_factor": 0.0,
         }
 
+    # Single-pass calculation for efficiency
     total_pnl = 0.0
-    wins = []
-    losses = []
+    win_count = 0
+    loss_count = 0
     breakeven = 0
+    total_wins = 0.0
+    total_losses = 0.0
+    largest_win = 0.0
+    largest_loss = 0.0
 
     for trade in trades:
         pnl = float(trade.get("pnl_usd", 0) or 0)
         total_pnl += pnl
 
         if pnl > 0:
-            wins.append(pnl)
+            win_count += 1
+            total_wins += pnl
+            if pnl > largest_win:
+                largest_win = pnl
         elif pnl < 0:
-            losses.append(pnl)
+            loss_count += 1
+            total_losses += pnl
+            if pnl < largest_loss:
+                largest_loss = pnl
         else:
             breakeven += 1
 
     total_trades = len(trades)
-    win_count = len(wins)
-    loss_count = len(losses)
     win_rate = (win_count / total_trades * 100) if total_trades > 0 else 0.0
 
-    avg_win = sum(wins) / len(wins) if wins else 0.0
-    avg_loss = sum(losses) / len(losses) if losses else 0.0
-    largest_win = max(wins) if wins else 0.0
-    largest_loss = min(losses) if losses else 0.0
+    avg_win = total_wins / win_count if win_count > 0 else 0.0
+    avg_loss = total_losses / loss_count if loss_count > 0 else 0.0
 
-    gross_profit = sum(wins) if wins else 0.0
-    gross_loss = abs(sum(losses)) if losses else 0.0
+    gross_profit = total_wins
+    gross_loss = abs(total_losses)
     profit_factor = gross_profit / gross_loss if gross_loss > 0 else 0.0
 
     return {
