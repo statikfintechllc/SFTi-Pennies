@@ -43,10 +43,10 @@ Created a **fully transparent, organized trading account** with complete documen
 <img src=".github/UI-SS/App-Presentation.01.demo.png" alt="App Screenshot 1" width="250"/>
 </td>
 <td align="center" width="33%">
-<img src=".github/UI-SS/App-Presentstion.02.demo.png" alt="App Screenshot 2" width="250"/>
+<img src=".github/UI-SS/App-Presentation.02.demo.png" alt="App Screenshot 2" width="250"/>
 </td>
 <td align="center" width="33%">
-<img src=".github/UI-SS/App-Presentstion.03.demo.png" alt="App Screenshot 3" width="250"/>
+<img src=".github/UI-SS/App-Presentation.03.demo.png" alt="App Screenshot 3" width="250"/>
 </td>
 </tr>
 </table>
