@@ -44,10 +44,10 @@ class Navbar {
       <li class="nav-item has-submenu">
         <a href="#" class="nav-link">Trades</a>
         <ul class="nav-submenu">
-          <li><a href="${allTradesPath}" class="nav-link">All Trades</a></li>
+          <li><a href="${allTradesPath}" class="nav-link">Trading History</a></li>
           <li><a href="${allWeeksPath}" class="nav-link">All Summaries</a></li>
-          <li><a href="${analyticsPath}" class="nav-link">Analytics</a></li>
-          <li><a href="${importPath}" class="nav-link">Import CSV</a></li>
+          <li><a href="${analyticsPath}" class="nav-link">Trade Analytics</a></li>
+          <li><a href="${importPath}" class="nav-link">Add Broker CSV</a></li>
           <li><a href="${reviewPath}" class="nav-link">Review Trades</a></li>
         </ul>
       </li>
