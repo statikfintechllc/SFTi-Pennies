@@ -10,6 +10,7 @@ class TradingJournal {
     this.uploadedImages = [];
     // Get base path from URL to make code portable
     this.basePath = SFTiUtils.getBasePath();
+    this.eventBus = window.SFTiEventBus;
     this.initializeApp();
   }
   
@@ -52,6 +53,9 @@ class TradingJournal {
     // Set up navigation
     this.setupNavigation();
     
+    // Set up event listeners
+    this.setupEventListeners();
+    
     // Load trades on homepage
     if (document.getElementById('recent-trades')) {
       this.loadRecentTrades();
@@ -64,6 +68,67 @@ class TradingJournal {
     
     // Set up auth UI
     this.setupAuthUI();
+  }
+  
+  /**
+   * Setup event listeners for reactive updates
+   */
+  setupEventListeners() {
+    if (!this.eventBus) return;
+    
+    // Listen for account balance changes
+    this.eventBus.on('account:balance-updated', () => {
+      console.log('[TradingJournal] Account balance updated, refreshing stats');
+      this.refreshStats();
+    });
+    
+    // Listen for deposit additions
+    this.eventBus.on('account:deposit-added', () => {
+      console.log('[TradingJournal] Deposit added, refreshing stats');
+      this.refreshStats();
+    });
+    
+    // Listen for trades updates
+    this.eventBus.on('trades:updated', () => {
+      console.log('[TradingJournal] Trades updated, refreshing stats');
+      this.refreshStats();
+    });
+    
+    // Listen for analytics updates
+    this.eventBus.on('analytics:updated', () => {
+      console.log('[TradingJournal] Analytics updated, refreshing display');
+      this.refreshStats();
+    });
+  }
+  
+  /**
+   * Refresh stats without reloading trades
+   */
+  async refreshStats() {
+    try {
+      // Load latest trades data
+      const response = await fetch(`${this.basePath}/index.directory/trades-index.json`);
+      if (!response.ok) return;
+      
+      const data = await response.json();
+      
+      // Load analytics
+      let analyticsData = null;
+      try {
+        const analyticsResponse = await fetch(`${this.basePath}/index.directory/assets/charts/analytics-data.json`);
+        if (analyticsResponse.ok) {
+          analyticsData = await analyticsResponse.json();
+        }
+      } catch (err) {
+        console.warn('Could not load analytics data:', err);
+      }
+      
+      // Update stats
+      this.updateStats(data.statistics || {}, analyticsData);
+      
+    } catch (error) {
+      console.warn('Could not refresh stats:', error);
+    }
   }
   
   /**

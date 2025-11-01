@@ -1,6 +1,7 @@
 /**
  * Account Manager
  * Handles starting balance, deposits, and portfolio value calculations
+ * Integrated with EventBus for reactive updates
  */
 
 class AccountManager {
@@ -8,6 +9,7 @@ class AccountManager {
     this.config = null;
     this.basePath = SFTiUtils.getBasePath();
     this.initialized = false;
+    this.eventBus = window.SFTiEventBus;
   }
 
   /**
@@ -16,7 +18,31 @@ class AccountManager {
   async init() {
     await this.loadConfig();
     this.updateDisplay();
+    this.setupEventListeners();
     this.initialized = true;
+    
+    // Emit initial account loaded event
+    if (this.eventBus) {
+      this.eventBus.emit('account:config-loaded', this.config);
+    }
+  }
+  
+  /**
+   * Setup event listeners
+   */
+  setupEventListeners() {
+    if (!this.eventBus) return;
+    
+    // Listen for trades updates to recalculate portfolio value
+    this.eventBus.on('trades:updated', (trades) => {
+      this.updateDisplay();
+    });
+    
+    // Listen for state refresh requests
+    this.eventBus.on('state:refreshed', () => {
+      this.loadConfig();
+      this.updateDisplay();
+    });
   }
 
   /**
@@ -163,6 +189,14 @@ class AccountManager {
     this.config.starting_balance = parseFloat(newBalance);
     this.saveConfig();
     this.updateDisplay();
+    
+    // Emit balance updated event
+    if (this.eventBus) {
+      this.eventBus.emit('account:balance-updated', {
+        starting_balance: this.config.starting_balance,
+        total_deposits: this.getTotalDeposits()
+      });
+    }
   }
 
   /**
@@ -185,6 +219,15 @@ class AccountManager {
     
     this.saveConfig();
     this.updateDisplay();
+    
+    // Emit deposit added event
+    if (this.eventBus) {
+      this.eventBus.emit('account:deposit-added', {
+        amount: parseFloat(amount),
+        date: date,
+        total_deposits: this.getTotalDeposits()
+      });
+    }
   }
 
   /**

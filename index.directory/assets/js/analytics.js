@@ -39,33 +39,79 @@ let drawdownChart = null;
 async function initAnalytics() {
   try {
     // Load analytics-data.json
-    try {
-      const response = await fetch('assets/charts/analytics-data.json');
-      if (response.ok) {
-        analyticsData = await response.json();
-        console.log('Loaded analytics data from file');
-      } else {
-        console.warn('Analytics data not found, using mock data');
-        analyticsData = getMockAnalyticsData();
-      }
-    } catch (fetchError) {
-      console.warn('Error fetching analytics data, using mock data:', fetchError);
+    await loadAnalyticsData();
+    
+    // Setup event listeners for reactive updates
+    setupAnalyticsEventListeners();
+    
+  } catch (error) {
+    console.error('Error loading analytics:', error);
+  }
+}
+
+/**
+ * Load analytics data
+ */
+async function loadAnalyticsData() {
+  try {
+    const response = await fetch('assets/charts/analytics-data.json');
+    if (response.ok) {
+      analyticsData = await response.json();
+      console.log('Loaded analytics data from file');
+    } else {
+      console.warn('Analytics data not found, using mock data');
       analyticsData = getMockAnalyticsData();
     }
-    
-    // Update metrics
+  } catch (fetchError) {
+    console.warn('Error fetching analytics data, using mock data:', fetchError);
+    analyticsData = getMockAnalyticsData();
+  }
+  
+  // Update display
+  updateMetrics(analyticsData);
+  renderStrategyChart(analyticsData);
+  renderSetupChart(analyticsData);
+  renderWinRateChart(analyticsData);
+  renderDrawdownChart(analyticsData);
+  renderStrategyTable(analyticsData);
+}
+
+/**
+ * Setup event listeners for reactive updates
+ */
+function setupAnalyticsEventListeners() {
+  const eventBus = window.SFTiEventBus;
+  if (!eventBus) return;
+  
+  // Listen for account changes
+  eventBus.on('account:balance-updated', () => {
+    console.log('[Analytics] Account balance updated, reloading analytics');
+    loadAnalyticsData();
+  });
+  
+  eventBus.on('account:deposit-added', () => {
+    console.log('[Analytics] Deposit added, reloading analytics');
+    loadAnalyticsData();
+  });
+  
+  // Listen for trades updates
+  eventBus.on('trades:updated', () => {
+    console.log('[Analytics] Trades updated, reloading analytics');
+    loadAnalyticsData();
+  });
+  
+  // Listen for analytics updates
+  eventBus.on('analytics:updated', (data) => {
+    console.log('[Analytics] Analytics updated, refreshing display');
+    analyticsData = data;
     updateMetrics(analyticsData);
-    
-    // Render charts
     renderStrategyChart(analyticsData);
     renderSetupChart(analyticsData);
     renderWinRateChart(analyticsData);
     renderDrawdownChart(analyticsData);
-    
-    // Render table
     renderStrategyTable(analyticsData);
-    
-  } catch (error) {
+  });
+}
     console.error('Error loading analytics:', error);
   }
 }
