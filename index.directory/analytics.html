@@ -161,8 +161,15 @@
             <strong>✓ Data Loading:</strong> <code>analytics.js</code> loads from <code>analytics-data.json</code>
           </p>
           
-          <p style="margin-bottom: 0; overflow-wrap: break-word;">
-            <strong>Note:</strong> Run the following command to compute analytics from your trades and to populate <code style="word-break: keep-all; overflow-wrap: anywhere;">analytics-data.json</code>: <code style="word-break: keep-all; overflow-wrap: anywhere;">python .github/scripts/generate_analytics.py</code> Mock data is displayed as fallback when the file is not available.
+          <p style="margin-bottom: 0;">
+            <strong>Note:</strong> Run the following command to compute analytics from your trades and to populate <code>analytics-data.json</code>:
+          </p>
+          <div style="position: relative; margin-top: 0.5rem;">
+            <code id="analytics-command" style="display: block; padding: 0.75rem; background: var(--bg-primary); border-radius: 4px; font-family: var(--font-mono); white-space: pre-wrap; word-break: break-all;">python .github/scripts/generate_analytics.py</code>
+            <button onclick="copyCommand('analytics-command')" style="position: absolute; top: 0.5rem; right: 0.5rem; padding: 0.25rem 0.5rem; background: var(--accent-green); color: var(--bg-primary); border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">Copy</button>
+          </div>
+          <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+            Mock data is displayed as fallback when the file is not available.
           </p>
         </div>
       </div>
@@ -180,6 +187,22 @@
   </footer>
   
   <!-- Scripts -->
+  <script>
+    function copyCommand(elementId) {
+      const element = document.getElementById(elementId);
+      const text = element.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const button = element.nextElementSibling;
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+  </script>
   <script src="assets/js/navbar.js"></script>
   <script src="assets/js/background.js"></script>
   <script src="assets/js/auth.js"></script>
