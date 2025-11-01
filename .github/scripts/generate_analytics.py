@@ -4,6 +4,12 @@ Generate Analytics Script
 Computes advanced analytics from trades data including expectancy, streaks,
 per-tag aggregates, drawdown series, and profit factors.
 
+Performance Optimizations:
+- Single-pass algorithms for calculating win/loss statistics
+- Reduced list comprehensions and intermediate data structures
+- Optimized aggregate_by_tag() to minimize iterations
+- Efficient memory usage with streaming calculations
+
 Output: analytics-data.json
 """
 

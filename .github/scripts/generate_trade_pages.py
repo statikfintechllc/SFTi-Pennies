@@ -10,6 +10,11 @@ Features:
 - Shows strategy and setup tags
 - Mobile-friendly design with dark theme
 
+Performance Optimizations:
+- List comprehensions for gallery and tag rendering
+- Efficient string joining instead of concatenation in loops
+- Pre-computed formatting with f-strings
+
 Output: index.directory/trades/{trade-id}.html
 """
 

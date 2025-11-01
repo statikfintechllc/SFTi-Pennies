@@ -3,6 +3,12 @@
 Parse Trades Script
 Parses markdown files from the trades/ directory and generates a JSON index
 with all trade data extracted from YAML frontmatter
+
+Performance Optimizations:
+- Single-pass statistics calculation combining multiple metrics
+- Efficient cumulative P&L tracking for drawdown calculation
+- Reduced memory allocation with in-place updates
+- Optimized type conversions and validations
 """
 
 import os

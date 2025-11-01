@@ -3,6 +3,13 @@
 Generate Summaries Script
 Generates weekly, monthly, and yearly summaries from parsed trade data
 Enhanced to preserve user reviews and auto-aggregate higher-level summaries
+
+Performance Optimizations:
+- Single-pass calculation of all period statistics
+- Combined winner/loser tracking with strategy breakdown
+- Efficient best/worst trade tracking without separate max/min operations
+- Reduced file I/O with smart caching of summary content
+- Optimized date parsing with string operations
 """
 
 import json
