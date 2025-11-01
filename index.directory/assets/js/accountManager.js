@@ -77,32 +77,35 @@ class AccountManager {
 
   /**
    * Save account configuration
-   * Saves to localStorage and triggers backend workflow to update JSON files
+   * Saves to localStorage and commits to repository via GitHub API
    */
-  async saveConfig() {
+  async saveConfig(isDeposit = false) {
     try {
       this.config.last_updated = new Date().toISOString();
+      
+      // Save to localStorage for immediate UI updates
       localStorage.setItem('sfti-account-config', JSON.stringify(this.config));
       console.log('Account config saved to localStorage');
       
-      // Try to trigger backend workflow automatically
-      const workflowTriggered = await this.triggerBackendUpdate();
+      // Try to commit to repository
+      const committed = await this.commitConfigToRepo(isDeposit);
       
       // Show appropriate notification
-      if (workflowTriggered) {
+      if (committed) {
         this.showNotification(
           'Changes Saved!',
-          'Backend is updating. Changes will appear in 1-5 minutes.',
+          'Account config committed. Changes will appear in 1-5 minutes.',
           'success',
           5000
         );
       } else {
-        // Fallback: show manual instruction if auto-trigger failed
+        // Fallback: show manual instruction if commit failed
+        const message = isDeposit ? '"Added Deposit to account"' : '"Adjusted account base total"';
         this.showNotification(
           'Changes Saved Locally',
-          'Auto-update unavailable. To persist: commit account-config.json changes and push.',
+          `Please manually commit index.directory/account-config.json with message ${message} and push.`,
           'warning',
-          7000
+          8000
         );
       }
       
@@ -118,49 +121,26 @@ class AccountManager {
   }
   
   /**
-   * Trigger backend workflow to update analytics
-   * Requires GitHub authentication (PAT stored in localStorage)
+   * Commit account-config.json to repository via GitHub API
+   * This triggers the workflow automatically when pushed
    */
-  async triggerBackendUpdate() {
+  async commitConfigToRepo(isDeposit = false) {
     // Check if we have auth available
     const auth = window.tradingJournal?.auth;
     if (!auth || !auth.isAuthenticated()) {
-      console.log('[AccountManager] No authentication available for auto-update');
+      console.log('[AccountManager] No authentication available for commit');
       return false;
     }
     
     try {
-      console.log('[AccountManager] Triggering backend workflow...');
+      console.log('[AccountManager] Committing account-config.json to repository...');
       
-      // First, update the account-config.json file in the repository
-      const fileUpdated = await this.updateAccountConfigFile(auth);
-      if (!fileUpdated) {
-        console.warn('[AccountManager] Failed to update account-config.json file');
-        return false;
-      }
-      
-      // Then trigger the trade pipeline workflow to regenerate analytics
-      const workflowTriggered = await this.triggerWorkflow(auth);
-      if (workflowTriggered) {
-        console.log('[AccountManager] Backend workflow triggered successfully');
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('[AccountManager] Error triggering backend update:', error);
-      return false;
-    }
-  }
-  
-  /**
-   * Update account-config.json file in the repository
-   */
-  async updateAccountConfigFile(auth) {
-    try {
       const filePath = 'index.directory/account-config.json';
       const content = JSON.stringify(this.config, null, 2);
       const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      
+      // Determine commit message based on action type
+      const commitMessage = isDeposit ? 'Added Deposit to account' : 'Adjusted account base total';
       
       // Get current file SHA
       const getFileUrl = `https://api.github.com/repos/${auth.owner}/${auth.repo}/contents/${filePath}`;
@@ -172,46 +152,37 @@ class AccountManager {
       if (getResponse.ok) {
         const fileData = await getResponse.json();
         sha = fileData.sha;
+      } else if (getResponse.status === 404) {
+        // File doesn't exist yet, will create it
+        console.log('[AccountManager] account-config.json does not exist, will create it');
+      } else {
+        console.error('[AccountManager] Error fetching file:', await getResponse.text());
+        return false;
       }
       
       // Update or create file
-      const updateUrl = getFileUrl;
-      const updateResponse = await fetch(updateUrl, {
+      const updateResponse = await fetch(getFileUrl, {
         method: 'PUT',
         headers: auth.getAuthHeaders(),
         body: JSON.stringify({
-          message: `Update account config: balance=${this.config.starting_balance}, deposits=${this.config.deposits.length}`,
+          message: commitMessage,
           content: encodedContent,
           sha: sha,
           branch: 'main'
         })
       });
       
-      return updateResponse.ok;
+      if (updateResponse.ok) {
+        console.log('[AccountManager] Successfully committed account-config.json');
+        // Note: The workflow will trigger automatically because it watches this file path
+        return true;
+      } else {
+        const errorText = await updateResponse.text();
+        console.error('[AccountManager] Error committing file:', errorText);
+        return false;
+      }
     } catch (error) {
-      console.error('[AccountManager] Error updating file:', error);
-      return false;
-    }
-  }
-  
-  /**
-   * Trigger GitHub Actions workflow
-   */
-  async triggerWorkflow(auth) {
-    try {
-      const workflowUrl = `https://api.github.com/repos/${auth.owner}/${auth.repo}/actions/workflows/trade_pipeline.yml/dispatches`;
-      
-      const response = await fetch(workflowUrl, {
-        method: 'POST',
-        headers: auth.getAuthHeaders(),
-        body: JSON.stringify({
-          ref: 'main'
-        })
-      });
-      
-      return response.ok || response.status === 204;
-    } catch (error) {
-      console.error('[AccountManager] Error triggering workflow:', error);
+      console.error('[AccountManager] Error in commitConfigToRepo:', error);
       return false;
     }
   }
@@ -332,7 +303,7 @@ class AccountManager {
    */
   updateStartingBalance(newBalance) {
     this.config.starting_balance = parseFloat(newBalance);
-    this.saveConfig();
+    this.saveConfig(false); // false = not a deposit, balance adjustment
     this.updateDisplay();
     
     // Emit balance updated event
@@ -362,7 +333,7 @@ class AccountManager {
     // Sort deposits by date
     this.config.deposits.sort((a, b) => new Date(a.date) - new Date(b.date));
     
-    this.saveConfig();
+    this.saveConfig(true); // true = is a deposit
     this.updateDisplay();
     
     // Emit deposit added event
