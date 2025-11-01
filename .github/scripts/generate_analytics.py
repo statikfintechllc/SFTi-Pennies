@@ -167,8 +167,8 @@ def calculate_drawdown_series(trades: List[Dict]) -> Dict:
         except:
             labels.append(date_str)
 
-    # Calculate drawdown from peak
-    peak = cumulative_pnl[0] if cumulative_pnl else 0
+    # Calculate drawdown from peak (start peak at 0 for proper drawdown calculation)
+    peak = 0
     for value in cumulative_pnl:
         if value > peak:
             peak = value
