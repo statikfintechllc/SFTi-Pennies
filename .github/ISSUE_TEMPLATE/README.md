@@ -4,7 +4,7 @@
 
 ## Overview
 
-This directory contains issue templates for the SFTi-Pennies trading journal repository. These templates help contributors and users submit well-structured bug reports, feature requests, and integration proposals.
+This directory contains issue templates for the SFTi-Pennies trading journal repository. These templates help contributors and users submit well-structured bug reports, feature requests, and other types of issues.
 
 ## Available Templates
 
@@ -17,6 +17,7 @@ Use this template when you encounter problems, errors, or unexpected behavior in
 - GitHub Actions workflow errors
 - Data processing issues
 - Chart generation problems
+- CSV import/export errors
 - Authentication failures
 - Mobile responsiveness issues
 
@@ -36,7 +37,7 @@ Use this template to propose new features, enhancements, or improvements to the 
 - Proposing UI/UX improvements
 - Requesting new chart types or analytics
 - Suggesting automation enhancements
-- Proposing documentation improvements
+- Proposing workflow improvements
 
 **What to include:**
 - Clear description of the proposed feature
@@ -46,22 +47,67 @@ Use this template to propose new features, enhancements, or improvements to the 
 - Alternative solutions considered
 - Additional context or mockups
 
-### 3. IBKR Integration (`ibkr-integration.md`)
-Use this template specifically for Interactive Brokers (IBKR) integration-related issues, features, or discussions.
+### 3. Documentation Issue (`documentation.md`)
+Use this template to report missing, unclear, or incorrect documentation.
 
 **When to use:**
-- Proposing IBKR API integration
-- Discussing automated trade import
-- Suggesting broker data synchronization
-- Planning IBKR-specific features
+- Documentation is missing for a feature
+- Instructions are unclear or confusing
+- Information is outdated or incorrect
+- Broken links or missing examples
+- Typos or grammatical errors
 
 **What to include:**
-- Integration scope and objectives
-- IBKR API endpoints involved
-- Authentication requirements
-- Data mapping considerations
-- Security implications
-- Implementation timeline
+- Location of the documentation issue
+- Current state vs desired state
+- Who would benefit from the fix
+- Suggestions for improvement
+
+### 4. Question or Help (`question.md`)
+Use this template to ask questions or request help with the trading journal system.
+
+**When to use:**
+- Need clarification on how to use a feature
+- Troubleshooting setup or configuration
+- Understanding automation scripts
+- General questions about workflows
+
+**What to include:**
+- Clear question
+- What you've already tried
+- Context of what you're trying to accomplish
+- Environment details if relevant
+
+### 5. Broker Integration Request (`broker-integration.md`)
+Use this template to propose or request support for a new broker's CSV import format.
+
+**When to use:**
+- Want to import trades from an unsupported broker
+- Have broker CSV format documentation
+- Can provide sample data for testing
+
+**What to include:**
+- Broker name and why it's needed
+- CSV format information
+- Sample data structure (sanitized)
+- Export process from broker
+- Willingness to help test/document
+
+### 6. Analytics Feature Request (`analytics-feature.md`)
+Use this template specifically for suggesting new analytics, metrics, or visualizations.
+
+**When to use:**
+- Proposing new trading metrics
+- Suggesting chart types or visualizations
+- Requesting statistical calculations
+- Analytics dashboard enhancements
+
+**What to include:**
+- Metric or visualization description
+- Trading value and use case
+- Calculation formula if applicable
+- Visualization preferences
+- Data requirements
 
 ## How to Use
 
@@ -115,19 +161,30 @@ Use this template specifically for Interactive Brokers (IBKR) integration-relate
 - Expect immediate implementation
 - Duplicate existing feature requests
 
-#### For IBKR Integration
+#### For Documentation Issues
 ✅ **DO:**
-- Research IBKR API documentation first
-- Consider security implications
-- Propose phased implementation
-- Discuss authentication strategy
-- Consider rate limits and costs
+- Specify exact location of the issue
+- Provide constructive suggestions
+- Consider the target audience
+- Check if docs have been recently updated
 
 ❌ **DON'T:**
-- Share IBKR credentials or API keys
-- Propose unauthorized API usage
-- Ignore IBKR's terms of service
-- Expect real-time data without cost considerations
+- Report multiple unrelated doc issues in one ticket
+- Provide vague "needs improvement" feedback
+- Expect documentation for every edge case
+
+#### For Broker Integration Requests
+✅ **DO:**
+- Research broker's CSV export format first
+- Provide sample data (sanitized)
+- Consider security implications
+- Offer to help test or document
+- Check if broker is already supported
+
+❌ **DON'T:**
+- Share actual trading data with account numbers
+- Request proprietary broker API integrations
+- Expect support for brokers with no CSV export
 
 ## Template Maintenance
 
@@ -180,7 +237,8 @@ Common labels used with these templates:
 - `bug` - Something isn't working
 - `enhancement` - New feature or request
 - `documentation` - Documentation improvements
-- `integration` - Third-party integrations
+- `integration` - Broker or third-party integrations
+- `analytics` - Analytics, metrics, or visualization features
 - `question` - Further information requested
 - `help wanted` - Extra attention needed
 - `good first issue` - Good for newcomers
@@ -192,8 +250,8 @@ Common labels used with these templates:
 If you're unsure which template to use:
 1. Check existing issues for similar problems
 2. Review [CONTRIBUTING.md](../CONTRIBUTING.md) guidelines
-3. Ask in Discussions (if enabled)
-4. Start with the most relevant template and modify as needed
+3. Start with the most relevant template
+4. For general questions, use the Question template
 
 ### Issue Triage
 
@@ -215,27 +273,47 @@ Maintainers will:
 
 ### Good Bug Report
 ```
-Title: [BUG] Form submission fails on mobile Safari
-Description: Clear, detailed explanation...
-Steps to reproduce: 1, 2, 3...
-Expected: Form submits successfully
-Actual: Error message appears
+Title: [BUG] CSV import fails with Schwab files
+Description: When importing Schwab CSV files with options trades...
+Steps to reproduce: 1. Go to import.html, 2. Select Schwab, 3. Upload CSV...
+Expected: Trades imported successfully
+Actual: Error: "Invalid column format"
 Screenshots: [attached]
-Device: iPhone 14, iOS 17, Safari 17
+Environment: Chrome 120, Windows 11, Python 3.11
 ```
 
 ### Good Feature Request
 ```
-Title: [FEATURE] Add profit factor chart
-Description: Comprehensive explanation...
-Use case: Track quality of wins vs losses...
-Benefits: Better risk management insights...
-Implementation: Could use Chart.js...
-Alternatives: Consider Sharpe ratio instead...
+Title: [FEATURE] Add Sharpe ratio to analytics
+Description: Add Sharpe ratio metric to measure risk-adjusted returns...
+Use case: Better understand performance relative to risk taken...
+Benefits: Industry-standard metric for portfolio evaluation...
+Implementation: Calculate using daily returns and standard deviation...
+Alternatives: Consider Sortino ratio which focuses on downside risk...
+```
+
+### Good Documentation Issue
+```
+Title: [DOCS] CSV import instructions unclear for Robinhood
+Description: QUICKSTART.md mentions Robinhood CSV import but doesn't explain...
+Location: QUICKSTART.md, line 45
+Current: "Export from Robinhood"
+Desired: Step-by-step instructions with screenshots showing where to find export...
+Affected: New users trying to import Robinhood trades
+```
+
+### Good Broker Integration Request
+```
+Title: [BROKER] Add support for E*TRADE CSV import
+Description: E*TRADE provides CSV exports in their "Transactions" section...
+Sample CSV headers: Date,Symbol,Action,Quantity,Price,Commission,Total
+Export process: Account → Transactions → Download → CSV
+Complexity: Simple, similar to existing brokers
+Willingness: Can provide test data and help with testing
 ```
 
 ---
 
-**Last Updated:** October 2025  
-**Template Count:** 3  
-**Purpose:** Standardized issue reporting
+**Last Updated:** November 2025  
+**Template Count:** 6  
+**Purpose:** Standardized issue reporting for SFTi-Pennies Trading Journal
