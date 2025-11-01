@@ -244,7 +244,8 @@ code {
   position: absolute;
   top: 100%;
   left: 0;
-  min-width: 200px;
+  width: auto;
+  white-space: nowrap;
   padding: var(--spacing-sm) 0;
   margin-top: var(--spacing-sm);
   /* Apply glass effect to dropdown menus (Trades & Mentors) */
@@ -752,6 +753,7 @@ input[type="time"].form-input::-webkit-datetime-edit-fields-wrapper {
   font-size: 0.875rem;
   color: var(--text-dim);
   margin-top: var(--spacing-xs);
+  margin-bottom: 0;
 }
 
 .form-error {

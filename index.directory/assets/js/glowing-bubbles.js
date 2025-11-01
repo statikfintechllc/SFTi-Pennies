@@ -108,10 +108,10 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
         </svg>`,
         dropdownItems: [
-          { label: 'All Trades', href: `${basePath}all-trades.html` },
+          { label: 'Trading History', href: `${basePath}all-trades.html` },
           { label: 'All Summaries', href: `${basePath}all-weeks.html` },
-          { label: 'Analytics', href: `${basePath}analytics.html` },
-          { label: 'Import CSV', href: `${basePath}import.html` },
+          { label: 'Trade Analytics', href: `${basePath}analytics.html` },
+          { label: 'Add Broker CSV', href: `${basePath}import.html` },
           { label: 'Review Trades', href: `${basePath}review.html` }
         ]
       },
