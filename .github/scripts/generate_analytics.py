@@ -25,7 +25,7 @@ def load_account_config():
         with open("index.directory/account-config.json", "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        print("account-config.json not found, using defaults")
+        print("index.directory/account-config.json not found, using defaults")
         return {
             "starting_balance": 1000.00,
             "deposits": [],

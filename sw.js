@@ -99,8 +99,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Skip external requests (CDN, APIs, etc.)
-  if (!url.origin.includes(location.origin) && !url.pathname.startsWith('/SFTi-Pennies/')) {
+  // Skip external requests
+  if (url.origin !== location.origin) {
     return;
   }
   

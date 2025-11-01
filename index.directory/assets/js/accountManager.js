@@ -122,13 +122,21 @@ class AccountManager {
   
   /**
    * Commit account-config.json to repository via GitHub API
-   * This triggers the workflow automatically when pushed
+   * Uses the same uploadFile method as add-trade for consistency
    */
   async commitConfigToRepo(isDeposit = false) {
-    // Check if we have auth available
-    const auth = window.tradingJournal?.auth;
-    if (!auth || !auth.isAuthenticated()) {
-      console.log('[AccountManager] No authentication available for commit');
+    // Get or create auth instance (same approach as add-trade.html)
+    let auth = window.tradingJournal?.auth;
+    
+    // If tradingJournal isn't available yet, create a temporary auth instance
+    if (!auth) {
+      console.log('[AccountManager] tradingJournal.auth not available, creating temporary auth instance');
+      auth = new GitHubAuth();
+    }
+    
+    // Check authentication
+    if (!auth.isAuthenticated()) {
+      console.log('[AccountManager] Not authenticated. User needs to sign in.');
       return false;
     }
     
@@ -137,50 +145,17 @@ class AccountManager {
       
       const filePath = 'index.directory/account-config.json';
       const content = JSON.stringify(this.config, null, 2);
-      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(content)));
       
       // Determine commit message based on action type
       const commitMessage = isDeposit ? 'Added Deposit to account' : 'Adjusted account base total';
       
-      // Get current file SHA
-      const getFileUrl = `https://api.github.com/repos/${auth.owner}/${auth.repo}/contents/${filePath}`;
-      const getResponse = await fetch(getFileUrl, {
-        headers: auth.getAuthHeaders()
-      });
+      // Use the same uploadFile method that add-trade.html uses
+      await auth.uploadFile(filePath, encodedContent, commitMessage);
       
-      let sha = null;
-      if (getResponse.ok) {
-        const fileData = await getResponse.json();
-        sha = fileData.sha;
-      } else if (getResponse.status === 404) {
-        // File doesn't exist yet, will create it
-        console.log('[AccountManager] account-config.json does not exist, will create it');
-      } else {
-        console.error('[AccountManager] Error fetching file:', await getResponse.text());
-        return false;
-      }
-      
-      // Update or create file
-      const updateResponse = await fetch(getFileUrl, {
-        method: 'PUT',
-        headers: auth.getAuthHeaders(),
-        body: JSON.stringify({
-          message: commitMessage,
-          content: encodedContent,
-          sha: sha,
-          branch: 'main'
-        })
-      });
-      
-      if (updateResponse.ok) {
-        console.log('[AccountManager] Successfully committed account-config.json');
-        // Note: The workflow will trigger automatically because it watches this file path
-        return true;
-      } else {
-        const errorText = await updateResponse.text();
-        console.error('[AccountManager] Error committing file:', errorText);
-        return false;
-      }
+      console.log('[AccountManager] Successfully committed account-config.json');
+      // Note: The workflow will trigger automatically because it watches this file path
+      return true;
     } catch (error) {
       console.error('[AccountManager] Error in commitConfigToRepo:', error);
       return false;

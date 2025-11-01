@@ -315,8 +315,17 @@ class StateManager {
 // Create global state manager
 window.SFTiStateManager = new StateManager();
 
-// Initialize on DOM ready
-SFTiUtils.onDOMReady(async () => {
+// Initialize on DOM ready (with fallback if SFTiUtils is missing)
+(function(initFn) {
+  if (window.SFTiUtils && typeof window.SFTiUtils.onDOMReady === 'function') {
+    window.SFTiUtils.onDOMReady(initFn);
+  } else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFn);
+  } else {
+    // DOM already loaded
+    initFn();
+  }
+})(async () => {
   await window.SFTiStateManager.init();
 });
 
