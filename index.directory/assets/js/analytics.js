@@ -9,6 +9,8 @@
  * - Efficient template string building for tables
  */
 
+// Use utilities from global SFTiUtils and SFTiChartConfig
+
 // State
 let analyticsData = null;
 
@@ -89,10 +91,7 @@ function renderStrategyChart(data) {
   const pnls = strategies.map(s => data.by_strategy[s].total_pnl);
   
   // Pre-compute colors once instead of in map
-  const colors = pnls.map(p => ({
-    bg: p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)',
-    border: p >= 0 ? '#00ff88' : '#ff4757'
-  }));
+  const colors = pnls.map(p => SFTiUtils.getPnLColors(p));
   
   if (strategyChart) strategyChart.destroy();
   
@@ -108,31 +107,7 @@ function renderStrategyChart(data) {
         borderWidth: 2
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0a0e27',
-          titleColor: '#e4e4e7',
-          bodyColor: '#e4e4e7',
-          borderColor: '#00ff88',
-          borderWidth: 1
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: 'rgba(161, 161, 170, 0.2)' },
-          ticks: { color: '#e4e4e7' }
-        },
-        x: {
-          grid: { display: false },
-          ticks: { color: '#e4e4e7' }
-        }
-      }
-    }
+    options: SFTiChartConfig.getBarChartOptions()
   });
 }
 
@@ -147,10 +122,7 @@ function renderSetupChart(data) {
   const pnls = setups.map(s => data.by_setup[s].total_pnl);
   
   // Pre-compute colors once instead of in map
-  const colors = pnls.map(p => ({
-    bg: p >= 0 ? 'rgba(0, 255, 136, 0.8)' : 'rgba(255, 71, 87, 0.8)',
-    border: p >= 0 ? '#00ff88' : '#ff4757'
-  }));
+  const colors = pnls.map(p => SFTiUtils.getPnLColors(p));
   
   if (setupChart) setupChart.destroy();
   
@@ -166,31 +138,7 @@ function renderSetupChart(data) {
         borderWidth: 2
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0a0e27',
-          titleColor: '#e4e4e7',
-          bodyColor: '#e4e4e7',
-          borderColor: '#00ff88',
-          borderWidth: 1
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          grid: { color: 'rgba(161, 161, 170, 0.2)' },
-          ticks: { color: '#e4e4e7' }
-        },
-        x: {
-          grid: { display: false },
-          ticks: { color: '#e4e4e7' }
-        }
-      }
-    }
+    options: SFTiChartConfig.getBarChartOptions()
   });
 }
 
@@ -206,6 +154,23 @@ function renderWinRateChart(data) {
   
   if (winrateChart) winrateChart.destroy();
   
+  // Get base options and customize for percentage display
+  const options = SFTiChartConfig.getBarChartOptions('#ffd700');
+  const customOptions = {
+    ...options,
+    scales: {
+      ...options.scales,
+      y: {
+        ...options.scales.y,
+        max: 100,
+        ticks: {
+          ...options.scales.y.ticks,
+          callback: value => value + '%'
+        }
+      }
+    }
+  };
+  
   winrateChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -218,35 +183,7 @@ function renderWinRateChart(data) {
         borderWidth: 2
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0a0e27',
-          titleColor: '#e4e4e7',
-          bodyColor: '#e4e4e7',
-          borderColor: '#ffd700',
-          borderWidth: 1
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 100,
-          grid: { color: 'rgba(161, 161, 170, 0.2)' },
-          ticks: { 
-            color: '#e4e4e7',
-            callback: value => value + '%'
-          }
-        },
-        x: {
-          grid: { display: false },
-          ticks: { color: '#e4e4e7' }
-        }
-      }
-    }
+    options: customOptions
   });
 }
 
@@ -274,33 +211,7 @@ function renderDrawdownChart(data) {
         pointBackgroundColor: '#ff4757'
       }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#0a0e27',
-          titleColor: '#e4e4e7',
-          bodyColor: '#e4e4e7',
-          borderColor: '#ff4757',
-          borderWidth: 1
-        }
-      },
-      scales: {
-        y: {
-          grid: { color: 'rgba(161, 161, 170, 0.2)' },
-          ticks: { 
-            color: '#e4e4e7',
-            callback: value => '$' + value.toFixed(0)
-          }
-        },
-        x: {
-          grid: { display: false },
-          ticks: { color: '#e4e4e7' }
-        }
-      }
-    }
+    options: SFTiChartConfig.getLineChartOptions('#ff4757')
   });
 }
 
@@ -391,8 +302,4 @@ function getMockAnalyticsData() {
 }
 
 // Initialize on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAnalytics);
-} else {
-  initAnalytics();
-}
+SFTiUtils.onDOMReady(initAnalytics);

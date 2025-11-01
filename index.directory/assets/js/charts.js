@@ -3,16 +3,8 @@
  * Handles all chart types: equity curve, trade distribution, performance by day, ticker performance
  */
 
-// Get base path dynamically to support different deployments
-const getBasePath = () => {
-  const pathSegments = window.location.pathname.split('/').filter(Boolean);
-  if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-    return '/' + pathSegments[0];
-  }
-  return '';
-};
-
-const basePath = getBasePath();
+// Use utilities from global SFTiUtils and SFTiChartConfig
+const basePath = SFTiUtils.getBasePath();
 
 // Chart instances
 let equityCurveChart = null;
@@ -23,74 +15,7 @@ let tickerPerformanceChart = null;
 // Chart selector
 const chartSelector = document.getElementById('chart-selector');
 
-/**
- * Common chart options for consistent styling
- */
-function getCommonChartOptions() {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        labels: {
-          color: '#e4e4e7',
-          font: {
-            family: 'JetBrains Mono',
-            size: 12
-          }
-        }
-      },
-      tooltip: {
-        backgroundColor: '#0a0e27',
-        titleColor: '#e4e4e7',
-        bodyColor: '#e4e4e7',
-        borderColor: '#00ff88',
-        borderWidth: 1,
-        callbacks: {
-          label: function(context) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += '$' + context.parsed.y.toFixed(2);
-            }
-            return label;
-          }
-        }
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: 'rgba(161, 161, 170, 0.2)'
-        },
-        ticks: {
-          color: '#e4e4e7',
-          font: {
-            family: 'JetBrains Mono'
-          },
-          callback: function(value) {
-            return '$' + value.toFixed(0);
-          }
-        }
-      },
-      x: {
-        grid: {
-          color: 'rgba(161, 161, 170, 0.2)'
-        },
-        ticks: {
-          color: '#e4e4e7',
-          font: {
-            family: 'JetBrains Mono'
-          }
-        }
-      }
-    }
-  };
-}
+// Chart options are now imported from chartConfig.js
 
 /**
  * Load and render equity curve chart
@@ -110,11 +35,11 @@ async function loadEquityCurveChart() {
     equityCurveChart = new Chart(ctx, {
       type: 'line',
       data: data,
-      options: getCommonChartOptions()
+      options: SFTiChartConfig.getCommonChartOptions()
     });
   } catch (error) {
     console.log('Equity curve data not yet available:', error);
-    renderEmptyChart(ctx, 'No equity curve data available yet. Add trades to see your equity curve.');
+    SFTiChartConfig.renderEmptyChart(ctx, 'No equity curve data available yet. Add trades to see your equity curve.');
   }
 }
 
@@ -136,19 +61,11 @@ async function loadTradeDistributionChart() {
     tradeDistributionChart = new Chart(ctx, {
       type: 'bar',
       data: data,
-      options: {
-        ...getCommonChartOptions(),
-        plugins: {
-          ...getCommonChartOptions().plugins,
-          legend: {
-            display: false
-          }
-        }
-      }
+      options: SFTiChartConfig.getBarChartOptions()
     });
   } catch (error) {
     console.log('Trade distribution data not yet available:', error);
-    renderEmptyChart(ctx, 'No trade distribution data available yet. Add trades to see your distribution.');
+    SFTiChartConfig.renderEmptyChart(ctx, 'No trade distribution data available yet. Add trades to see your distribution.');
   }
 }
 
@@ -170,19 +87,11 @@ async function loadPerformanceByDayChart() {
     performanceByDayChart = new Chart(ctx, {
       type: 'bar',
       data: data,
-      options: {
-        ...getCommonChartOptions(),
-        plugins: {
-          ...getCommonChartOptions().plugins,
-          legend: {
-            display: false
-          }
-        }
-      }
+      options: SFTiChartConfig.getBarChartOptions()
     });
   } catch (error) {
     console.log('Performance by day data not yet available:', error);
-    renderEmptyChart(ctx, 'No performance by day data available yet. Add trades to see daily performance.');
+    SFTiChartConfig.renderEmptyChart(ctx, 'No performance by day data available yet. Add trades to see daily performance.');
   }
 }
 
@@ -205,54 +114,17 @@ async function loadTickerPerformanceChart() {
       type: 'bar',
       data: data,
       options: {
-        ...getCommonChartOptions(),
-        plugins: {
-          ...getCommonChartOptions().plugins,
-          legend: {
-            display: false
-          }
-        },
+        ...SFTiChartConfig.getBarChartOptions(),
         indexAxis: 'y'  // Horizontal bar chart for better ticker label display
       }
     });
   } catch (error) {
     console.log('Ticker performance data not yet available:', error);
-    renderEmptyChart(ctx, 'No ticker performance data available yet. Add trades to see performance by ticker.');
+    SFTiChartConfig.renderEmptyChart(ctx, 'No ticker performance data available yet. Add trades to see performance by ticker.');
   }
 }
 
-/**
- * Render an empty chart with a message
- */
-function renderEmptyChart(ctx, message) {
-  const chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'No Data',
-        data: [],
-        borderColor: '#00ff88',
-        backgroundColor: 'rgba(0, 255, 136, 0.1)'
-      }]
-    },
-    options: {
-      ...getCommonChartOptions(),
-      plugins: {
-        ...getCommonChartOptions().plugins,
-        title: {
-          display: true,
-          text: message,
-          color: '#a1a1aa',
-          font: {
-            family: 'Inter',
-            size: 14
-          }
-        }
-      }
-    }
-  });
-}
+// renderEmptyChart is now imported from chartConfig.js
 
 /**
  * Switch between chart views
@@ -302,8 +174,4 @@ function initCharts() {
 }
 
 // Initialize when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCharts);
-} else {
-  initCharts();
-}
+SFTiUtils.onDOMReady(initCharts);

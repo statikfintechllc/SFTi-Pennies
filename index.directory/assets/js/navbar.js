@@ -3,6 +3,8 @@
  * Dynamically generates and inserts the navigation bar into pages
  */
 
+// Use utilities from global SFTiUtils
+
 class Navbar {
   constructor(options = {}) {
     this.basePath = options.basePath || '';
@@ -202,10 +204,6 @@ class Navbar {
 }
 
 // Auto-initialize navbar when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new Navbar();
-  });
-} else {
+SFTiUtils.onDOMReady(() => {
   new Navbar();
-}
+});
