@@ -154,10 +154,22 @@ function renderWinRateChart(data) {
   
   if (winrateChart) winrateChart.destroy();
   
+  // Get base options and customize for percentage display
   const options = SFTiChartConfig.getBarChartOptions('#ffd700');
-  // Customize Y axis for percentage display
-  options.scales.y.max = 100;
-  options.scales.y.ticks.callback = value => value + '%';
+  const customOptions = {
+    ...options,
+    scales: {
+      ...options.scales,
+      y: {
+        ...options.scales.y,
+        max: 100,
+        ticks: {
+          ...options.scales.y.ticks,
+          callback: value => value + '%'
+        }
+      }
+    }
+  };
   
   winrateChart = new Chart(ctx, {
     type: 'bar',
@@ -171,7 +183,7 @@ function renderWinRateChart(data) {
         borderWidth: 2
       }]
     },
-    options: options
+    options: customOptions
   });
 }
 
