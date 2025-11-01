@@ -19,6 +19,20 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 
 
+def load_account_config():
+    """Load account configuration with starting balance and deposits"""
+    try:
+        with open("index.directory/account-config.json", "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("account-config.json not found, using defaults")
+        return {
+            "starting_balance": 1000.00,
+            "deposits": [],
+            "version": "1.0"
+        }
+
+
 def load_trades_index():
     """Load the trades index JSON file"""
     try:
@@ -299,12 +313,23 @@ def main():
     """Main execution function"""
     print("Generating analytics...")
 
+    # Load account config
+    account_config = load_account_config()
+    starting_balance = account_config.get("starting_balance", 1000.00)
+    total_deposits = sum(d.get("amount", 0) for d in account_config.get("deposits", []))
+    
     # Load trades index
     index_data = load_trades_index()
     if not index_data:
         return
 
     trades = index_data.get("trades", [])
+    stats = index_data.get("statistics", {})
+    total_pnl = stats.get("total_pnl", 0)
+    
+    # Calculate portfolio value
+    portfolio_value = starting_balance + total_deposits + total_pnl
+    
     if not trades:
         print("No trades found in index")
         # Create empty analytics
@@ -319,6 +344,12 @@ def main():
             "by_setup": {},
             "by_session": {},
             "drawdown_series": {"labels": [], "values": []},
+            "account": {
+                "starting_balance": starting_balance,
+                "total_deposits": total_deposits,
+                "total_pnl": total_pnl,
+                "portfolio_value": portfolio_value
+            },
             "generated_at": datetime.now().isoformat(),
         }
     else:
@@ -355,6 +386,12 @@ def main():
             "by_setup": by_setup,
             "by_session": by_session,
             "drawdown_series": drawdown_series,
+            "account": {
+                "starting_balance": starting_balance,
+                "total_deposits": total_deposits,
+                "total_pnl": total_pnl,
+                "portfolio_value": portfolio_value
+            },
             "generated_at": datetime.now().isoformat(),
         }
 

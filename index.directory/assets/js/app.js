@@ -257,8 +257,15 @@ class TradingJournal {
   updateStats(stats) {
     if (!stats || Object.keys(stats).length === 0) return;
     
+    // Calculate portfolio value if accountManager is available
+    let portfolioValue = 0;
+    if (window.accountManager && window.accountManager.initialized) {
+      portfolioValue = window.accountManager.calculatePortfolioValue(stats.total_pnl || 0);
+    }
+    
     // Update DOM
     const statElements = {
+      'stat-portfolio-value': `$${portfolioValue.toFixed(2)}`,
       'stat-total-trades': stats.total_trades || 0,
       'stat-win-rate': `${stats.win_rate || 0}%`,
       'stat-total-pnl': `$${(stats.total_pnl || 0).toFixed(2)}`,
@@ -272,7 +279,13 @@ class TradingJournal {
         // Add positive/negative class for P&L
         if (id.includes('pnl')) {
           const totalPnL = stats.total_pnl || 0;
+          element.classList.remove('positive', 'negative');
           element.classList.add(totalPnL >= 0 ? 'positive' : 'negative');
+        }
+        // Add positive/negative class for portfolio value
+        if (id === 'stat-portfolio-value') {
+          element.classList.remove('positive', 'negative');
+          element.classList.add(portfolioValue >= 0 ? 'positive' : 'negative');
         }
       }
     });

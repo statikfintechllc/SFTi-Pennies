@@ -46,5 +46,11 @@
       -3.9
     ]
   },
-  "generated_at": "2025-11-01T20:05:01.699013"
+  "account": {
+    "starting_balance": 1000.0,
+    "total_deposits": 0,
+    "total_pnl": -3.9,
+    "portfolio_value": 996.1
+  },
+  "generated_at": "2025-11-01T20:10:06.215666"
 }
