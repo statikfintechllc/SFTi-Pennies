@@ -159,10 +159,10 @@ def calculate_period_stats(trades):
     loss_count = 0
     total_pnl = 0.0
     total_volume = 0
-    best_trade = trades[0]
-    worst_trade = trades[0]
-    best_pnl = trades[0].get("pnl_usd", 0)
-    worst_pnl = trades[0].get("pnl_usd", 0)
+    best_trade = None
+    worst_trade = None
+    best_pnl = float('-inf')
+    worst_pnl = float('inf')
     
     # Strategy breakdown using defaultdict for efficiency
     strategies = defaultdict(lambda: {"count": 0, "pnl": 0.0})
@@ -190,6 +190,12 @@ def calculate_period_stats(trades):
         strategy = trade.get("strategy", "Unknown")
         strategies[strategy]["count"] += 1
         strategies[strategy]["pnl"] += pnl
+
+    # Use first trade as fallback if no best/worst found (shouldn't happen with valid data)
+    if best_trade is None:
+        best_trade = trades[0]
+    if worst_trade is None:
+        worst_trade = trades[0]
 
     return {
         "total_trades": total_trades,

@@ -196,6 +196,7 @@ def calculate_kelly_criterion(trades: List[Dict]) -> float:
 
     # Single pass to calculate stats
     win_count = 0
+    loss_count = 0
     total_wins = 0.0
     total_losses = 0.0
     
@@ -205,9 +206,8 @@ def calculate_kelly_criterion(trades: List[Dict]) -> float:
             win_count += 1
             total_wins += pnl
         elif pnl < 0:
+            loss_count += 1
             total_losses += pnl
-    
-    loss_count = len(trades) - win_count
 
     if win_count == 0 or loss_count == 0:
         return 0.0

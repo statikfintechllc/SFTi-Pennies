@@ -105,8 +105,7 @@ def generate_trade_html(trade):
     # Generate image gallery HTML
     gallery_html = ""
     if images and len(images) > 0:
-        # Use list comprehension for better performance
-        # Pre-compute adjusted paths to avoid duplicate string operations
+        # Use list comprehension with pre-computed paths to avoid duplicate operations
         gallery_items = []
         for idx, img in enumerate(images):
             if img and img != "None" and img.strip():
