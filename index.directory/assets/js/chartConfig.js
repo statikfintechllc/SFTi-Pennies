@@ -138,6 +138,10 @@
    * @returns {Chart} Chart.js instance
    */
   function renderEmptyChart(ctx, message) {
+    if (typeof Chart === 'undefined') {
+      console.error('Chart.js not loaded');
+      return null;
+    }
     const commonOptions = getCommonChartOptions();
     return new Chart(ctx, {
       type: 'line',
