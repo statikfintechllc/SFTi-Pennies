@@ -21,8 +21,11 @@ Welcome to **SFTi-Pennies** - a comprehensive, fully automated trading journal s
 - **🎨 Beautiful Dark UI** - Terminal-inspired interface with sparkling animations
 - **📱 Mobile-First PWA** - Install on any device, works offline
 - **🤖 Fully Automated** - GitHub Actions handle all processing and deployments
-- **📊 Real-Time Analytics** - Automated chart generation and performance tracking
-- **🔗 Integrated Ecosystem** - Part of the larger SFTi AI platform
+- **📊 Advanced Analytics** - Expectancy, profit factor, Kelly Criterion, and more
+- **📥 Import/Export** - CSV import from major brokers (IBKR, Schwab, Robinhood, Webull)
+- **📝 Weekly Reviews** - Structured review workflow for continuous improvement
+- **📚 Integrated Library** - Books and notes management with PDF/Markdown viewers
+- **🔗 Complete Ecosystem** - Part of the larger SFTi AI platform
 
 ### 🎯 Purpose Statement
 
@@ -60,11 +63,16 @@ Created a **fully transparent, organized trading account** with complete documen
 
 #### 4. [🤖 .github/scripts](./.github/scripts/README.md)
 **Automation Scripts** - Python scripts that power the system:
-- `parse_trades.py` - Trade data extraction
-- `generate_summaries.py` - Performance analytics
-- `generate_charts.py` - Equity curve generation
-- `generate_index.py` - Content indexing
-- `optimize_images.sh` - Image optimization
+- `parse_trades.py` - Trade data extraction from markdown to JSON
+- `generate_summaries.py` - Weekly/monthly/yearly performance summaries
+- `generate_charts.py` - Equity curves and performance visualizations
+- `generate_analytics.py` - Advanced metrics (expectancy, Kelly, profit factor)
+- `generate_index.py` - Content indexing and all-trades page
+- `generate_week_summaries.py` - Weekly master trade summaries
+- `import_csv.py` - Import trades from broker CSV files
+- `export_csv.py` - Export trades to CSV format
+- `importers/` - Broker-specific CSV parsers (IBKR, Schwab, Robinhood, Webull)
+- `optimize_images.sh` - Image compression and optimization
 
 #### 5. [⚡ .github/workflows](./.github/workflows/README.md)
 **CI/CD Pipeline** - Automated deployment system:
@@ -81,7 +89,21 @@ Created a **fully transparent, organized trading account** with complete documen
 
 ### 🎨 Frontend & Assets
 
-#### 7. [🎨 index.directory/assets](./index.directory/assets/README.md)
+#### 7. [🌐 Web Interface](./index.directory/)
+**User-Friendly Pages** - Complete web application:
+- 🏠 **index.html** - Homepage with recent trades and performance summary
+- ➕ **add-trade.html** - Trade submission form with auto-calculations
+- 📊 **analytics.html** - Advanced analytics dashboard with detailed metrics
+- 📋 **all-trades.html** - Complete sortable trade listing
+- 📅 **all-weeks.html** - Weekly performance summaries and navigation
+- 🔄 **review.html** - Weekly trade review and summary completion tool
+- 📥 **import.html** - CSV import interface for broker statements
+- 📚 **books.html** - PDF library browser and viewer
+- 📝 **notes.html** - Trading strategy notes and framework viewer
+- ➕ **add-pdf.html** - Upload new trading books to library
+- ➕ **add-note.html** - Create new trading strategy notes
+
+#### 8. [🎨 index.directory/assets](./index.directory/assets/README.md)
 **Visual Assets & Resources** - Organized media files:
 - 📊 [Charts](./index.directory/assets/charts/README.md) - Generated performance charts
 - 🖼️ [Icons](./index.directory/assets/icons/README.md) - PWA app icons
@@ -90,7 +112,7 @@ Created a **fully transparent, organized trading account** with complete documen
 - 📸 [Trade Screenshots](./index.directory/assets/sfti.tradez.assets/README.md) - Trade charts
 - 📚 [Framework Charts](./index.directory/assets/sfti.notez.assets/README.md) - Pattern examples
 
-#### 8. [📚 .github/docs](./.github/docs/README.md)
+#### 9. [📚 .github/docs](./.github/docs/README.md)
 **Comprehensive Documentation** - Complete guides:
 - [Quick Start Guide](./.github/docs/QUICKSTART.md)
 - [Developer Documentation](./.github/docs/README-DEV.md)
@@ -104,8 +126,10 @@ Created a **fully transparent, organized trading account** with complete documen
 
 1. **📱 Visit the Live Site**: [statikfintechllc.github.io/SFTi-Pennies](https://statikfintechllc.github.io/SFTi-Pennies/)
 2. **📊 Browse Recent Trades**: View latest trading activity on homepage
-3. **📚 Explore Education**: Access trading books and frameworks
-4. **📈 Review Performance**: See automated charts and analytics
+3. **📈 Deep Dive Analytics**: Check the analytics page for detailed performance metrics
+4. **📅 Weekly Summaries**: Review weekly performance and all-weeks overview
+5. **📚 Explore Education**: Access trading books and frameworks
+6. **📝 Study Strategies**: Review trading notes and methodologies
 
 ### 📖 For Learners (Study the Method)
 
@@ -120,8 +144,19 @@ Created a **fully transparent, organized trading account** with complete documen
 1. **Read Setup Guide** → [Developer Docs](./.github/docs/README-DEV.md)
 2. **Understand Architecture** → [System Structure](./.github/docs/STRUCTURE.md)
 3. **Learn the Pipeline** → [Trade Pipeline](./.github/docs/TRADE_PIPELINE.md)
-4. **Clone & Customize** → Fork repo and adapt to your needs
-5. **Deploy Your Version** → GitHub Pages automatic deployment
+4. **Review Contributing** → [Contributing Guide](./.github/CONTRIBUTING.md)
+5. **Clone & Customize** → Fork repo and adapt to your needs
+6. **Deploy Your Version** → GitHub Pages automatic deployment
+
+### 📈 For Active Traders (Use the System)
+
+1. **Setup Authentication** → Generate GitHub Personal Access Token
+2. **Add Your Trades** → Use the add-trade form with auto-calculations
+3. **Import Broker Data** → CSV import from IBKR, Schwab, Robinhood, or Webull
+4. **Review Performance** → Weekly review workflow to complete summaries
+5. **Track Analytics** → Monitor expectancy, profit factor, and Kelly Criterion
+6. **Export Data** → Download your trades as CSV for external analysis
+7. **Manage Library** → Upload books and create trading notes
 
 ### 🎯 Essential Resources
 
@@ -214,25 +249,31 @@ This journal follows key principles:
 - ✅ Indicator strategies
 - ✅ Risk management
 - ✅ Pattern recognition
+- ✅ Weekly review workflow
 
 </td>
 <td width="33%">
 
-### 📊 Analytics
+### 📊 Advanced Analytics
 - ✅ Automated P&L calculation
-- ✅ Win rate tracking
+- ✅ Win rate & profit factor
+- ✅ Expectancy calculation
+- ✅ Kelly Criterion
 - ✅ Equity curve charts
-- ✅ Performance metrics
-- ✅ Trade statistics
+- ✅ Per-strategy breakdowns
+- ✅ Drawdown analysis
+- ✅ Win/loss streaks
 
 </td>
 <td width="33%">
 
-### 🚀 Automation
+### 🚀 Automation & Tools
 - ✅ GitHub Actions pipeline
 - ✅ Auto chart generation
 - ✅ Image optimization
-- ✅ Index generation
+- ✅ CSV import/export
+- ✅ Broker integration (IBKR, Schwab, Robinhood, Webull)
+- ✅ PDF/Markdown management
 - ✅ Zero-touch deployment
 
 </td>
