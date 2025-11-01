@@ -62,17 +62,15 @@ Created a **fully transparent, organized trading account** with complete documen
 ### ⚙️ Automation & Infrastructure
 
 #### 4. [🤖 .github/scripts](./.github/scripts/README.md)
-**Automation Scripts** - Python scripts that power the system:
-- `parse_trades.py` - Trade data extraction from markdown to JSON
-- `generate_summaries.py` - Weekly/monthly/yearly performance summaries
-- `generate_charts.py` - Equity curves and performance visualizations
-- `generate_analytics.py` - Advanced metrics (expectancy, Kelly, profit factor)
-- `generate_index.py` - Content indexing and all-trades page
-- `generate_week_summaries.py` - Weekly master trade summaries
-- `import_csv.py` - Import trades from broker CSV files
-- `export_csv.py` - Export trades to CSV format
-- `importers/` - Broker-specific CSV parsers (IBKR, Schwab, Robinhood, Webull)
-- `optimize_images.sh` - Image compression and optimization
+**Automation Scripts** - Python/Shell scripts that power the system (17 total):
+- **Trade Processing**: `parse_trades.py`, `import_csv.py`, `export_csv.py`
+- **Analytics & Charts**: `generate_analytics.py`, `generate_charts.py`
+- **Summaries**: `generate_summaries.py`, `generate_week_summaries.py`
+- **Indexing**: `generate_index.py`, `generate_books_index.py`, `generate_notes_index.py`
+- **Content Pages**: `generate_trade_pages.py`, `update_homepage.py`
+- **Utilities**: `attach_media.py`, `normalize_schema.py`, `navbar_template.py`
+- **Build & Optimize**: `build.mjs`, `optimize_images.sh`
+- **Broker Importers**: `importers/` module (IBKR, Schwab, Robinhood, Webull)
 
 #### 5. [⚡ .github/workflows](./.github/workflows/README.md)
 **CI/CD Pipeline** - Automated deployment system:

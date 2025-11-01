@@ -177,8 +177,10 @@ The form will automatically calculate:
 ## 📁 What's Where
 
 ```
-Your Repository (index.directory/)
-├── index.html              # Homepage (3 recent trades + stats)
+SFTi-Pennies Repository Structure
+│
+└── index.directory/           # Main application directory
+    ├── index.html              # Homepage (3 recent trades + stats)
 ├── add-trade.html         # Trade submission form
 ├── all-trades.html        # List of all trades (sortable/filterable)
 ├── all-weeks.html         # Weekly performance overview
