@@ -12,8 +12,8 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 # Regex patterns for file matching
-WEEKLY_PATTERN = r'weekly-\d{4}-W(\d{2})\.md'
-MONTHLY_PATTERN = r'monthly-\d{4}-(\d{2})\.md'
+WEEKLY_PATTERN = r"weekly-\d{4}-W(\d{2})\.md"
+MONTHLY_PATTERN = r"monthly-\d{4}-(\d{2})\.md"
 
 
 def load_trades_index():
@@ -29,48 +29,64 @@ def load_trades_index():
 def load_existing_summary(filepath):
     """
     Load existing summary and extract user-filled review sections
-    
+
     Args:
         filepath (str): Path to existing summary file
-        
+
     Returns:
         dict: Extracted review sections or None if file doesn't exist
     """
     if not os.path.exists(filepath):
         return None
-        
+
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
-            
+
         # Extract review sections
         review = {
             "what_went_well": "",
             "needs_improvement": "",
             "key_lessons": "",
-            "next_goals": ""
+            "next_goals": "",
         }
-        
+
         # Extract "What Went Well" section
-        match = re.search(r'### What Went Well\s*\n\s*\n(.*?)(?=\n###|\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
+        match = re.search(
+            r"### What Went Well\s*\n\s*\n(.*?)(?=\n###|\n##|$)", content, re.DOTALL
+        )
+        if match and not match.group(1).strip().startswith(
+            "_To be filled in manually during review"
+        ):
             review["what_went_well"] = match.group(1).strip()
-        
+
         # Extract "What Needs Improvement" section
-        match = re.search(r'### What Needs Improvement\s*\n\s*\n(.*?)(?=\n###|\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
+        match = re.search(
+            r"### What Needs Improvement\s*\n\s*\n(.*?)(?=\n###|\n##|$)",
+            content,
+            re.DOTALL,
+        )
+        if match and not match.group(1).strip().startswith(
+            "_To be filled in manually during review"
+        ):
             review["needs_improvement"] = match.group(1).strip()
-        
+
         # Extract "Key Lessons Learned" section
-        match = re.search(r'### Key Lessons Learned\s*\n\s*\n(.*?)(?=\n##|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('_To be filled in manually during review'):
+        match = re.search(
+            r"### Key Lessons Learned\s*\n\s*\n(.*?)(?=\n##|$)", content, re.DOTALL
+        )
+        if match and not match.group(1).strip().startswith(
+            "_To be filled in manually during review"
+        ):
             review["key_lessons"] = match.group(1).strip()
-        
+
         # Extract "Next Period Goals" section
-        match = re.search(r'## Next Period Goals\s*\n\s*\n(.*?)(?=\n---|$)', content, re.DOTALL)
-        if match and not match.group(1).strip().startswith('- _Goal'):
+        match = re.search(
+            r"## Next Period Goals\s*\n\s*\n(.*?)(?=\n---|$)", content, re.DOTALL
+        )
+        if match and not match.group(1).strip().startswith("- _Goal"):
             review["next_goals"] = match.group(1).strip()
-        
+
         return review
     except Exception as e:
         print(f"Warning: Error loading existing summary {filepath}: {e}")
@@ -171,16 +187,18 @@ def calculate_period_stats(trades):
     }
 
 
-def generate_summary_markdown(period_key, period_stats, period_type="week", existing_review=None):
+def generate_summary_markdown(
+    period_key, period_stats, period_type="week", existing_review=None
+):
     """
     Generate markdown summary for a period
-    
+
     Args:
         period_key (str): Period identifier (e.g., '2025-W42')
         period_stats (dict): Statistics for the period
         period_type (str): 'week', 'month', or 'year'
         existing_review (dict): Existing review content to preserve
-        
+
     Returns:
         str: Markdown content
     """
@@ -202,13 +220,24 @@ def generate_summary_markdown(period_key, period_stats, period_type="week", exis
     strategy_breakdown = (
         "\n".join(strategy_lines) if strategy_lines else "- No strategies recorded"
     )
-    
+
     # Use existing review content if available, otherwise use placeholders
     if existing_review:
-        what_went_well = existing_review.get("what_went_well") or "_To be filled in manually during review_"
-        needs_improvement = existing_review.get("needs_improvement") or "_To be filled in manually during review_"
-        key_lessons = existing_review.get("key_lessons") or "_To be filled in manually during review_"
-        next_goals = existing_review.get("next_goals") or "- _Goal 1_\n- _Goal 2_\n- _Goal 3_"
+        what_went_well = (
+            existing_review.get("what_went_well")
+            or "_To be filled in manually during review_"
+        )
+        needs_improvement = (
+            existing_review.get("needs_improvement")
+            or "_To be filled in manually during review_"
+        )
+        key_lessons = (
+            existing_review.get("key_lessons")
+            or "_To be filled in manually during review_"
+        )
+        next_goals = (
+            existing_review.get("next_goals") or "- _Goal 1_\n- _Goal 2_\n- _Goal 3_"
+        )
     else:
         what_went_well = "_To be filled in manually during review_"
         needs_improvement = "_To be filled in manually during review_"
@@ -284,16 +313,16 @@ def main():
     weekly_groups = group_trades_by_period(trades, "week")
     for week_key, week_trades in weekly_groups.items():
         stats = calculate_period_stats(week_trades)
-        
+
         # Load existing review content to preserve user input
         filename = f"index.directory/summaries/weekly-{week_key}.md"
         existing_review = load_existing_summary(filename)
-        
+
         markdown = generate_summary_markdown(week_key, stats, "week", existing_review)
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(markdown)
-        
+
         if existing_review and any(existing_review.values()):
             print(f"  Updated {filename} (preserved user review)")
         else:
@@ -304,15 +333,15 @@ def main():
     monthly_groups = group_trades_by_period(trades, "month")
     for month_key, month_trades in monthly_groups.items():
         stats = calculate_period_stats(month_trades)
-        
+
         # Load existing review content to preserve user input
         filename = f"index.directory/summaries/monthly-{month_key}.md"
         existing_review = load_existing_summary(filename)
-        
+
         # Aggregate insights from weekly summaries if available
         year, month = month_key.split("-")
         weekly_insights = aggregate_weekly_insights(year, month)
-        
+
         # Merge weekly insights with existing review
         if weekly_insights and not existing_review:
             existing_review = weekly_insights
@@ -321,12 +350,12 @@ def main():
             for key in ["what_went_well", "needs_improvement", "key_lessons"]:
                 if not existing_review.get(key) and weekly_insights.get(key):
                     existing_review[key] = weekly_insights[key]
-        
+
         markdown = generate_summary_markdown(month_key, stats, "month", existing_review)
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(markdown)
-        
+
         if existing_review and any(existing_review.values()):
             print(f"  Updated {filename} (with weekly insights)")
         else:
@@ -337,14 +366,14 @@ def main():
     yearly_groups = group_trades_by_period(trades, "year")
     for year_key, year_trades in yearly_groups.items():
         stats = calculate_period_stats(year_trades)
-        
+
         # Load existing review content to preserve user input
         filename = f"index.directory/summaries/yearly-{year_key}.md"
         existing_review = load_existing_summary(filename)
-        
+
         # Aggregate insights from monthly summaries if available
         monthly_insights = aggregate_monthly_insights(year_key)
-        
+
         # Merge monthly insights with existing review
         if monthly_insights and not existing_review:
             existing_review = monthly_insights
@@ -353,12 +382,12 @@ def main():
             for key in ["what_went_well", "needs_improvement", "key_lessons"]:
                 if not existing_review.get(key) and monthly_insights.get(key):
                     existing_review[key] = monthly_insights[key]
-        
+
         markdown = generate_summary_markdown(year_key, stats, "year", existing_review)
 
         with open(filename, "w", encoding="utf-8") as f:
             f.write(markdown)
-        
+
         if existing_review and any(existing_review.values()):
             print(f"  Updated {filename} (with monthly insights)")
         else:
@@ -370,12 +399,12 @@ def main():
 def aggregate_section(reviews, section_key, prefix_format):
     """
     Helper function to aggregate a specific section from multiple reviews
-    
+
     Args:
         reviews (list): List of tuples containing (identifier, review_dict)
         section_key (str): Key of the section to aggregate
         prefix_format (str): Format string for the prefix (e.g., "**Week {}**")
-        
+
     Returns:
         str: Aggregated content or empty string
     """
@@ -384,18 +413,18 @@ def aggregate_section(reviews, section_key, prefix_format):
         if review.get(section_key):
             prefix = prefix_format.format(identifier)
             sections.append(f"{prefix}: {review[section_key]}")
-    
+
     return "\n\n".join(sections) if sections else ""
 
 
 def get_week_month(week_number, year):
     """
     Determine which month a given ISO week falls into
-    
+
     Args:
         week_number (int): ISO week number (1-53)
         year (int): Year
-        
+
     Returns:
         int: Month number (1-12) or None if cannot determine
     """
@@ -405,7 +434,7 @@ def get_week_month(week_number, year):
         jan_4 = datetime(int(year), 1, 4)
         week_1_start = jan_4 - timedelta(days=jan_4.weekday())
         target_week_start = week_1_start + timedelta(weeks=week_number - 1)
-        
+
         # Use the middle of the week (Wednesday) to determine the month
         mid_week = target_week_start + timedelta(days=2)
         return mid_week.month
@@ -416,11 +445,11 @@ def get_week_month(week_number, year):
 def aggregate_weekly_insights(year, month):
     """
     Aggregate insights from weekly summaries for a given month
-    
+
     Args:
         year (str): Year string
         month (str): Month string (01-12)
-        
+
     Returns:
         dict: Aggregated review sections
     """
@@ -429,9 +458,9 @@ def aggregate_weekly_insights(year, month):
         "what_went_well": "",
         "needs_improvement": "",
         "key_lessons": "",
-        "next_goals": ""
+        "next_goals": "",
     }
-    
+
     # Find all weekly summaries for this month
     weekly_reviews = []
     if os.path.exists(summaries_dir):
@@ -451,13 +480,13 @@ def aggregate_weekly_insights(year, month):
                                 weekly_reviews.append((week_num, review))
                 except (ValueError, AttributeError):
                     continue
-    
+
     if not weekly_reviews:
         return None
-    
+
     # Sort by week number
     weekly_reviews.sort(key=lambda x: x[0])
-    
+
     # Aggregate each section using the helper function
     aggregated["what_went_well"] = aggregate_section(
         weekly_reviews, "what_went_well", "**Week {}**"
@@ -468,17 +497,17 @@ def aggregate_weekly_insights(year, month):
     aggregated["key_lessons"] = aggregate_section(
         weekly_reviews, "key_lessons", "**Week {}**"
     )
-    
+
     return aggregated if any(aggregated.values()) else None
 
 
 def aggregate_monthly_insights(year):
     """
     Aggregate insights from monthly summaries for a given year
-    
+
     Args:
         year (str): Year string
-        
+
     Returns:
         dict: Aggregated review sections
     """
@@ -487,9 +516,9 @@ def aggregate_monthly_insights(year):
         "what_went_well": "",
         "needs_improvement": "",
         "key_lessons": "",
-        "next_goals": ""
+        "next_goals": "",
     }
-    
+
     # Find all monthly summaries for this year
     monthly_reviews = []
     if os.path.exists(summaries_dir):
@@ -510,10 +539,10 @@ def aggregate_monthly_insights(year):
                 review = load_existing_summary(filepath)
                 if review and any(review.values()):
                     monthly_reviews.append((month_name, review))
-    
+
     if not monthly_reviews:
         return None
-    
+
     # Aggregate each section using the helper function
     aggregated["what_went_well"] = aggregate_section(
         monthly_reviews, "what_went_well", "**{}**"
@@ -524,7 +553,7 @@ def aggregate_monthly_insights(year):
     aggregated["key_lessons"] = aggregate_section(
         monthly_reviews, "key_lessons", "**{}**"
     )
-    
+
     return aggregated if any(aggregated.values()) else None
 
 
