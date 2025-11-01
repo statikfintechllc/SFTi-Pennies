@@ -61,15 +61,7 @@ async function loadTradeDistributionChart() {
     tradeDistributionChart = new Chart(ctx, {
       type: 'bar',
       data: data,
-      options: {
-        ...getCommonChartOptions(),
-        plugins: {
-          ...getCommonChartOptions().plugins,
-          legend: {
-            display: false
-          }
-        }
-      }
+      options: SFTiChartConfig.getBarChartOptions()
     });
   } catch (error) {
     console.log('Trade distribution data not yet available:', error);
