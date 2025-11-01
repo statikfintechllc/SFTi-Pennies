@@ -6,16 +6,37 @@ This is a comprehensive trading journal system built for GitHub Pages with autom
 
 ## Features
 
-- 🎨 **Dark Terminal Theme**: Professional trading terminal aesthetic
+### Core Functionality
+- 🎨 **Dark Terminal Theme**: Professional trading terminal aesthetic with animated background
 - 📱 **Mobile-First Design**: Optimized for iPhone and Android devices
 - 📊 **Auto-Calculations**: P&L, R:R, and time-in-trade calculated automatically
-- 🔐 **Dual Auth**: OAuth/GitHub App or Personal Access Token
+- 🔐 **GitHub Authentication**: Personal Access Token for secure API access
 - 🖼️ **Image Management**: Automatic upload and optimization
-- 📈 **Charts & Analytics**: Equity curves and performance metrics
+
+### Trading Tools
+- 📈 **Trade Submission**: Form-based entry with validation and auto-calculations
+- 📋 **All Trades View**: Sortable, filterable list of all trades
+- 📅 **Weekly Summaries**: Automated weekly performance tracking
+- 🔄 **Review Workflow**: Structured weekly review and summary completion
+- 📥 **CSV Import**: Import trades from broker statements (IBKR, Schwab, Robinhood, Webull)
+- 📤 **CSV Export**: Export your trades for external analysis
+
+### Analytics & Insights
+- 📊 **Advanced Analytics Dashboard**: Expectancy, profit factor, Kelly Criterion
+- 📈 **Charts & Visualizations**: Equity curves, performance metrics, trade distribution
+- 🎯 **Per-Strategy Analysis**: Performance breakdowns by strategy, setup, and session
+- 📉 **Drawdown Tracking**: Monitor drawdowns over time
+- 🔢 **Win/Loss Streaks**: Track winning and losing streaks
+
+### Content Management
+- 📚 **Books Library**: PDF viewer with navigation for trading education materials
+- 📝 **Notes System**: Markdown renderer for trading strategies and frameworks
+- ➕ **Upload Tools**: Add new books (PDFs) and notes (Markdown) via web interface
+
+### Automation
 - 🤖 **GitHub Actions**: Fully automated processing pipeline
 - 📦 **PWA Ready**: Progressive Web App with offline capability
-- 📚 **Books Library**: PDF viewer with navigation for trading books
-- 📝 **Notes System**: Markdown renderer with GitHub styling for trading notes
+- 🔄 **Auto-Generation**: Charts, summaries, and indices updated automatically
 
 ## Architecture
 
@@ -235,9 +256,64 @@ Screenshots should be uploaded via the web form. They will be:
 ### Viewing Your Journal
 
 - **Homepage**: Shows 3 most recent trades and summary stats
-- **All Trades**: `/all-trades.html` for complete list
-- **Summaries**: `/summaries/` for weekly/monthly/yearly reports
-- **Charts**: Equity curve on homepage
+- **All Trades**: `/all-trades.html` for complete filterable/sortable list
+- **All Weeks**: `/all-weeks.html` for weekly performance overview
+- **Analytics**: `/analytics.html` for advanced metrics and charts
+- **Review**: `/review.html` for weekly trade review workflow
+- **Books**: `/books.html` to browse and read trading education PDFs
+- **Notes**: `/notes.html` to view trading strategies and frameworks
+- **Summaries**: `/summaries/` for weekly/monthly/yearly detailed reports
+
+### Importing Trades from Broker CSVs
+
+1. Navigate to `/import.html`
+2. Select your broker (IBKR, Schwab, Robinhood, or Webull)
+3. Upload your broker's CSV export file
+4. Review detected trades in the preview
+5. Click "Import Trades" to process
+6. Trades will be created in the appropriate week folders
+7. GitHub Actions will automatically process them
+
+**Supported Brokers:**
+- **Interactive Brokers (IBKR)**: Activity statements and trade reports
+- **Charles Schwab / TD Ameritrade**: Transaction history exports
+- **Robinhood**: Trade history CSV downloads
+- **Webull**: Account activity exports
+
+### Exporting Trades to CSV
+
+1. Navigate to `/import.html`
+2. Click "Export CSV" button
+3. Optionally filter by date range or strategy
+4. Download the generated CSV file
+5. Open in Excel, Google Sheets, or other analysis tools
+
+### Managing Books and Notes
+
+#### Adding Books (PDFs)
+1. Navigate to `/add-pdf.html`
+2. Fill in book title and description
+3. Upload PDF file
+4. Submit to add to library
+5. Book appears in `/books.html` viewer
+
+#### Adding Notes (Markdown)
+1. Navigate to `/add-note.html`
+2. Enter note title
+3. Write content in Markdown
+4. Optionally upload related images
+5. Submit to save note
+6. Note appears in `/notes.html` viewer
+
+### Weekly Review Workflow
+
+1. Navigate to `/review.html`
+2. Select the week you want to review
+3. View all trades from that week
+4. Add weekly notes and lessons learned
+5. Set goals for the next week
+6. Submit to generate `master.trade.md` for the week
+7. Weekly summary appears in `/all-weeks.html`
 
 ## GitHub Actions Workflow
 
@@ -253,8 +329,8 @@ The workflow runs automatically when you:
 ### Workflow Steps
 
 1. **Parse Trades** (parse_trades.py)
-   - Reads all markdown files in `trades/` (legacy) and `SFTi.Tradez/week.*/` (supports both `week.XXX` and `week.YYYY.WW`)
-   - Extracts YAML frontmatter
+   - Reads all markdown files in `trades/` (legacy) and `SFTi.Tradez/week.*/`
+   - Extracts YAML frontmatter with trade details
    - Validates required fields
    - Generates `trades-index.json`
 
@@ -273,29 +349,44 @@ The workflow runs automatically when you:
    - Calculates statistics for each period
    - Creates markdown summaries in `summaries/`
 
-5. **Generate Index** (generate_index.py)
+5. **Generate Analytics** (generate_analytics.py)
+   - Calculates advanced metrics:
+     - Expectancy (average P&L per trade)
+     - Profit factor (gross profit / gross loss)
+     - Kelly Criterion for position sizing
+     - Max win/loss streaks
+     - Drawdown series
+   - Aggregates per-strategy, per-setup statistics
+   - Generates `analytics-data.json`
+
+6. **Generate Index** (generate_index.py)
    - Creates consolidated trade index
    - Generates `all-trades.html` page
 
-6. **Generate Charts** (generate_charts.py)
+7. **Generate Charts** (generate_charts.py)
    - Creates equity curve data (Chart.js format)
    - Generates static chart images with matplotlib
    - Saves to `assets/charts/`
 
-7. **Update Homepage** (update_homepage.py)
+8. **Generate Week Summaries** (generate_week_summaries.py)
+   - Creates `master.trade.md` for each week
+   - Includes week totals and trade list
+   - Generates `all-weeks.html` overview page
+
+9. **Update Homepage** (update_homepage.py)
    - Ensures trades-index.json is accessible
    - Homepage loads data dynamically via JavaScript
 
-8. **Optimize Images** (optimize_images.sh)
-   - Moves images from `.github/assets/` to `assets/images/`
-   - Optimizes PNGs with optipng
-   - Optimizes JPEGs with jpegoptim
-   - Reduces file sizes for faster loading
+10. **Optimize Images** (optimize_images.sh)
+    - Moves images from `.github/assets/` to `assets/images/`
+    - Optimizes PNGs with optipng
+    - Optimizes JPEGs with jpegoptim
+    - Reduces file sizes for faster loading
 
-9. **Commit and Push**
-   - Commits all generated files to repository
-   - Pushes changes to remote branch
-   - GitHub Pages automatically builds and deploys from the branch
+11. **Commit and Push**
+    - Commits all generated files to repository
+    - Pushes changes to remote branch
+    - GitHub Pages automatically builds and deploys
 
 ### Monitoring Workflow
 

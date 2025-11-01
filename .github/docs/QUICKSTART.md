@@ -70,12 +70,12 @@ Your trading journal is now a complete, production-ready system with:
 
 ## 🎯 Using Your Trading Journal
 
-### Adding Your First Trade
+### Option 1: Adding Trades Manually
 
-1. **Visit your site** at `https://statikfintechllc.github.io/SFTi-Pennies/`
+1. **Visit your site** at `https://statikfintechllc.github.io/SFTi-Pennies/index.directory/`
 2. **Click "Login"** in the navigation
 3. **Paste your PAT** when prompted
-4. **Click "+ Add Trade"**
+4. **Click "+ Add Trade"** in the menu
 5. **Fill out the form**:
    - Trade number (sequential: 1, 2, 3...)
    - Ticker symbol (e.g., TSLA, AAPL)
@@ -84,7 +84,7 @@ Your trading journal is now a complete, production-ready system with:
    - Position size (number of shares)
    - Direction (LONG or SHORT)
    - Stop loss and target prices
-   - Strategy name
+   - Strategy, setup, and session tags
    - Notes about the trade
 6. **Upload screenshots** (optional but recommended)
 7. **Click "Submit Trade"**
@@ -95,31 +95,122 @@ The form will automatically calculate:
 - ✅ Time in trade (hours and minutes)
 - ✅ Risk:Reward ratio
 
+### Option 2: Importing from Broker CSV
+
+1. **Export trades from your broker**:
+   - IBKR: Activity Statements → Trade Confirmation
+   - Schwab: Export Transactions → CSV
+   - Robinhood: Account → History → Export
+   - Webull: Orders → Export CSV
+2. **Navigate to Import page** (`/import.html`)
+3. **Select your broker** from the dropdown
+4. **Upload CSV file**
+5. **Review detected trades** in the preview
+6. **Click "Import Trades"**
+7. **Trades are created automatically** in the correct week folders
+
+### Viewing Your Performance
+
+- **Homepage** (`/index.html`) - Recent trades and summary stats
+- **All Trades** (`/all-trades.html`) - Complete sortable/filterable list
+- **All Weeks** (`/all-weeks.html`) - Weekly performance at a glance
+- **Analytics** (`/analytics.html`) - Deep dive into metrics:
+  - Expectancy and profit factor
+  - Kelly Criterion for position sizing
+  - Win/loss streaks
+  - Per-strategy breakdowns
+  - Drawdown analysis
+- **Books** (`/books.html`) - Browse trading education PDFs
+- **Notes** (`/notes.html`) - Review strategies and frameworks
+
+### Weekly Review Process
+
+1. **Navigate to Review page** (`/review.html`)
+2. **Select the week** you want to review
+3. **Review all trades** from that week
+4. **Add weekly notes**:
+   - What went well
+   - What needs improvement
+   - Lessons learned
+5. **Set goals** for next week
+6. **Submit** to generate weekly summary
+7. **View in All Weeks** page
+
+### Managing Your Library
+
+#### Adding Books
+1. Navigate to `/add-pdf.html`
+2. Enter book title and description
+3. Upload PDF file
+4. Submit to add to library
+
+#### Adding Notes
+1. Navigate to `/add-note.html`
+2. Enter note title
+3. Write content in Markdown
+4. Upload related images (optional)
+5. Submit to save
+
+### Exporting Data
+
+1. Navigate to `/import.html`
+2. Click "Export CSV" button
+3. Optionally filter by date range or strategy
+4. Download CSV for external analysis
+
 ### What Happens Next?
 
-1. **Your trade is saved** to the `trades/` directory as a markdown file
+1. **Your trade is saved** to `SFTi.Tradez/week.YYYY.WW/` directory
 2. **GitHub Actions automatically runs** (watch the Actions tab)
 3. **Processing pipeline executes**:
-   - Parses all trades into JSON
+   - Parses all trades into JSON indices
    - Generates weekly/monthly/yearly summaries
-   - Creates equity curve chart
+   - Calculates advanced analytics (expectancy, Kelly, profit factor)
+   - Creates equity curves and performance charts
+   - Generates weekly master.trade.md summaries
+   - Updates all-weeks.html overview
    - Updates homepage with recent trades
    - Optimizes any uploaded images
-4. **Site is redeployed** with your new trade!
-5. **Visit homepage** to see your trade appear
+4. **Site is redeployed** with your new data!
+5. **Visit any page** to see your updated trades and analytics
 
 ## 📁 What's Where
 
 ```
-Your Repository
-├── index.html              # Homepage (3 recent trades + stats)
-├── add-trade.html         # Trade submission form
-├── all-trades.html        # List of all trades (auto-generated)
-├── trades-index.json      # Trade data (auto-generated)
+SFTi-Pennies Repository Structure
 │
-├── trades/                # Your trade markdown files
-│   ├── trade-001.md      # Trade #1
-│   ├── trade-002.md      # Trade #2
+└── index.directory/           # Main application directory
+    ├── index.html              # Homepage (3 recent trades + stats)
+├── add-trade.html         # Trade submission form
+├── all-trades.html        # List of all trades (sortable/filterable)
+├── all-weeks.html         # Weekly performance overview
+├── analytics.html         # Advanced metrics dashboard
+├── review.html            # Weekly review workflow
+├── import.html            # CSV import/export
+├── books.html             # PDF library viewer
+├── notes.html             # Strategy notes viewer
+├── add-pdf.html           # Upload books
+├── add-note.html          # Create notes
+│
+├── trades-index.json      # Trade data (auto-generated)
+├── books-index.json       # Books data (auto-generated)
+├── notes-index.json       # Notes data (auto-generated)
+│
+├── SFTi.Tradez/           # Your trade journal
+│   ├── week.2025.01/      # Week 1 of 2025
+│   │   ├── 01:06:2025.1.md      # Individual trades
+│   │   └── master.trade.md      # Week summary (auto-generated)
+│   ├── week.2025.42/      # Week 42 of 2025
+│   └── ...
+│
+├── SFTi.Notez/            # Trading strategies and notes
+│   ├── 7.Step.Frame.md
+│   ├── GSTRWT.md
+│   └── ...
+│
+├── Informational.Bookz/    # PDF education library
+│   ├── 10_Patterns.pdf
+│   ├── Penny_Course.pdf
 │   └── ...
 │
 ├── summaries/             # Auto-generated summaries
@@ -128,16 +219,14 @@ Your Repository
 │   └── yearly-*.md
 │
 ├── assets/
-│   ├── css/              # Styles
-│   ├── js/               # JavaScript
-│   ├── images/           # Optimized images (served)
-│   └── charts/           # Generated charts
+│   ├── css/               # Styles
+│   ├── js/                # JavaScript
+│   ├── charts/            # Generated charts
+│   ├── sfti.tradez.assets/    # Trade screenshots
+│   └── sfti.notez.assets/     # Framework images
 │
-└── .github/
-    ├── assets/           # Original images (uploaded)
-    ├── scripts/          # Python processing scripts
-    ├── workflows/        # GitHub Actions
-    └── templates/        # Trade templates
+└── trades/                # Legacy trade entries (still supported)
+    └── trade-*.md
 ```
 
 ## 🎨 Customization
@@ -170,24 +259,44 @@ Edit the `<nav>` section in:
 
 ## 📊 Viewing Your Performance
 
-### Homepage
-- **Recent Trades**: 3 most recent with animation
-- **Summary Stats**: Win rate, total P&L, average P&L
-- **Equity Curve**: Cumulative P&L over time
+### Homepage Dashboard
+- **Recent 3 trades** with animated cards
+- **Summary statistics**: Total P&L, win rate, average P/L
+- **Equity curve chart**: Cumulative performance over time
+- **Quick navigation** to all sections
 
-### All Trades Page
-Visit `/all-trades.html` for a complete table of all trades
+### Analytics Page (`/analytics.html`)
+Deep dive into your trading performance:
+- **Overall Performance**: Win rate, profit factor, expectancy
+- **Kelly Criterion**: Optimal position sizing calculation
+- **Win/Loss Streaks**: Current and maximum streaks
+- **Drawdown Analysis**: Peak-to-trough performance
+- **Per-Strategy Metrics**: Breakdown by strategy, setup, session
+- **Interactive Charts**: Visual performance analysis
 
-### Summaries
-Check the `summaries/` folder for:
-- `weekly-YYYY-Www.md` - Weekly breakdowns
-- `monthly-YYYY-MM.md` - Monthly analysis
-- `yearly-YYYY.md` - Yearly overview
+### All Trades Page (`/all-trades.html`)
+- **Complete trade list** with all details
+- **Sortable columns**: Click headers to sort
+- **Filterable**: Search by ticker, strategy, date
+- **Export option**: Download as CSV
 
-### Charts
-Static chart images are generated in `assets/charts/`:
-- `equity-curve.png` - Your equity curve
-- `trade-distribution.png` - P&L by trade
+### All Weeks Page (`/all-weeks.html`)
+- **Weekly summaries** at a glance
+- **Week-over-week performance**
+- **Total trades and P&L per week**
+- **Click through** to individual week details
+
+### Books Library (`/books.html`)
+- **Browse all trading books** in your library
+- **PDF viewer** with zoom and page navigation
+- **Search and filter** by title
+- **Upload new books** via add-pdf.html
+
+### Notes Viewer (`/notes.html`)
+- **View all trading strategies** and frameworks
+- **Markdown rendering** with GitHub styling
+- **Linked images** and charts
+- **Create new notes** via add-note.html
 
 ## 🔧 Troubleshooting
 
