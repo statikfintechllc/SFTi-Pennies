@@ -4,9 +4,7 @@
  */
 
 class Footer {
-  constructor(options = {}) {
-    this.basePath = options.basePath || '';
-    this.currentPath = options.currentPath || '';
+  constructor() {
     this.render();
   }
 
