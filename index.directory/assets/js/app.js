@@ -187,8 +187,19 @@ class TradingJournal {
         this.createTradeCard(trade, index)
       ).join('');
       
-      // Update stats
-      this.updateStats(data.statistics || {});
+      // Load analytics for percentage returns
+      let analyticsData = null;
+      try {
+        const analyticsResponse = await fetch(`${this.basePath}/index.directory/assets/charts/analytics-data.json`);
+        if (analyticsResponse.ok) {
+          analyticsData = await analyticsResponse.json();
+        }
+      } catch (err) {
+        console.warn('Could not load analytics data:', err);
+      }
+      
+      // Update stats with analytics data
+      this.updateStats(data.statistics || {}, analyticsData);
       
     } catch (error) {
       console.warn('Could not load trades:', error);
@@ -253,8 +264,9 @@ class TradingJournal {
   /**
    * Update stats display
    * @param {Object} stats - Statistics object from trades index
+   * @param {Object} analytics - Analytics data with percentage returns
    */
-  updateStats(stats) {
+  updateStats(stats, analytics = null) {
     if (!stats || Object.keys(stats).length === 0) return;
     
     // Calculate portfolio value if accountManager is available
@@ -263,9 +275,16 @@ class TradingJournal {
       portfolioValue = window.accountManager.calculatePortfolioValue(stats.total_pnl || 0);
     }
     
+    // Get total return percentage from analytics
+    let totalReturnPercent = 0;
+    if (analytics && analytics.returns) {
+      totalReturnPercent = analytics.returns.total_return_percent || 0;
+    }
+    
     // Update DOM
     const statElements = {
       'stat-portfolio-value': `$${portfolioValue.toFixed(2)}`,
+      'stat-total-return': `${totalReturnPercent >= 0 ? '+' : ''}${totalReturnPercent.toFixed(2)}%`,
       'stat-total-trades': stats.total_trades || 0,
       'stat-win-rate': `${stats.win_rate || 0}%`,
       'stat-total-pnl': `$${(stats.total_pnl || 0).toFixed(2)}`,
@@ -286,6 +305,11 @@ class TradingJournal {
         if (id === 'stat-portfolio-value') {
           element.classList.remove('positive', 'negative');
           element.classList.add(portfolioValue >= 0 ? 'positive' : 'negative');
+        }
+        // Add positive/negative class for total return
+        if (id === 'stat-total-return') {
+          element.classList.remove('positive', 'negative');
+          element.classList.add(totalReturnPercent >= 0 ? 'positive' : 'negative');
         }
       }
     });
