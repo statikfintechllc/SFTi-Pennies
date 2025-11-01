@@ -374,14 +374,14 @@ body {
 .glowing-bubble-wrapper:has(.bubble-trades) .bubble-dropdown {
   min-width: auto;
   width: auto;
-  max-width: 220px;
+  max-width: 180px;
 }
 
 .glowing-bubble-wrapper:has(.bubble-mentors) .bubble-dropdown a,
 .glowing-bubble-wrapper:has(.bubble-books) .bubble-dropdown a,
 .glowing-bubble-wrapper:has(.bubble-notes) .bubble-dropdown a,
 .glowing-bubble-wrapper:has(.bubble-trades) .bubble-dropdown a {
-  padding: 0.75rem 0.75rem;
+  padding: 0.75rem 0.5rem;
   white-space: nowrap;
   text-align: center;
 }
