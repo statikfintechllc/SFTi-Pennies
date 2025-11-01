@@ -78,6 +78,7 @@ class AccountManager {
   /**
    * Save account configuration
    * Saves to localStorage and commits to repository via GitHub API
+   * Uses exact same pattern as trade submission in app.js
    */
   async saveConfig(isDeposit = false) {
     try {
@@ -87,33 +88,23 @@ class AccountManager {
       localStorage.setItem('sfti-account-config', JSON.stringify(this.config));
       console.log('Account config saved to localStorage');
       
-      // Try to commit to repository
-      const committed = await this.commitConfigToRepo(isDeposit);
+      // Commit to repository (throws error if fails - just like trade submission)
+      await this.commitConfigToRepo(isDeposit);
       
-      // Show appropriate notification
-      if (committed) {
-        this.showNotification(
-          'Changes Saved!',
-          'Account config committed. Changes will appear in 1-5 minutes.',
-          'success',
-          5000
-        );
-      } else {
-        // Fallback: show manual instruction if commit failed
-        const message = isDeposit ? '"Added Deposit to account"' : '"Adjusted account base total"';
-        this.showNotification(
-          'Changes Saved Locally',
-          `Please manually commit index.directory/account-config.json with message ${message} and push.`,
-          'warning',
-          8000
-        );
-      }
+      // If we reach here, commit was successful
+      this.showNotification(
+        'Changes Saved!',
+        'Account config committed. Changes will appear in 1-5 minutes.',
+        'success',
+        5000
+      );
       
     } catch (error) {
       console.error('Error saving config:', error);
+      // Show error just like trade submission does
       this.showNotification(
-        'Error Saving',
-        'Changes may not persist. Please try again.',
+        'Failed to Save',
+        `Failed to commit changes: ${error.message}`,
         'error',
         5000
       );
@@ -122,7 +113,7 @@ class AccountManager {
   
   /**
    * Commit account-config.json to repository via GitHub API
-   * Uses the same uploadFile method as add-trade for consistency
+   * Uses EXACT same pattern as trade submission in app.js
    */
   async commitConfigToRepo(isDeposit = false) {
     // Get or create auth instance (same approach as add-trade.html)
@@ -134,32 +125,27 @@ class AccountManager {
       auth = new GitHubAuth();
     }
     
-    // Check authentication
+    // Check authentication (throw error if not authenticated - just like trade submission)
     if (!auth.isAuthenticated()) {
-      console.log('[AccountManager] Not authenticated. User needs to sign in.');
-      return false;
+      throw new Error('Not authenticated. Please sign in with your GitHub token.');
     }
     
-    try {
-      console.log('[AccountManager] Committing account-config.json to repository...');
-      
-      const filePath = 'index.directory/account-config.json';
-      const content = JSON.stringify(this.config, null, 2);
-      const encodedContent = btoa(String.fromCharCode(...new TextEncoder().encode(content)));
-      
-      // Determine commit message based on action type
-      const commitMessage = isDeposit ? 'Added Deposit to account' : 'Adjusted account base total';
-      
-      // Use the same uploadFile method that add-trade.html uses
-      await auth.uploadFile(filePath, encodedContent, commitMessage);
-      
-      console.log('[AccountManager] Successfully committed account-config.json');
-      // Note: The workflow will trigger automatically because it watches this file path
-      return true;
-    } catch (error) {
-      console.error('[AccountManager] Error in commitConfigToRepo:', error);
-      return false;
-    }
+    console.log('[AccountManager] Committing account-config.json to repository...');
+    
+    const filePath = 'index.directory/account-config.json';
+    const content = JSON.stringify(this.config, null, 2);
+    // Use EXACT same encoding as trade submission
+    const encodedContent = btoa(unescape(encodeURIComponent(content)));
+    
+    // Determine commit message based on action type
+    const commitMessage = isDeposit ? 'Added Deposit to account' : 'Adjusted account base total';
+    
+    // Use the same uploadFile method that add-trade.html uses
+    // This will throw an error if it fails - let it bubble up to saveConfig
+    await auth.uploadFile(filePath, encodedContent, commitMessage);
+    
+    console.log('[AccountManager] Successfully committed account-config.json');
+    // Note: The workflow will trigger automatically because it watches this file path
   }
   
   /**
