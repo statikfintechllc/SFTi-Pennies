@@ -77,53 +77,198 @@ class AccountManager {
 
   /**
    * Save account configuration
-   * Note: In a real implementation, this would need backend/GitHub API
-   * For now, we'll use localStorage as a client-side solution
+   * Saves to localStorage and triggers backend workflow to update JSON files
    */
-  saveConfig() {
+  async saveConfig() {
     try {
       this.config.last_updated = new Date().toISOString();
       localStorage.setItem('sfti-account-config', JSON.stringify(this.config));
       console.log('Account config saved to localStorage');
       
-      // Show a notification to the user that they need to commit changes
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--accent-yellow);
-        color: #000;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        z-index: 10000;
-        max-width: 400px;
-        font-weight: 500;
-      `;
-      notification.innerHTML = `
-        <div style="display: flex; align-items: start; gap: 0.75rem;">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink: 0; margin-top: 2px;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          <div>
-            <div style="font-weight: 600; margin-bottom: 0.25rem;">Changes Saved Locally</div>
-            <div style="font-size: 0.875rem;">Run <code style="background: rgba(0,0,0,0.2); padding: 2px 6px; border-radius: 3px;">python .github/scripts/parse_trades.py</code> and commit to persist changes.</div>
-          </div>
-        </div>
-      `;
-      document.body.appendChild(notification);
+      // Try to trigger backend workflow automatically
+      const workflowTriggered = await this.triggerBackendUpdate();
       
-      setTimeout(() => {
-        notification.style.transition = 'opacity 0.3s';
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
-      }, 5000);
+      // Show appropriate notification
+      if (workflowTriggered) {
+        this.showNotification(
+          'Changes Saved!',
+          'Backend is updating. Changes will appear in 1-5 minutes.',
+          'success',
+          5000
+        );
+      } else {
+        // Fallback: show manual instruction if auto-trigger failed
+        this.showNotification(
+          'Changes Saved Locally',
+          'Auto-update unavailable. To persist: commit account-config.json changes and push.',
+          'warning',
+          7000
+        );
+      }
       
     } catch (error) {
       console.error('Error saving config:', error);
-      alert('Error saving configuration. Changes may not persist.');
+      this.showNotification(
+        'Error Saving',
+        'Changes may not persist. Please try again.',
+        'error',
+        5000
+      );
     }
+  }
+  
+  /**
+   * Trigger backend workflow to update analytics
+   * Requires GitHub authentication (PAT stored in localStorage)
+   */
+  async triggerBackendUpdate() {
+    // Check if we have auth available
+    const auth = window.tradingJournal?.auth;
+    if (!auth || !auth.isAuthenticated()) {
+      console.log('[AccountManager] No authentication available for auto-update');
+      return false;
+    }
+    
+    try {
+      console.log('[AccountManager] Triggering backend workflow...');
+      
+      // First, update the account-config.json file in the repository
+      const fileUpdated = await this.updateAccountConfigFile(auth);
+      if (!fileUpdated) {
+        console.warn('[AccountManager] Failed to update account-config.json file');
+        return false;
+      }
+      
+      // Then trigger the trade pipeline workflow to regenerate analytics
+      const workflowTriggered = await this.triggerWorkflow(auth);
+      if (workflowTriggered) {
+        console.log('[AccountManager] Backend workflow triggered successfully');
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[AccountManager] Error triggering backend update:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Update account-config.json file in the repository
+   */
+  async updateAccountConfigFile(auth) {
+    try {
+      const filePath = 'index.directory/account-config.json';
+      const content = JSON.stringify(this.config, null, 2);
+      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+      
+      // Get current file SHA
+      const getFileUrl = `https://api.github.com/repos/${auth.owner}/${auth.repo}/contents/${filePath}`;
+      const getResponse = await fetch(getFileUrl, {
+        headers: auth.getAuthHeaders()
+      });
+      
+      let sha = null;
+      if (getResponse.ok) {
+        const fileData = await getResponse.json();
+        sha = fileData.sha;
+      }
+      
+      // Update or create file
+      const updateUrl = getFileUrl;
+      const updateResponse = await fetch(updateUrl, {
+        method: 'PUT',
+        headers: auth.getAuthHeaders(),
+        body: JSON.stringify({
+          message: `Update account config: balance=${this.config.starting_balance}, deposits=${this.config.deposits.length}`,
+          content: encodedContent,
+          sha: sha,
+          branch: 'main'
+        })
+      });
+      
+      return updateResponse.ok;
+    } catch (error) {
+      console.error('[AccountManager] Error updating file:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Trigger GitHub Actions workflow
+   */
+  async triggerWorkflow(auth) {
+    try {
+      const workflowUrl = `https://api.github.com/repos/${auth.owner}/${auth.repo}/actions/workflows/trade_pipeline.yml/dispatches`;
+      
+      const response = await fetch(workflowUrl, {
+        method: 'POST',
+        headers: auth.getAuthHeaders(),
+        body: JSON.stringify({
+          ref: 'main'
+        })
+      });
+      
+      return response.ok || response.status === 204;
+    } catch (error) {
+      console.error('[AccountManager] Error triggering workflow:', error);
+      return false;
+    }
+  }
+  
+  /**
+   * Show notification to user
+   */
+  showNotification(title, message, type = 'info', duration = 5000) {
+    const colors = {
+      success: 'var(--accent-green)',
+      warning: 'var(--accent-yellow)',
+      error: 'var(--accent-red)',
+      info: 'var(--accent-blue)'
+    };
+    
+    const icons = {
+      success: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+      warning: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+      error: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z',
+      info: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+    };
+    
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${colors[type] || colors.info};
+      color: #000;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 10000;
+      max-width: 400px;
+      font-weight: 500;
+      animation: slideIn 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+      <div style="display: flex; align-items: start; gap: 0.75rem;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink: 0; margin-top: 2px;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${icons[type] || icons.info}"/>
+        </svg>
+        <div>
+          <div style="font-weight: 600; margin-bottom: 0.25rem;">${title}</div>
+          <div style="font-size: 0.875rem;">${message}</div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.transition = 'opacity 0.3s';
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }, duration);
   }
 
   /**
