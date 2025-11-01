@@ -386,6 +386,11 @@ body {
   text-align: center;
 }
 
+/* Tighter horizontal padding for Trades dropdown to balance spacing with longer text */
+.glowing-bubble-wrapper:has(.bubble-trades) .bubble-dropdown a {
+  padding: 0.75rem 0.4rem;
+}
+
 /* Additional bubble styles for new buttons */
 .glowing-bubble.bubble-trades {
   border-color: rgba(251, 191, 36, 0.3);
