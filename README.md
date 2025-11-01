@@ -31,6 +31,32 @@ Welcome to **SFTi-Pennies** - a comprehensive, fully automated trading journal s
 
 Created a **fully transparent, organized trading account** with complete documentation of strategies, trades, education materials, and performance tracking to achieve **18 months to freedom**. 🚀
 
+## 📱 Application Interface
+
+<div align="center">
+
+### Mobile App Preview
+
+<table>
+<tr>
+<td align="center" width="33%">
+<img src=".github/UI-SS/App-Presentation.01.demo.png" alt="App Screenshot 1" width="250"/>
+</td>
+<td align="center" width="33%">
+<img src=".github/UI-SS/App-Presentstion.02.demo.png" alt="App Screenshot 2" width="250"/>
+</td>
+<td align="center" width="33%">
+<img src=".github/UI-SS/App-Presentstion.03.demo.png" alt="App Screenshot 3" width="250"/>
+</td>
+</tr>
+</table>
+
+<img src=".github/UI-SS/App-Icon.demo.png" alt="App Icon" width="120"/>
+
+*Progressive Web App with dark terminal theme and beautiful UI*
+
+</div>
+
 ## 📚 Repository Architecture
 
 ### 🎯 Core Trading System
