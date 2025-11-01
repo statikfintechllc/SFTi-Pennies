@@ -3,6 +3,8 @@
  * Dynamically generates and inserts the footer into pages
  */
 
+// Use utilities from global SFTiUtils
+
 class Footer {
   constructor() {
     this.render();
@@ -43,10 +45,6 @@ class Footer {
 }
 
 // Auto-initialize footer when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    new Footer();
-  });
-} else {
+SFTiUtils.onDOMReady(() => {
   new Footer();
-}
+});

@@ -3,29 +3,17 @@
  * Handles trade form calculations, submission, and homepage interactions
  */
 
+// Use utilities from global SFTiUtils
 class TradingJournal {
   constructor() {
     this.auth = new GitHubAuth();
     this.uploadedImages = [];
     // Get base path from URL to make code portable
-    this.basePath = this.getBasePath();
+    this.basePath = SFTiUtils.getBasePath();
     this.initializeApp();
   }
   
-  /**
-   * Get base path for the application
-   * Works with GitHub Pages and custom domains
-   * @returns {string} - Base path (e.g., '/SFTi-Pennies' or '')
-   */
-  getBasePath() {
-    const pathSegments = window.location.pathname.split('/').filter(Boolean);
-    // For GitHub Pages URLs (username.github.io/repo-name)
-    if (pathSegments.length > 0 && window.location.hostname.includes('github.io')) {
-      return '/' + pathSegments[0];
-    }
-    // For custom domains or root deployments
-    return '';
-  }
+  // getBasePath is now imported from utils.js
   
   /**
    * Calculate year and week number from date (ISO week)
@@ -33,18 +21,7 @@ class TradingJournal {
    * @returns {string} - Year and week in format "YYYY.WW"
    */
   getYearWeekNumber(date) {
-    const target = new Date(date.valueOf());
-    const dayNumber = (date.getDay() + 6) % 7;
-    target.setDate(target.getDate() - dayNumber + 3);
-    const thursdayOfTargetWeek = new Date(target.valueOf());
-    const year = thursdayOfTargetWeek.getFullYear();
-    const firstThursday = target.valueOf();
-    target.setMonth(0, 1);
-    if (target.getDay() !== 4) {
-      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
-    }
-    const weekNumber = 1 + Math.ceil((firstThursday - target) / 604800000);
-    return `${year}.${String(weekNumber).padStart(2, '0')}`;
+    return SFTiUtils.getYearWeekNumber(date);
   }
   
   /**
@@ -65,8 +42,7 @@ class TradingJournal {
    * @returns {string} - Date in MM:DD:YYYY format
    */
   formatDateForFilename(dateStr) {
-    const [year, month, day] = dateStr.split('-');
-    return `${month}:${day}:${year}`;
+    return SFTiUtils.formatDateForFilename(dateStr);
   }
   
   /**

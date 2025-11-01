@@ -6,6 +6,8 @@
  * This frontend provides UI for file upload, validation, and preview.
  */
 
+// Use utilities from global SFTiUtils
+
 // State management
 let uploadedFile = null;
 let parsedTrades = [];
@@ -54,7 +56,7 @@ function handleFileUpload(event) {
   
   // Show file info
   csvFilename.textContent = file.name;
-  csvFilesize.textContent = formatFileSize(file.size);
+  csvFilesize.textContent = SFTiUtils.formatFileSize(file.size);
   csvFileInfo.style.display = 'block';
   
   // Read and parse file
@@ -69,8 +71,8 @@ function handleFileUpload(event) {
     if (detectedBroker) {
       brokerSelect.value = detectedBroker;
       brokerInfo.style.display = 'block';
-      brokerInfoText.textContent = `Detected ${getBrokerName(detectedBroker)} format`;
-      showStatus(`Auto-detected ${getBrokerName(detectedBroker)} CSV format. Click Validate to preview trades.`, 'success');
+      brokerInfoText.textContent = `Detected ${SFTiUtils.getBrokerName(detectedBroker)} format`;
+      showStatus(`Auto-detected ${SFTiUtils.getBrokerName(detectedBroker)} CSV format. Click Validate to preview trades.`, 'success');
     } else {
       showStatus('Could not auto-detect broker. Please select manually and click Validate.', 'warning');
     }
@@ -111,19 +113,6 @@ function detectBrokerFromCSV(csvContent) {
 }
 
 /**
- * Get broker display name
- */
-function getBrokerName(broker) {
-  const names = {
-    'ibkr': 'Interactive Brokers',
-    'schwab': 'Schwab/TD Ameritrade',
-    'robinhood': 'Robinhood',
-    'webull': 'Webull'
-  };
-  return names[broker] || broker;
-}
-
-/**
  * Clear uploaded file
  */
 function clearFile() {
@@ -151,7 +140,7 @@ function handleBrokerChange(event) {
   
   if (broker) {
     detectedBroker = broker;
-    brokerInfoText.textContent = `Selected: ${getBrokerDisplayName(broker)}`;
+    brokerInfoText.textContent = `Selected: ${SFTiUtils.getBrokerName(broker)}`;
     brokerInfo.style.display = 'block';
   } else {
     brokerInfo.style.display = 'none';
@@ -236,7 +225,7 @@ function parseCSVForBroker(csvContent, broker) {
           position_size: parseInt(row['quantity'] || row['position_size'] || row['qty'] || 0),
           direction: 'LONG',
           pnl_usd: parseFloat(row['realized p/l'] || row['pnl_usd'] || 0),
-          broker: getBrokerName(broker)
+          broker: SFTiUtils.getBrokerName(broker)
         });
       }
     }
@@ -332,9 +321,9 @@ function handleDownloadMapping() {
   };
   
   const mapping = {
-    broker: getBrokerDisplayName(broker),
+    broker: SFTiUtils.getBrokerName(broker),
     fields: mappings[broker] || {},
-    notes: `Field mapping for ${getBrokerDisplayName(broker)} CSV format. These mappings show how broker CSV columns are converted to the standard trade format.`
+    notes: `Field mapping for ${SFTiUtils.getBrokerName(broker)} CSV format. These mappings show how broker CSV columns are converted to the standard trade format.`
   };
   
   const blob = new Blob([JSON.stringify(mapping, null, 2)], { type: 'application/json' });
@@ -489,30 +478,9 @@ function hideStatus() {
 }
 
 /**
- * Get broker display name
+ * Get broker display name (alias for getBrokerName from utils)
  */
-function getBrokerDisplayName(broker) {
-  const names = {
-    'ibkr': 'Interactive Brokers (IBKR)',
-    'schwab': 'Charles Schwab / TD Ameritrade',
-    'robinhood': 'Robinhood',
-    'webull': 'Webull'
-  };
-  return names[broker] || broker;
-}
-
-/**
- * Format file size
- */
-function formatFileSize(bytes) {
-  if (bytes < 1024) return bytes + ' bytes';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-}
+// Removed - now using SFTiUtils.getBrokerName directly
 
 // Initialize on DOM ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initImportPage);
-} else {
-  initImportPage();
-}
+SFTiUtils.onDOMReady(initImportPage);

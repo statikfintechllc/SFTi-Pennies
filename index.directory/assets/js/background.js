@@ -3,6 +3,8 @@
  * Creates an animated matrix-style background with trading symbols
  */
 
+// Use utilities from global SFTiUtils
+
 class BackgroundAnimation {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
@@ -69,6 +71,6 @@ class BackgroundAnimation {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+SFTiUtils.onDOMReady(() => {
   new BackgroundAnimation('bg-canvas');
 });
